@@ -19,5 +19,7 @@ data class Card(
     @ColumnInfo(name = "remindDate")
     val remindDate: String,
     @ColumnInfo(name = "remindTime")
-    val remindTime: String
+    val remindTime: String,
+    @ColumnInfo(name = "step")
+    val step: Int
 )
