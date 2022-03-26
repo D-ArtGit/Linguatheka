@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Wordcards</string>
+    <string name="create">Create</string>
 </resources>
