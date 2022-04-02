@@ -11,6 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Wordcards">
         <activity
+            android:name=".activities.NewCardActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.MainActivity"
             android:exported="true">
             <intent-filter>

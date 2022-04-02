@@ -1,4 +1,8 @@
 <resources>
-    <string name="app_name">Wordcards</string>
+    <string name="app_name">WordCards</string>
     <string name="create">Create</string>
+    <string name="word">Enter word</string>
+    <string name="examples">Enter some phrases</string>
+    <string name="translate">Enter translation</string>
+    <string name="save">Save</string>
 </resources>
