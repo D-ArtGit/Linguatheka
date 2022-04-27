@@ -15,12 +15,8 @@ data class Card(
     @ColumnInfo(name = "content")
     val content: String,
     @ColumnInfo(name = "createDate")
-    val createDate: String,
-    @ColumnInfo(name = "createTime")
     val createTime: String,
     @ColumnInfo(name = "remindDate")
-    val remindDate: String,
-    @ColumnInfo(name = "remindTime")
     val remindTime: String,
     @ColumnInfo(name = "step")
     val step: Int

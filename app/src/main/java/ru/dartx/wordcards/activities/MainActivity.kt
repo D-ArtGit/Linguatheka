@@ -5,12 +5,17 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
+import androidx.activity.viewModels
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.databinding.ActivityMainBinding
+import ru.dartx.wordcards.db.MainViewModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var edSearch: EditText? = null
+    private val mainViewModel: MainViewModel by viewModels {
+        MainViewModel.MainViewModelFactory((applicationContext as MainApp).database)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

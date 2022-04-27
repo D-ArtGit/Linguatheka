@@ -2,8 +2,12 @@
     <string name="app_name">WordCards</string>
     <string name="create">Create</string>
     <string name="search">Search</string>
-    <string name="word">Enter word</string>
-    <string name="examples">Enter some phrases</string>
-    <string name="translate">Enter translation</string>
+    <string name="enter_word">Enter word</string>
+    <string name="word">Word</string>
+    <string name="phrases">Phrases</string>
+    <string name="word_usage_examples">Word usage examples</string>
+    <string name="examples_hint">Enter some phrases, word usage examples</string>
+    <string name="enter_translation">Enter translation</string>
+    <string name="translation">Translation</string>
     <string name="save">Save</string>
 </resources>
