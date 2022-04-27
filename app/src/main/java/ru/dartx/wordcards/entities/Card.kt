@@ -12,8 +12,10 @@ data class Card(
     val lang: String,
     @ColumnInfo(name = "word")
     val word: String,
-    @ColumnInfo(name = "content")
-    val content: String,
+    @ColumnInfo(name = "examples")
+    val examples: String,
+    @ColumnInfo(name = "translation")
+    val translation: String,
     @ColumnInfo(name = "createDate")
     val createTime: String,
     @ColumnInfo(name = "remindDate")

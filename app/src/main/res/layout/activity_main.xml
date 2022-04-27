@@ -28,7 +28,7 @@
             app:srcCompat="@drawable/ic_fab" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rcVew"
+            android:id="@+id/rcViewCardList"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
