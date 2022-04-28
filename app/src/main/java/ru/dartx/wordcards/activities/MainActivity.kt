@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +21,7 @@ import ru.dartx.wordcards.utils.TimeManager
 
 class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var launcher: ActivityResultLauncher<Intent>
     private var edSearch: EditText? = null
     private var adapter: CardAdapter? = null
     private val mainViewModel: MainViewModel by viewModels {
@@ -30,19 +32,11 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == RESULT_OK) {
-                val card = it.data?.getSerializableExtra("card") as Card
-                Log.d("DArtX", "insert ${card.word.toString()}")
-                mainViewModel.insertCard(card)
-            }
-        }
         init()
         cardListObserver()
+        onEditResult()
         binding.btFab.setOnClickListener {
-            val i = Intent(this, NewCardActivity::class.java)
-            i.putExtra("card", 0)
-            launcher.launch(i)
+            launcher.launch(Intent(this, NewCardActivity::class.java))
         }
     }
 
@@ -86,6 +80,26 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     }
 
     override fun onClickCard(card: Card) {
-        TODO("Not yet implemented")
+        val i = Intent(this, NewCardActivity::class.java)
+        i.putExtra(CARD_DATA, card)
+        launcher.launch(i)
+    }
+
+    private fun onEditResult() {
+        launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == RESULT_OK) {
+                val editState = it.data?.getStringExtra(CARD_STATE)
+                if (editState == "new") {
+                    mainViewModel.insertCard(it.data?.getSerializableExtra(CARD_DATA) as Card)
+                } else {
+                    mainViewModel.updateCard(it.data?.getSerializableExtra(CARD_DATA) as Card)
+                }
+            }
+        }
+    }
+
+    companion object {
+        const val CARD_DATA = "card"
+        const val CARD_STATE = "card_state"
     }
 }
