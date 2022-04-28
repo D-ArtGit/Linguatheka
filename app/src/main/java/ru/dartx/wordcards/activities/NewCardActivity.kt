@@ -1,5 +1,6 @@
 package ru.dartx.wordcards.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import ru.dartx.wordcards.R
@@ -24,6 +25,11 @@ class NewCardActivity : AppCompatActivity() {
                 TimeManager.getCurrentTime(),
                 0
             )
+            val i = Intent().apply {
+                putExtra("card", card)
+            }
+            setResult(RESULT_OK, i)
+            finish()
         }
     }
 }

@@ -9,7 +9,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Wordcards">
+        android:theme="@style/Theme.WordCards">
         <activity
             android:name=".activities.NewCardActivity"
             android:exported="false" />
