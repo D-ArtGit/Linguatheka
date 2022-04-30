@@ -14,13 +14,11 @@ object TimeManager {
     private const val DEF_TIME_FORMAT = "yyyy.MM.dd - hh:mm:ss"
     private const val RUS_TIME_FORMAT = "hh:mm:ss - dd.MM.yyyy"
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun getCurrentTime(): String {
         val date = LocalDateTime.now()
         return date.toString()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun getTimeFormat(time: String): String {
         val defDate = LocalDateTime.parse(time)
         val formatter = DateTimeFormatter.ofPattern(RUS_TIME_FORMAT)
@@ -28,7 +26,6 @@ object TimeManager {
         else time
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun addDays(time: String, days: Int): String {
         val defDate = LocalDateTime.parse(time)
         return defDate.plusDays(days.toLong()).toString()

@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WordCards">
         <activity
-            android:name=".activities.NewCardActivity"
+            android:name=".activities.CardActivity"
             android:exported="false" />
         <activity
             android:name=".activities.MainActivity"

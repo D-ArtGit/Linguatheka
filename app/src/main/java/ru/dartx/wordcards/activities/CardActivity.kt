@@ -1,20 +1,19 @@
 package ru.dartx.wordcards.activities
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import ru.dartx.wordcards.R
-import ru.dartx.wordcards.databinding.ActivityNewCardBinding
+import androidx.appcompat.app.AppCompatActivity
+import ru.dartx.wordcards.databinding.ActivityCardBinding
 import ru.dartx.wordcards.entities.Card
-import ru.dartx.wordcards.utils.TimeManager
+import ru.dartx.wordcards.utils.TimeManager.addDays
 import ru.dartx.wordcards.utils.TimeManager.getCurrentTime
 
-class NewCardActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityNewCardBinding
+class CardActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityCardBinding
     private var card: Card? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityNewCardBinding.inflate(layoutInflater)
+        binding = ActivityCardBinding.inflate(layoutInflater)
         setContentView(binding.root)
         getCard()
         binding.btSave.setOnClickListener {
@@ -27,8 +26,11 @@ class NewCardActivity : AppCompatActivity() {
         if (sCard != null) {
             card = sCard as Card
             binding.apply {
+                tvCardWord.text = card!!.word
                 edWord.setText(card?.word)
+                tvCardExamples.text = card!!.examples
                 edExamples.setText(card?.examples)
+                tvCardTranslation.text = card!!.translation
                 edTranslation.setText(card?.translation)
             }
         }
@@ -51,14 +53,16 @@ class NewCardActivity : AppCompatActivity() {
     }
 
     private fun newCard(): Card {
+        val currentDate = getCurrentTime()
+        val remindDate = addDays(currentDate, 1)
         return Card(
             null,
             "ru_RU",
             binding.edWord.text.toString(),
             binding.edExamples.text.toString(),
             binding.edTranslation.text.toString(),
-            getCurrentTime(),
-            TimeManager.getCurrentTime(),
+            currentDate,
+            remindDate,
             0
         )
     }

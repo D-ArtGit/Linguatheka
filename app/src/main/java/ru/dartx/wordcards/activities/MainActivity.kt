@@ -3,10 +3,8 @@ package ru.dartx.wordcards.activities
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.EditText
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,7 +15,6 @@ import ru.dartx.wordcards.databinding.ActivityMainBinding
 import ru.dartx.wordcards.db.CardAdapter
 import ru.dartx.wordcards.db.MainViewModel
 import ru.dartx.wordcards.entities.Card
-import ru.dartx.wordcards.utils.TimeManager
 
 class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     private lateinit var binding: ActivityMainBinding
@@ -36,7 +33,7 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
         cardListObserver()
         onEditResult()
         binding.btFab.setOnClickListener {
-            val i = Intent(this, NewCardActivity::class.java)
+            val i = Intent(this, CardActivity::class.java)
             i.putExtra(CARD_STATE, CARD_STATE_NEW)
             launcher.launch(i)
         }
@@ -82,7 +79,7 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     }
 
     override fun onClickCard(card: Card) {
-        val i = Intent(this, NewCardActivity::class.java)
+        val i = Intent(this, CardActivity::class.java)
         i.putExtra(CARD_DATA, card)
         i.putExtra(CARD_STATE, CARD_STATE_VIEW)
         launcher.launch(i)
