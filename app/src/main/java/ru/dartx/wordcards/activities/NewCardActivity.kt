@@ -7,6 +7,7 @@ import ru.dartx.wordcards.R
 import ru.dartx.wordcards.databinding.ActivityNewCardBinding
 import ru.dartx.wordcards.entities.Card
 import ru.dartx.wordcards.utils.TimeManager
+import ru.dartx.wordcards.utils.TimeManager.getCurrentTime
 
 class NewCardActivity : AppCompatActivity() {
     private lateinit var binding: ActivityNewCardBinding
@@ -34,11 +35,11 @@ class NewCardActivity : AppCompatActivity() {
     }
 
     private fun setMainResult() {
-        var editState = "new"
+        var editState = MainActivity.CARD_STATE_NEW
         val tempCard = if (card == null) {
             newCard()
         } else {
-            editState = "edit"
+            editState = MainActivity.CARD_STATE_EDIT
             updateCard()
         }
         val i = Intent().apply {
@@ -56,7 +57,7 @@ class NewCardActivity : AppCompatActivity() {
             binding.edWord.text.toString(),
             binding.edExamples.text.toString(),
             binding.edTranslation.text.toString(),
-            TimeManager.getCurrentTime(),
+            getCurrentTime(),
             TimeManager.getCurrentTime(),
             0
         )

@@ -36,7 +36,9 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
         cardListObserver()
         onEditResult()
         binding.btFab.setOnClickListener {
-            launcher.launch(Intent(this, NewCardActivity::class.java))
+            val i = Intent(this, NewCardActivity::class.java)
+            i.putExtra(CARD_STATE, CARD_STATE_NEW)
+            launcher.launch(i)
         }
     }
 
@@ -82,14 +84,15 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     override fun onClickCard(card: Card) {
         val i = Intent(this, NewCardActivity::class.java)
         i.putExtra(CARD_DATA, card)
+        i.putExtra(CARD_STATE, CARD_STATE_VIEW)
         launcher.launch(i)
     }
 
     private fun onEditResult() {
         launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == RESULT_OK) {
-                val editState = it.data?.getStringExtra(CARD_STATE)
-                if (editState == "new") {
+                val editState = it.data?.getIntExtra(CARD_STATE, 3)
+                if (editState == CARD_STATE_NEW) {
                     mainViewModel.insertCard(it.data?.getSerializableExtra(CARD_DATA) as Card)
                 } else {
                     mainViewModel.updateCard(it.data?.getSerializableExtra(CARD_DATA) as Card)
@@ -101,5 +104,8 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     companion object {
         const val CARD_DATA = "card"
         const val CARD_STATE = "card_state"
+        const val CARD_STATE_NEW = 0
+        const val CARD_STATE_EDIT = 2
+        const val CARD_STATE_VIEW = 3
     }
 }
