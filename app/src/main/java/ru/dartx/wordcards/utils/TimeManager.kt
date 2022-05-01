@@ -11,8 +11,10 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 object TimeManager {
-    private const val DEF_TIME_FORMAT = "yyyy.MM.dd - hh:mm:ss"
-    private const val RUS_TIME_FORMAT = "hh:mm:ss - dd.MM.yyyy"
+    private const val DEF_TIME_FORMAT = "yyyy.MM.dd - HH:mm:ss"
+    private const val RUS_TIME_FORMAT = "HH:mm:ss - dd.MM.yyyy"
+    private const val DATE_FORMAT = "yyyy.MM.dd"
+    const val ENDLESS_FUTURE = "2999-12-31T00:00:00.000"
 
     fun getCurrentTime(): String {
         val date = LocalDateTime.now()
@@ -24,6 +26,15 @@ object TimeManager {
         val formatter = DateTimeFormatter.ofPattern(RUS_TIME_FORMAT)
         return if (defDate != null) defDate.format(formatter)
         else time
+    }
+
+    fun isTimeToSetNewRemind (time: String): Boolean {
+        val dateFromTime = LocalDateTime.parse(time)
+        val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT)
+        val dateOfRemind = dateFromTime.format(formatter)
+        val currentDateTime = LocalDateTime.now()
+        val currentDate = currentDateTime.format(formatter)
+        return dateOfRemind <= currentDate
     }
 
     fun addDays(time: String, days: Int): String {

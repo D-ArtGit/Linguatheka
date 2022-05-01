@@ -9,7 +9,7 @@ import ru.dartx.wordcards.entities.Card
 
 @Dao
 interface Dao {
-    @Query("SELECT * FROM cards")
+    @Query("SELECT * FROM cards ORDER BY remindDate, word ASC")
     fun getAllCards(): Flow<List<Card>>
     @Query("DELETE FROM cards WHERE id IS :id")
     suspend fun deleteCard(id: Int)

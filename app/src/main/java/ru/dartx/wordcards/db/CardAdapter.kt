@@ -1,8 +1,11 @@
 package ru.dartx.wordcards.db
 
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.text.bold
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -26,9 +29,15 @@ class CardAdapter(private val listener: Listener) :
         private val binding = CardItemBinding.bind(view)
         fun setData(card: Card, listener: Listener) =
             with(binding) {
-                tvWord.text = card.word
-                tvExamples.text = card.examples
-                tvTime.text = TimeManager.getTimeFormat(card.remindTime)
+                if (card.remindTime == TimeManager.ENDLESS_FUTURE) tvTime.visibility = View.GONE
+                else tvTime.text = TimeManager.getTimeFormat(card.remindTime)
+                if (TimeManager.isTimeToSetNewRemind(card.remindTime)) {
+                    tvWord.text = SpannableStringBuilder().bold { append(card.word) }
+                    tvExamples.text = SpannableStringBuilder().bold { append(card.examples) }
+                } else {
+                    tvWord.text = card.word
+                    tvExamples.text = card.examples
+                }
                 itemView.setOnClickListener {
                     listener.onClickCard(card)
                 }
