@@ -10,4 +10,8 @@
     <string name="enter_translation">Enter translation</string>
     <string name="translation">Translation</string>
     <string name="save">Save</string>
+    <string name="edit">Edit</string>
+    <string name="bold">Bold</string>
+    <string name="delete">Delete</string>
+    <string name="reset_progress">Reset progress</string>
 </resources>

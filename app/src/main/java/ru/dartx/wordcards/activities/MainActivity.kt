@@ -3,6 +3,7 @@ package ru.dartx.wordcards.activities
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
@@ -88,11 +89,16 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     private fun onEditResult() {
         launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == RESULT_OK) {
-                val editState = it.data?.getIntExtra(CARD_STATE, 3)
-                if (editState == CARD_STATE_NEW) {
-                    mainViewModel.insertCard(it.data?.getSerializableExtra(CARD_DATA) as Card)
-                } else {
-                    mainViewModel.updateCard(it.data?.getSerializableExtra(CARD_DATA) as Card)
+                when (it.data?.getIntExtra(CARD_STATE, CARD_STATE_VIEW)) {
+                    CARD_STATE_NEW -> {
+                        mainViewModel.insertCard(it.data?.getSerializableExtra(CARD_DATA) as Card)
+                    }
+                    CARD_STATE_DELETE -> {
+                        mainViewModel.deleteCard(it.data?.getStringExtra(CARD_ID)!!.toInt())
+                    }
+                    else -> {
+                        mainViewModel.updateCard(it.data?.getSerializableExtra(CARD_DATA) as Card)
+                    }
                 }
             }
         }
@@ -100,9 +106,11 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
 
     companion object {
         const val CARD_DATA = "card"
+        const val CARD_ID = "card_id"
         const val CARD_STATE = "card_state"
         const val CARD_STATE_NEW = 0
         const val CARD_STATE_EDIT = 2
         const val CARD_STATE_VIEW = 3
+        const val CARD_STATE_DELETE = 4
     }
 }

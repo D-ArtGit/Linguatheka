@@ -2,10 +2,14 @@ package ru.dartx.wordcards.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.databinding.ActivityCardBinding
+import ru.dartx.wordcards.db.CardAdapter
 import ru.dartx.wordcards.entities.Card
 import ru.dartx.wordcards.utils.TimeManager
 import ru.dartx.wordcards.utils.TimeManager.addDays
@@ -18,16 +22,31 @@ class CardActivity : AppCompatActivity() {
     private var cardState = MainActivity.CARD_STATE_VIEW
     private lateinit var daysArray: IntArray
     private var timeToSetRemind = false
+    var editState = MainActivity.CARD_STATE_NEW
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCardBinding.inflate(layoutInflater)
         setContentView(binding.root)
         daysArray = resources.getIntArray(R.array.remind_days)
+        actionBarSettings()
         getCard()
         fieldState()
         binding.btSave.setOnClickListener {
             setMainResult()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.card_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> finish()
+            R.id.delete -> deleteCard()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun getCard() {
@@ -67,7 +86,6 @@ class CardActivity : AppCompatActivity() {
     }
 
     private fun setMainResult() {
-        var editState = MainActivity.CARD_STATE_NEW
         val tempCard = if (card == null) {
             newCard()
         } else {
@@ -116,5 +134,21 @@ class CardActivity : AppCompatActivity() {
             step = step
         )
 
+    }
+
+    private fun deleteCard() {
+        var editState = MainActivity.CARD_STATE_DELETE
+        val i = Intent().apply {
+            Log.d("DArtX", "CA: ${card?.id}")
+            putExtra(MainActivity.CARD_ID, card?.id.toString())
+            putExtra(MainActivity.CARD_STATE, editState)
+        }
+        setResult(RESULT_OK, i)
+        finish()
+    }
+
+    private fun actionBarSettings() {
+        val ab = supportActionBar
+        ab?.setDisplayHomeAsUpEnabled(true)
     }
 }
