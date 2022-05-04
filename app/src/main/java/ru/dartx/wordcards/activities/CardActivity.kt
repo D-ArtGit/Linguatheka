@@ -22,7 +22,7 @@ class CardActivity : AppCompatActivity() {
     private var cardState = MainActivity.CARD_STATE_VIEW
     private lateinit var daysArray: IntArray
     private var timeToSetRemind = false
-    var editState = MainActivity.CARD_STATE_NEW
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCardBinding.inflate(layoutInflater)
@@ -38,6 +38,24 @@ class CardActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.card_menu, menu)
+        val itemBold = menu?.findItem(R.id.bold)
+        val itemEdit = menu?.findItem(R.id.edit)
+        val itemReset = menu?.findItem(R.id.reset)
+        val itemDelete = menu?.findItem(R.id.delete)
+        Log.d("DArtX", "editState: $cardState")
+        if (cardState == MainActivity.CARD_STATE_VIEW) {
+            itemEdit?.isVisible = true
+            itemBold?.isVisible = false
+        }
+        if (cardState == MainActivity.CARD_STATE_NEW) {
+            itemReset?.isVisible = false
+            itemDelete?.isVisible = false
+            itemEdit?.isVisible = false
+        }
+        if (cardState == MainActivity.CARD_STATE_EDIT) {
+            itemBold?.isVisible = true
+            itemEdit?.isVisible = false
+        }
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -45,6 +63,7 @@ class CardActivity : AppCompatActivity() {
         when (item.itemId) {
             android.R.id.home -> finish()
             R.id.delete -> deleteCard()
+            R.id.edit -> editCard()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -89,12 +108,12 @@ class CardActivity : AppCompatActivity() {
         val tempCard = if (card == null) {
             newCard()
         } else {
-            editState = MainActivity.CARD_STATE_EDIT
+            cardState = MainActivity.CARD_STATE_EDIT
             updateCard()
         }
         val i = Intent().apply {
             putExtra(MainActivity.CARD_DATA, tempCard)
-            putExtra(MainActivity.CARD_STATE, editState)
+            putExtra(MainActivity.CARD_STATE, cardState)
         }
         setResult(RESULT_OK, i)
         finish()
@@ -137,14 +156,29 @@ class CardActivity : AppCompatActivity() {
     }
 
     private fun deleteCard() {
-        var editState = MainActivity.CARD_STATE_DELETE
+        cardState = MainActivity.CARD_STATE_DELETE
         val i = Intent().apply {
             Log.d("DArtX", "CA: ${card?.id}")
             putExtra(MainActivity.CARD_ID, card?.id.toString())
-            putExtra(MainActivity.CARD_STATE, editState)
+            putExtra(MainActivity.CARD_STATE, cardState)
         }
         setResult(RESULT_OK, i)
         finish()
+    }
+
+    private fun editCard() {
+        cardState = MainActivity.CARD_STATE_EDIT
+        invalidateOptionsMenu()
+        binding.apply {
+            btSave.visibility = View.VISIBLE
+            btSave.setImageResource(R.drawable.ic_save)
+            tvCardWord.visibility = View.GONE
+            tvCardExamples.visibility = View.GONE
+            tvCardTranslation.visibility = View.GONE
+            edWord.visibility = View.VISIBLE
+            edExamples.visibility = View.VISIBLE
+            edTranslation.visibility = View.VISIBLE
+        }
     }
 
     private fun actionBarSettings() {
