@@ -14,4 +14,8 @@
     <string name="bold">Bold</string>
     <string name="delete">Delete</string>
     <string name="reset_progress">Reset progress</string>
+    <string name="repeat_card">Repeat card</string>
+    <string name="fill_card">Fill card</string>
+    <string name="view_card">View card</string>
+    <string name="edit_card">Edit card</string>
 </resources>

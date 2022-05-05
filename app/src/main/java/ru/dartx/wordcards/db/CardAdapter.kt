@@ -1,6 +1,5 @@
 package ru.dartx.wordcards.db
 
-import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View

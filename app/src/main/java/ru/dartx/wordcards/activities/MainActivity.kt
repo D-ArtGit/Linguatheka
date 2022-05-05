@@ -1,15 +1,14 @@
 package ru.dartx.wordcards.activities
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.databinding.ActivityMainBinding
@@ -96,6 +95,7 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
                     CARD_STATE_DELETE -> {
                         mainViewModel.deleteCard(it.data?.getStringExtra(CARD_ID)!!.toInt())
                     }
+                    CARD_STATE_VIEW -> {}
                     else -> {
                         mainViewModel.updateCard(it.data?.getSerializableExtra(CARD_DATA) as Card)
                     }
@@ -112,5 +112,7 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
         const val CARD_STATE_EDIT = 2
         const val CARD_STATE_VIEW = 3
         const val CARD_STATE_DELETE = 4
+        const val CARD_STATE_CHECK = 5
+
     }
 }

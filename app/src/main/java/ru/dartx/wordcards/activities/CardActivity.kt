@@ -2,22 +2,22 @@ package ru.dartx.wordcards.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import ru.dartx.wordcards.R
-import ru.dartx.wordcards.databinding.ActivityCardBinding
-import ru.dartx.wordcards.db.CardAdapter
 import ru.dartx.wordcards.entities.Card
 import ru.dartx.wordcards.utils.TimeManager
 import ru.dartx.wordcards.utils.TimeManager.addDays
 import ru.dartx.wordcards.utils.TimeManager.getCurrentTime
 import ru.dartx.wordcards.utils.TimeManager.isTimeToSetNewRemind
+import ru.dartx.wordcards.databinding.ActivityCardBinding as ActivityCardBinding1
 
 class CardActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityCardBinding
+    private lateinit var binding: ActivityCardBinding1
+    private var ab: ActionBar? = null
     private var card: Card? = null
     private var cardState = MainActivity.CARD_STATE_VIEW
     private lateinit var daysArray: IntArray
@@ -25,12 +25,12 @@ class CardActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityCardBinding.inflate(layoutInflater)
+        binding = ActivityCardBinding1.inflate(layoutInflater)
         setContentView(binding.root)
         daysArray = resources.getIntArray(R.array.remind_days)
-        actionBarSettings()
         getCard()
         fieldState()
+        actionBarSettings()
         binding.btSave.setOnClickListener {
             setMainResult()
         }
@@ -42,7 +42,6 @@ class CardActivity : AppCompatActivity() {
         val itemEdit = menu?.findItem(R.id.edit)
         val itemReset = menu?.findItem(R.id.reset)
         val itemDelete = menu?.findItem(R.id.delete)
-        Log.d("DArtX", "editState: $cardState")
         if (cardState == MainActivity.CARD_STATE_VIEW) {
             itemEdit?.isVisible = true
             itemBold?.isVisible = false
@@ -80,17 +79,18 @@ class CardActivity : AppCompatActivity() {
                 tvCardTranslation.text = card!!.translation
                 edTranslation.setText(card?.translation)
             }
+            timeToSetRemind = isTimeToSetNewRemind(card!!.remindTime)
+            cardState = if (timeToSetRemind) MainActivity.CARD_STATE_CHECK
+            else MainActivity.CARD_STATE_VIEW
         } else cardState = MainActivity.CARD_STATE_NEW
     }
 
     private fun fieldState() = with(binding) {
-        if (cardState == MainActivity.CARD_STATE_VIEW) timeToSetRemind =
-            isTimeToSetNewRemind(card!!.remindTime)
-        when {
-            timeToSetRemind -> {
+        when (cardState) {
+            MainActivity.CARD_STATE_CHECK -> {
                 btSave.setImageResource(R.drawable.ic_check)
             }
-            cardState != MainActivity.CARD_STATE_NEW -> {
+            MainActivity.CARD_STATE_VIEW -> {
                 btSave.visibility = View.GONE
             }
             else -> {
@@ -108,7 +108,6 @@ class CardActivity : AppCompatActivity() {
         val tempCard = if (card == null) {
             newCard()
         } else {
-            cardState = MainActivity.CARD_STATE_EDIT
             updateCard()
         }
         val i = Intent().apply {
@@ -158,7 +157,6 @@ class CardActivity : AppCompatActivity() {
     private fun deleteCard() {
         cardState = MainActivity.CARD_STATE_DELETE
         val i = Intent().apply {
-            Log.d("DArtX", "CA: ${card?.id}")
             putExtra(MainActivity.CARD_ID, card?.id.toString())
             putExtra(MainActivity.CARD_STATE, cardState)
         }
@@ -169,6 +167,7 @@ class CardActivity : AppCompatActivity() {
     private fun editCard() {
         cardState = MainActivity.CARD_STATE_EDIT
         invalidateOptionsMenu()
+        ab?.setTitle(R.string.edit_card)
         binding.apply {
             btSave.visibility = View.VISIBLE
             btSave.setImageResource(R.drawable.ic_save)
@@ -182,7 +181,12 @@ class CardActivity : AppCompatActivity() {
     }
 
     private fun actionBarSettings() {
-        val ab = supportActionBar
+        ab = supportActionBar
         ab?.setDisplayHomeAsUpEnabled(true)
+        when (cardState) {
+            MainActivity.CARD_STATE_CHECK -> ab?.setTitle(R.string.repeat_card)
+            MainActivity.CARD_STATE_NEW -> ab?.setTitle(R.string.fill_card)
+            MainActivity.CARD_STATE_VIEW -> ab?.setTitle(R.string.view_card)
+        }
     }
 }
