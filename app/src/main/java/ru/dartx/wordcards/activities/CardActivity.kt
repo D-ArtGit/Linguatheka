@@ -1,12 +1,16 @@
 package ru.dartx.wordcards.activities
 
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Spannable
+import android.text.style.StyleSpan
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.text.getSpans
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.entities.Card
 import ru.dartx.wordcards.utils.TimeManager
@@ -62,7 +66,7 @@ class CardActivity : AppCompatActivity() {
         when (item.itemId) {
             android.R.id.home -> finish()
             R.id.delete -> deleteCard()
-            R.id.edit -> editCard()
+            R.id.edit -> editCardState()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -164,7 +168,7 @@ class CardActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun editCard() {
+    private fun editCardState() {
         cardState = MainActivity.CARD_STATE_EDIT
         invalidateOptionsMenu()
         ab?.setTitle(R.string.edit_card)
@@ -178,6 +182,18 @@ class CardActivity : AppCompatActivity() {
             edExamples.visibility = View.VISIBLE
             edTranslation.visibility = View.VISIBLE
         }
+    }
+
+    private fun setBoldForSelectedText() = with(binding) {
+        val startPos = edExamples.selectionStart
+        val endPos = edExamples.selectionEnd
+        val styles = edExamples.text.getSpans(startPos, endPos, StyleSpan::class.java)
+        var boldStyle: StyleSpan? = null
+        if (styles.isNotEmpty()) edExamples.text.removeSpan(styles[0])
+        else boldStyle = StyleSpan(Typeface.BOLD)
+        edExamples.text.setSpan(boldStyle, startPos, endPos, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        edExamples.text.trim()
+        edExamples.setSelection(startPos)
     }
 
     private fun actionBarSettings() {

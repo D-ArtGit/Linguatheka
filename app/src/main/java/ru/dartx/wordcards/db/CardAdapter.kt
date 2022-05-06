@@ -64,7 +64,6 @@ class CardAdapter(private val listener: Listener) :
     }
 
     interface Listener {
-        fun deleteCard(id: Int)
         fun onClickCard(card: Card)
     }
 }

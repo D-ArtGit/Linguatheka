@@ -74,10 +74,6 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
         }
     }
 
-    override fun deleteCard(id: Int) {
-        TODO("Not yet implemented")
-    }
-
     override fun onClickCard(card: Card) {
         val i = Intent(this, CardActivity::class.java)
         i.putExtra(CARD_DATA, card)
@@ -95,7 +91,6 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
                     CARD_STATE_DELETE -> {
                         mainViewModel.deleteCard(it.data?.getStringExtra(CARD_ID)!!.toInt())
                     }
-                    CARD_STATE_VIEW -> {}
                     else -> {
                         mainViewModel.updateCard(it.data?.getSerializableExtra(CARD_DATA) as Card)
                     }
