@@ -10,7 +10,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.text.getSpans
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.entities.Card
 import ru.dartx.wordcards.utils.TimeManager
@@ -66,6 +65,7 @@ class CardActivity : AppCompatActivity() {
         when (item.itemId) {
             android.R.id.home -> finish()
             R.id.delete -> deleteCard()
+            R.id.reset -> resetCardState()
             R.id.edit -> editCardState()
         }
         return super.onOptionsItemSelected(item)
@@ -123,29 +123,33 @@ class CardActivity : AppCompatActivity() {
     }
 
     private fun newCard(): Card {
-        val currentDate = getCurrentTime()
-        val remindDate = addDays(currentDate, daysArray[0])
+        val currentTime = getCurrentTime()
+        val remindTime = addDays(currentTime, daysArray[0])
         return Card(
             null,
             "ru_RU",
             binding.edWord.text.toString(),
             binding.edExamples.text.toString(),
             binding.edTranslation.text.toString(),
-            currentDate,
-            remindDate,
+            currentTime,
+            remindTime,
             0
         )
     }
 
     private fun updateCard(): Card? = with(binding) {
-        var step = card!!.step
-        var remindTime = card!!.remindTime
-        if (timeToSetRemind) {
-            step = card!!.step + 1
-            remindTime = if (step <= 8) {
-                addDays(getCurrentTime(), daysArray[step])
-            } else {
-                TimeManager.ENDLESS_FUTURE
+        var remindTime = addDays(getCurrentTime(), daysArray[0])
+        var step = 0
+        if (cardState != MainActivity.CARD_STATE_RESET) {
+            step = card!!.step
+            remindTime = card!!.remindTime
+            if (timeToSetRemind) {
+                step = card!!.step + 1
+                remindTime = if (step <= 8) {
+                    addDays(getCurrentTime(), daysArray[step])
+                } else {
+                    TimeManager.ENDLESS_FUTURE
+                }
             }
         }
         return card?.copy(
@@ -182,6 +186,11 @@ class CardActivity : AppCompatActivity() {
             edExamples.visibility = View.VISIBLE
             edTranslation.visibility = View.VISIBLE
         }
+    }
+
+    private fun resetCardState() {
+        cardState = MainActivity.CARD_STATE_RESET
+        setMainResult()
     }
 
     private fun setBoldForSelectedText() = with(binding) {

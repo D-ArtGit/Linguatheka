@@ -103,11 +103,12 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
         const val CARD_DATA = "card"
         const val CARD_ID = "card_id"
         const val CARD_STATE = "card_state"
-        const val CARD_STATE_NEW = 0
+        const val CARD_STATE_NEW = 1
         const val CARD_STATE_EDIT = 2
         const val CARD_STATE_VIEW = 3
         const val CARD_STATE_DELETE = 4
         const val CARD_STATE_CHECK = 5
+        const val CARD_STATE_RESET = 6
 
     }
 }
