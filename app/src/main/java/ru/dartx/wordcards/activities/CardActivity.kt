@@ -5,6 +5,7 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Spannable
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -12,6 +13,7 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.entities.Card
+import ru.dartx.wordcards.utils.HtmlManager
 import ru.dartx.wordcards.utils.TimeManager
 import ru.dartx.wordcards.utils.TimeManager.addDays
 import ru.dartx.wordcards.utils.TimeManager.getCurrentTime
@@ -67,6 +69,7 @@ class CardActivity : AppCompatActivity() {
             R.id.delete -> deleteCard()
             R.id.reset -> resetCardState()
             R.id.edit -> editCardState()
+            R.id.bold -> setBoldForSelectedText()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -78,8 +81,8 @@ class CardActivity : AppCompatActivity() {
             binding.apply {
                 tvCardWord.text = card!!.word
                 edWord.setText(card?.word)
-                tvCardExamples.text = card!!.examples
-                edExamples.setText(card?.examples)
+                tvCardExamples.text = HtmlManager.getFromHtml(card?.examples!!).trim()
+                edExamples.setText(HtmlManager.getFromHtml(card?.examples!!).trim())
                 tvCardTranslation.text = card!!.translation
                 edTranslation.setText(card?.translation)
             }
@@ -129,7 +132,7 @@ class CardActivity : AppCompatActivity() {
             null,
             "ru_RU",
             binding.edWord.text.toString(),
-            binding.edExamples.text.toString(),
+            HtmlManager.toHtml(binding.edExamples.text),
             binding.edTranslation.text.toString(),
             currentTime,
             remindTime,
@@ -154,7 +157,7 @@ class CardActivity : AppCompatActivity() {
         }
         return card?.copy(
             word = edWord.text.toString(),
-            examples = edExamples.text.toString(),
+            examples = HtmlManager.toHtml(binding.edExamples.text),
             translation = edTranslation.text.toString(),
             remindTime = remindTime,
             step = step

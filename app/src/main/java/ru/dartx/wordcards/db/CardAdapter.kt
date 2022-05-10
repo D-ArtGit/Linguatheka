@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.databinding.CardItemBinding
 import ru.dartx.wordcards.entities.Card
+import ru.dartx.wordcards.utils.HtmlManager
 import ru.dartx.wordcards.utils.TimeManager
 
 class CardAdapter(private val listener: Listener) :
@@ -32,10 +33,11 @@ class CardAdapter(private val listener: Listener) :
                 else tvTime.text = TimeManager.getTimeFormat(card.remindTime)
                 if (TimeManager.isTimeToSetNewRemind(card.remindTime)) {
                     tvWord.text = SpannableStringBuilder().bold { append(card.word) }
-                    tvExamples.text = SpannableStringBuilder().bold { append(card.examples) }
+                    tvExamples.text =
+                        SpannableStringBuilder().bold { append(HtmlManager.getFromHtml(card.examples)) }
                 } else {
                     tvWord.text = card.word
-                    tvExamples.text = card.examples
+                    tvExamples.text = HtmlManager.getFromHtml(card.examples).toString()
                 }
                 itemView.setOnClickListener {
                     listener.onClickCard(card)
