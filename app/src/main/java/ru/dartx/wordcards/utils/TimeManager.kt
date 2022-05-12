@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 object TimeManager {
-    private const val DEF_TIME_FORMAT = "yyyy.MM.dd - HH:mm:ss"
+    private const val RUS_DATE_FORMAT = "d MMM yyyy"
     private const val RUS_TIME_FORMAT = "HH:mm:ss - dd.MM.yyyy"
     private const val DATE_FORMAT = "yyyy.MM.dd"
     const val ENDLESS_FUTURE = "2999-12-31T00:00:00.000"
@@ -23,7 +23,7 @@ object TimeManager {
 
     fun getTimeFormat(time: String): String {
         val defDate = LocalDateTime.parse(time)
-        val formatter = DateTimeFormatter.ofPattern(RUS_TIME_FORMAT)
+        val formatter = DateTimeFormatter.ofPattern(RUS_DATE_FORMAT)
         return if (defDate != null) defDate.format(formatter)
         else time
     }

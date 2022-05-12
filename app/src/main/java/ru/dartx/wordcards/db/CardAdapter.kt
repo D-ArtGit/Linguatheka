@@ -16,7 +16,6 @@ import ru.dartx.wordcards.utils.TimeManager
 
 class CardAdapter(private val listener: Listener) :
     ListAdapter<Card, CardAdapter.ItemHolder>(ItemComparator()) {
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemHolder {
         return ItemHolder.create(parent)
     }
@@ -25,13 +24,16 @@ class CardAdapter(private val listener: Listener) :
         holder.setData(getItem(position), listener)
     }
 
-    class ItemHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ItemHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         private val binding = CardItemBinding.bind(view)
         fun setData(card: Card, listener: Listener) =
             with(binding) {
                 if (card.remindTime == TimeManager.ENDLESS_FUTURE) tvTime.visibility = View.GONE
                 else {
-                    val tvTimeText: String = TimeManager.getTimeFormat(card.remindTime)
+                    val tvTimeText: String =
+                        view.context.getString(R.string.next_time_to_repeat) + TimeManager.getTimeFormat(
+                            card.remindTime
+                        )
                     tvTime.text = tvTimeText
                 }
                 if (TimeManager.isTimeToSetNewRemind(card.remindTime)) {
