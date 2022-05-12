@@ -18,4 +18,5 @@
     <string name="fill_card">Fill card</string>
     <string name="view_card">View card</string>
     <string name="edit_card">Edit card</string>
+    <string name="next_time_to_repeat">Next time to repeat: </string>
 </resources>

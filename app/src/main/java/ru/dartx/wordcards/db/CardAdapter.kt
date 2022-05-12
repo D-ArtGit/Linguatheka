@@ -30,7 +30,10 @@ class CardAdapter(private val listener: Listener) :
         fun setData(card: Card, listener: Listener) =
             with(binding) {
                 if (card.remindTime == TimeManager.ENDLESS_FUTURE) tvTime.visibility = View.GONE
-                else tvTime.text = TimeManager.getTimeFormat(card.remindTime)
+                else {
+                    val tvTimeText: String = TimeManager.getTimeFormat(card.remindTime)
+                    tvTime.text = tvTimeText
+                }
                 if (TimeManager.isTimeToSetNewRemind(card.remindTime)) {
                     tvWord.text = SpannableStringBuilder().bold { append(card.word) }
                     tvExamples.text =
@@ -39,6 +42,8 @@ class CardAdapter(private val listener: Listener) :
                     tvWord.text = card.word
                     tvExamples.text = HtmlManager.getFromHtml(card.examples).toString()
                 }
+                progressBar.max = 9
+                progressBar.progress = card.step
                 itemView.setOnClickListener {
                     listener.onClickCard(card)
                 }

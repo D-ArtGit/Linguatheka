@@ -83,8 +83,8 @@ class CardActivity : AppCompatActivity() {
                 edWord.setText(card?.word)
                 tvCardExamples.text = HtmlManager.getFromHtml(card?.examples!!).trim()
                 edExamples.setText(HtmlManager.getFromHtml(card?.examples!!).trim())
-                tvCardTranslation.text = card!!.translation
-                edTranslation.setText(card?.translation)
+                tvCardTranslation.text = HtmlManager.getFromHtml(card?.translation!!).trim()
+                edTranslation.setText(HtmlManager.getFromHtml(card?.translation!!).trim())
             }
             timeToSetRemind = isTimeToSetNewRemind(card!!.remindTime)
             cardState = if (timeToSetRemind) MainActivity.CARD_STATE_CHECK
@@ -133,7 +133,7 @@ class CardActivity : AppCompatActivity() {
             "ru_RU",
             binding.edWord.text.toString(),
             HtmlManager.toHtml(binding.edExamples.text),
-            binding.edTranslation.text.toString(),
+            HtmlManager.toHtml(binding.edTranslation.text),
             currentTime,
             remindTime,
             0
@@ -157,8 +157,8 @@ class CardActivity : AppCompatActivity() {
         }
         return card?.copy(
             word = edWord.text.toString(),
-            examples = HtmlManager.toHtml(binding.edExamples.text),
-            translation = edTranslation.text.toString(),
+            examples = HtmlManager.toHtml(edExamples.text),
+            translation = HtmlManager.toHtml(edTranslation.text),
             remindTime = remindTime,
             step = step
         )
@@ -197,15 +197,27 @@ class CardActivity : AppCompatActivity() {
     }
 
     private fun setBoldForSelectedText() = with(binding) {
-        val startPos = edExamples.selectionStart
-        val endPos = edExamples.selectionEnd
-        val styles = edExamples.text.getSpans(startPos, endPos, StyleSpan::class.java)
-        var boldStyle: StyleSpan? = null
-        if (styles.isNotEmpty()) edExamples.text.removeSpan(styles[0])
-        else boldStyle = StyleSpan(Typeface.BOLD)
-        edExamples.text.setSpan(boldStyle, startPos, endPos, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        edExamples.text.trim()
-        edExamples.setSelection(startPos)
+        if (edExamples.hasFocus()) {
+            val startPos = edExamples.selectionStart
+            val endPos = edExamples.selectionEnd
+            val styles = edExamples.text.getSpans(startPos, endPos, StyleSpan::class.java)
+            var boldStyle: StyleSpan? = null
+            if (styles.isNotEmpty()) edExamples.text.removeSpan(styles[0])
+            else boldStyle = StyleSpan(Typeface.BOLD)
+            edExamples.text.setSpan(boldStyle, startPos, endPos, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            edExamples.text.trim()
+            edExamples.setSelection(startPos)
+        } else if (edTranslation.hasFocus()) {
+            val startPos = edTranslation.selectionStart
+            val endPos = edTranslation.selectionEnd
+            val styles = edTranslation.text.getSpans(startPos, endPos, StyleSpan::class.java)
+            var boldStyle: StyleSpan? = null
+            if (styles.isNotEmpty()) edTranslation.text.removeSpan(styles[0])
+            else boldStyle = StyleSpan(Typeface.BOLD)
+            edTranslation.text.setSpan(boldStyle, startPos, endPos, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            edTranslation.text.trim()
+            edTranslation.setSelection(startPos)
+        }
     }
 
     private fun actionBarSettings() {
