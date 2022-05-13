@@ -26,7 +26,8 @@
                 android:id="@+id/tvWord"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="4dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:text="TextView"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
@@ -35,7 +36,8 @@
                 android:id="@+id/tvExamples"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="4dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="TextView"
@@ -46,7 +48,8 @@
                 android:id="@+id/tvTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="4dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:text="TextView" />
 
             <ProgressBar
@@ -54,8 +57,8 @@
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="4dp"
-                android:layout_marginRight="4dp" />
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp" />
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
