@@ -12,6 +12,7 @@ import android.view.View
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import ru.dartx.wordcards.R
+import ru.dartx.wordcards.dialogs.ConfirmDialog
 import ru.dartx.wordcards.entities.Card
 import ru.dartx.wordcards.utils.HtmlManager
 import ru.dartx.wordcards.utils.TimeManager
@@ -166,13 +167,24 @@ class CardActivity : AppCompatActivity() {
     }
 
     private fun deleteCard() {
-        cardState = MainActivity.CARD_STATE_DELETE
-        val i = Intent().apply {
-            putExtra(MainActivity.CARD_ID, card?.id.toString())
-            putExtra(MainActivity.CARD_STATE, cardState)
-        }
-        setResult(RESULT_OK, i)
-        finish()
+        val message = getString(R.string.confirm_delete)
+        Log.d("DArtX", "Message: $message")
+        ConfirmDialog.showDialog(
+            this, object : ConfirmDialog.Listener {
+                override fun onClick() {
+                    cardState = MainActivity.CARD_STATE_DELETE
+                    val i = Intent().apply {
+                        putExtra(MainActivity.CARD_ID, card?.id.toString())
+                        putExtra(MainActivity.CARD_STATE, cardState)
+                    }
+                    setResult(RESULT_OK, i)
+                    finish()
+                }
+            },
+            message
+        )
+
+
     }
 
     private fun editCardState() {
@@ -192,8 +204,16 @@ class CardActivity : AppCompatActivity() {
     }
 
     private fun resetCardState() {
-        cardState = MainActivity.CARD_STATE_RESET
-        setMainResult()
+        val message = getString(R.string.confirm_reset)
+        ConfirmDialog.showDialog(
+            this, object : ConfirmDialog.Listener {
+                override fun onClick() {
+                    cardState = MainActivity.CARD_STATE_RESET
+                    setMainResult()
+                }
+            },
+            message
+        )
     }
 
     private fun setBoldForSelectedText() = with(binding) {
@@ -214,7 +234,12 @@ class CardActivity : AppCompatActivity() {
             var boldStyle: StyleSpan? = null
             if (styles.isNotEmpty()) edTranslation.text.removeSpan(styles[0])
             else boldStyle = StyleSpan(Typeface.BOLD)
-            edTranslation.text.setSpan(boldStyle, startPos, endPos, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            edTranslation.text.setSpan(
+                boldStyle,
+                startPos,
+                endPos,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
             edTranslation.text.trim()
             edTranslation.setSelection(startPos)
         }

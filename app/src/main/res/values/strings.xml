@@ -19,4 +19,6 @@
     <string name="view_card">View card</string>
     <string name="edit_card">Edit card</string>
     <string name="next_time_to_repeat">Next time to repeat:&#160;</string>
+    <string name="confirm_reset">Do you really want to reset all progress for this card?</string>
+    <string name="confirm_delete">Do you really want to delete this card?</string>
 </resources>

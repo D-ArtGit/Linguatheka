@@ -28,7 +28,11 @@ class CardAdapter(private val listener: Listener) :
         private val binding = CardItemBinding.bind(view)
         fun setData(card: Card, listener: Listener) =
             with(binding) {
-                if (card.remindTime == TimeManager.ENDLESS_FUTURE) tvTime.visibility = View.GONE
+                if (card.remindTime == TimeManager.ENDLESS_FUTURE) {
+                    tvTime.visibility = View.GONE
+                    progressBar.visibility = View.GONE
+                    tvExamples.maxLines = 3
+                }
                 else {
                     val tvTimeText: String =
                         view.context.getString(R.string.next_time_to_repeat) + TimeManager.getTimeFormat(
