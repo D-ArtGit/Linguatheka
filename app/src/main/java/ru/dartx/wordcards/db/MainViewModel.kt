@@ -5,8 +5,12 @@ import kotlinx.coroutines.launch
 import ru.dartx.wordcards.entities.Card
 
 class MainViewModel(dataBase: MainDataBase) : ViewModel() {
-    val dao = dataBase.getDao()
+    private val dao = dataBase.getDao()
     val allCards: LiveData<List<Card>> = dao.getAllCards().asLiveData()
+    val foundCards = MutableLiveData<List<Card>>()
+
+    fun searchCard(cond: String) =
+        viewModelScope.launch { foundCards.postValue(dao.searchCards(cond)) }
 
     fun insertCard(card: Card) = viewModelScope.launch { dao.insertCard(card) }
     fun updateCard(card: Card) = viewModelScope.launch { dao.updateCard(card) }

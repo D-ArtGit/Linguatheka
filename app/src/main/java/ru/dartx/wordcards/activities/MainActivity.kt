@@ -2,6 +2,9 @@ package ru.dartx.wordcards.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
@@ -21,6 +24,7 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     private lateinit var launcher: ActivityResultLauncher<Intent>
     private var edSearch: EditText? = null
     private var adapter: CardAdapter? = null
+    private lateinit var textWatcher: TextWatcher
     private val mainViewModel: MainViewModel by viewModels {
         MainViewModel.MainViewModelFactory((applicationContext as MainApp).database)
     }
@@ -44,17 +48,26 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
         val search = menu!!.findItem(R.id.search)
         edSearch = search.actionView.findViewById(R.id.edSearch) as EditText
         search.setOnActionExpandListener(expandActionView())
+        textWatcher = textWatcher()
         return true
     }
 
     private fun expandActionView(): MenuItem.OnActionExpandListener {
         return object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
+                edSearch?.addTextChangedListener(textWatcher)
+                searchListObserver()
+                mainViewModel.allCards.removeObservers(this@MainActivity)
+                mainViewModel.searchCard("%%")
                 return true
             }
 
             override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
+                edSearch?.removeTextChangedListener(textWatcher)
+                edSearch?.setText("")
                 invalidateOptionsMenu()
+                mainViewModel.foundCards.removeObservers(this@MainActivity)
+                cardListObserver()
                 return true
             }
 
@@ -71,6 +84,16 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     private fun cardListObserver() {
         mainViewModel.allCards.observe(this) {
             adapter?.submitList(it)
+        }
+    }
+
+    private fun searchListObserver() {
+        mainViewModel.foundCards.observe(this) {
+            val tempCardList = ArrayList<Card>()
+            it.forEach { card ->
+                tempCardList.add(card)
+            }
+            adapter?.submitList(tempCardList)
         }
     }
 
@@ -96,6 +119,23 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
                     }
                 }
             }
+        }
+    }
+
+    private fun textWatcher(): TextWatcher {
+        return object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                mainViewModel.searchCard("%$s%")
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
         }
     }
 

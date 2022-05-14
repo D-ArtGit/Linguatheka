@@ -3,7 +3,9 @@ package ru.dartx.wordcards.activities
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Editable
 import android.text.Spannable
+import android.text.TextWatcher
 import android.text.style.StyleSpan
 import android.util.Log
 import android.view.Menu
