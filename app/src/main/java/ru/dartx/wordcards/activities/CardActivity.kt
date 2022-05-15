@@ -84,10 +84,10 @@ class CardActivity : AppCompatActivity() {
             binding.apply {
                 tvCardWord.text = card!!.word
                 edWord.setText(card?.word)
-                tvCardExamples.text = HtmlManager.getFromHtml(card?.examples!!).trim()
-                edExamples.setText(HtmlManager.getFromHtml(card?.examples!!).trim())
-                tvCardTranslation.text = HtmlManager.getFromHtml(card?.translation!!).trim()
-                edTranslation.setText(HtmlManager.getFromHtml(card?.translation!!).trim())
+                tvCardExamples.text = HtmlManager.getFromHtml(card?.examples_html!!).trim()
+                edExamples.setText(HtmlManager.getFromHtml(card?.examples_html!!).trim())
+                tvCardTranslation.text = HtmlManager.getFromHtml(card?.translation_html!!).trim()
+                edTranslation.setText(HtmlManager.getFromHtml(card?.translation_html!!).trim())
             }
             timeToSetRemind = isTimeToSetNewRemind(card!!.remindTime)
             cardState = if (timeToSetRemind) MainActivity.CARD_STATE_CHECK
@@ -135,7 +135,9 @@ class CardActivity : AppCompatActivity() {
             null,
             "ru_RU",
             binding.edWord.text.toString(),
+            binding.edExamples.text.toString(),
             HtmlManager.toHtml(binding.edExamples.text),
+            binding.edTranslation.text.toString(),
             HtmlManager.toHtml(binding.edTranslation.text),
             currentTime,
             remindTime,
@@ -160,8 +162,10 @@ class CardActivity : AppCompatActivity() {
         }
         return card?.copy(
             word = edWord.text.toString(),
-            examples = HtmlManager.toHtml(edExamples.text),
-            translation = HtmlManager.toHtml(edTranslation.text),
+            examples = edExamples.text.toString(),
+            examples_html = HtmlManager.toHtml(edExamples.text),
+            translation = edTranslation.text.toString(),
+            translation_html = HtmlManager.toHtml(edTranslation.text),
             remindTime = remindTime,
             step = step
         )

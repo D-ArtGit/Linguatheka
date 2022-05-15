@@ -16,7 +16,7 @@ class MainViewModel(dataBase: MainDataBase) : ViewModel() {
     fun updateCard(card: Card) = viewModelScope.launch { dao.updateCard(card) }
     fun deleteCard(id: Int) = viewModelScope.launch { dao.deleteCard(id) }
 
-    class MainViewModelFactory(val database: MainDataBase) : ViewModelProvider.Factory {
+    class MainViewModelFactory(private val database: MainDataBase) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")

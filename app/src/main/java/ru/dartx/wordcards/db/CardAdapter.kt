@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.text.bold
+import androidx.core.view.marginBottom
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -43,10 +44,10 @@ class CardAdapter(private val listener: Listener) :
                 if (TimeManager.isTimeToSetNewRemind(card.remindTime)) {
                     tvWord.text = SpannableStringBuilder().bold { append(card.word) }
                     tvExamples.text =
-                        SpannableStringBuilder().bold { append(HtmlManager.getFromHtml(card.examples)) }
+                        SpannableStringBuilder().bold { append(card.examples) }
                 } else {
                     tvWord.text = card.word
-                    tvExamples.text = HtmlManager.getFromHtml(card.examples).toString()
+                    tvExamples.text = card.examples
                 }
                 progressBar.max = 9
                 progressBar.progress = card.step
