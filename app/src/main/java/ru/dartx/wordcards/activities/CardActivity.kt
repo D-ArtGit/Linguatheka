@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import ru.dartx.wordcards.R
@@ -115,34 +116,55 @@ class CardActivity : AppCompatActivity() {
     }
 
     private fun setMainResult() {
+        binding.edExamples.clearComposingText()
+        binding.edTranslation.clearComposingText()
         val tempCard = if (card == null) {
             newCard()
         } else {
             updateCard()
         }
-        val i = Intent().apply {
-            putExtra(MainActivity.CARD_DATA, tempCard)
-            putExtra(MainActivity.CARD_STATE, cardState)
+        if (tempCard != null) {
+            val i = Intent().apply {
+                putExtra(MainActivity.CARD_DATA, tempCard)
+                putExtra(MainActivity.CARD_STATE, cardState)
+            }
+            setResult(RESULT_OK, i)
+            finish()
         }
-        setResult(RESULT_OK, i)
-        finish()
     }
 
-    private fun newCard(): Card {
+    private fun newCard(): Card? {
         val currentTime = getCurrentTime()
         val remindTime = addDays(currentTime, daysArray[0])
-        return Card(
-            null,
-            "ru_RU",
-            binding.edWord.text.toString(),
-            binding.edExamples.text.toString(),
-            HtmlManager.toHtml(binding.edExamples.text),
-            binding.edTranslation.text.toString(),
-            HtmlManager.toHtml(binding.edTranslation.text),
-            currentTime,
-            remindTime,
-            0
-        )
+        binding.apply {
+            if (edWord.text.isNullOrEmpty()) {
+                Toast.makeText(
+                    this@CardActivity, getString(R.string.fill_word), Toast.LENGTH_SHORT)
+                    .show()
+                return null
+            } else if (edExamples.text.isNullOrEmpty()) {
+                Toast.makeText(
+                    this@CardActivity,
+                    getString(R.string.fill_examples),
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                return null
+            } else {
+                return Card(
+                    null,
+                    "ru_RU",
+                    edWord.text.toString(),
+                    edExamples.text.toString(),
+                    HtmlManager.toHtml(edExamples.text),
+                    edTranslation.text.toString(),
+                    HtmlManager.toHtml(edTranslation.text),
+                    currentTime,
+                    remindTime,
+                    0
+                )
+            }
+        }
     }
 
     private fun updateCard(): Card? = with(binding) {
@@ -174,7 +196,6 @@ class CardActivity : AppCompatActivity() {
 
     private fun deleteCard() {
         val message = getString(R.string.confirm_delete)
-        Log.d("DArtX", "Message: $message")
         ConfirmDialog.showDialog(
             this, object : ConfirmDialog.Listener {
                 override fun onClick() {

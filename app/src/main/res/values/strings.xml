@@ -21,4 +21,6 @@
     <string name="next_time_to_repeat">Next time to repeat:&#160;</string>
     <string name="confirm_reset">Do you really want to reset all progress for this card?</string>
     <string name="confirm_delete">Do you really want to delete this card?</string>
+    <string name="fill_word">Fill Word</string>
+    <string name="fill_examples">Fill Examples</string>
 </resources>

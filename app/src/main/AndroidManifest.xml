@@ -12,6 +12,7 @@
         android:theme="@style/Theme.WordCards">
         <activity
             android:name=".activities.CardActivity"
+            android:windowSoftInputMode="adjustResize"
             android:exported="false" />
         <activity
             android:name=".activities.MainActivity"
