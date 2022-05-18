@@ -1,5 +1,8 @@
 package ru.dartx.wordcards.activities
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -12,12 +15,15 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.databinding.ActivityMainBinding
 import ru.dartx.wordcards.db.CardAdapter
 import ru.dartx.wordcards.db.MainViewModel
 import ru.dartx.wordcards.entities.Card
+import ru.dartx.wordcards.utils.TimeManager
 
 class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     private lateinit var binding: ActivityMainBinding
@@ -33,6 +39,7 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        createNotificationChannel()
         init()
         cardListObserver()
         onEditResult()
@@ -139,6 +146,41 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
         }
     }
 
+    private fun createNotifications() {
+        mainViewModel.notificationCards(TimeManager.getCurrentTime())
+        mainViewModel.notificationCard.observe(this) {
+            it.forEach { card ->
+                Log.d("DArtX", card.word)
+                val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_search)
+                    .setContentTitle(card.word)
+                    .setContentText(getString(R.string.time_to_repeat))
+                    .setStyle(
+                        NotificationCompat.BigTextStyle()
+                            .bigText("${card.examples}\n${card.translation}")
+                    )
+                    .setAutoCancel(true)
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                with(NotificationManagerCompat.from(this)) {
+                    notify(card.id!!, builder.build())
+                }
+            }
+        }
+
+    }
+
+    private fun createNotificationChannel() {
+        val name = getString(R.string.channel_name)
+        val descriptionText = getString(R.string.channel_description)
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+            description = descriptionText
+        }
+        val notificationManager: NotificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+    }
+
     companion object {
         const val CARD_DATA = "card"
         const val CARD_ID = "card_id"
@@ -149,6 +191,6 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
         const val CARD_STATE_DELETE = 4
         const val CARD_STATE_CHECK = 5
         const val CARD_STATE_RESET = 6
-
+        const val CHANNEL_ID = "wordCH"
     }
 }

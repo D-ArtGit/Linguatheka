@@ -138,17 +138,10 @@ class CardActivity : AppCompatActivity() {
         val remindTime = addDays(currentTime, daysArray[0])
         binding.apply {
             if (edWord.text.isNullOrEmpty()) {
-                Toast.makeText(
-                    this@CardActivity, getString(R.string.fill_word), Toast.LENGTH_SHORT)
-                    .show()
+                edWord.error = getString(R.string.type_word)
                 return null
             } else if (edExamples.text.isNullOrEmpty()) {
-                Toast.makeText(
-                    this@CardActivity,
-                    getString(R.string.fill_examples),
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+                edExamples.error = getString(R.string.examples_hint)
                 return null
             } else {
                 return Card(
@@ -182,16 +175,23 @@ class CardActivity : AppCompatActivity() {
                 }
             }
         }
-        return card?.copy(
-            word = edWord.text.toString(),
-            examples = edExamples.text.toString(),
-            examples_html = HtmlManager.toHtml(edExamples.text),
-            translation = edTranslation.text.toString(),
-            translation_html = HtmlManager.toHtml(edTranslation.text),
-            remindTime = remindTime,
-            step = step
-        )
-
+        if (edWord.text.isNullOrEmpty()) {
+            edWord.error = getString(R.string.type_word)
+            return null
+        } else if (edExamples.text.isNullOrEmpty()) {
+            edExamples.error = getString(R.string.examples_hint)
+            return null
+        } else {
+            return card?.copy(
+                word = edWord.text.toString(),
+                examples = edExamples.text.toString(),
+                examples_html = HtmlManager.toHtml(edExamples.text),
+                translation = edTranslation.text.toString(),
+                translation_html = HtmlManager.toHtml(edTranslation.text),
+                remindTime = remindTime,
+                step = step
+            )
+        }
     }
 
     private fun deleteCard() {

@@ -9,12 +9,16 @@ import ru.dartx.wordcards.entities.Card
 
 @Dao
 interface Dao {
-    @Query("SELECT * FROM cards ORDER BY remindDate, word ASC")
+    @Query("SELECT * FROM cards ORDER BY remindTime, word ASC")
     fun getAllCards(): Flow<List<Card>>
 
     @Query("SELECT * FROM cards WHERE word LIKE :cond OR examples LIKE :cond " +
-            "OR translation LIKE :cond ORDER BY remindDate, word ASC")
+            "OR translation LIKE :cond ORDER BY remindTime, word ASC")
     suspend fun searchCards(cond: String): List<Card>
+
+    @Query("SELECT * FROM cards WHERE remindTime <= :cond " +
+            "AND step < 9 ORDER BY remindTime, word ASC")
+    fun notificationCards(cond: String): List<Card>
 
     @Query("DELETE FROM cards WHERE id IS :id")
     suspend fun deleteCard(id: Int)

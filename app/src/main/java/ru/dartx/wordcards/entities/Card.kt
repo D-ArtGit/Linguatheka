@@ -21,9 +21,9 @@ data class Card(
     val translation: String,
     @ColumnInfo(name = "translation_html")
     val translation_html: String,
-    @ColumnInfo(name = "createDate")
+    @ColumnInfo(name = "createTime")
     val createTime: String,
-    @ColumnInfo(name = "remindDate")
+    @ColumnInfo(name = "remindTime")
     val remindTime: String,
     @ColumnInfo(name = "step")
     val step: Int
