@@ -8,13 +8,9 @@ class MainViewModel(dataBase: MainDataBase) : ViewModel() {
     private val dao = dataBase.getDao()
     val allCards: LiveData<List<Card>> = dao.getAllCards().asLiveData()
     val foundCards = MutableLiveData<List<Card>>()
-    val notificationCard = MutableLiveData<List<Card>>()
 
     fun searchCard(cond: String) =
         viewModelScope.launch { foundCards.postValue(dao.searchCards(cond)) }
-
-    fun notificationCards(cond: String) =
-        viewModelScope.launch { notificationCard.postValue(dao.notificationCards(cond)) }
 
     fun insertCard(card: Card) = viewModelScope.launch { dao.insertCard(card) }
     fun updateCard(card: Card) = viewModelScope.launch { dao.updateCard(card) }

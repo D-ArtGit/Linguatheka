@@ -3,17 +3,14 @@ package ru.dartx.wordcards.activities
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
-import android.text.Editable
 import android.text.Spannable
-import android.text.TextWatcher
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationManagerCompat
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.dialogs.ConfirmDialog
 import ru.dartx.wordcards.entities.Card
@@ -82,6 +79,7 @@ class CardActivity : AppCompatActivity() {
         val sCard = intent.getSerializableExtra(MainActivity.CARD_DATA)
         if (sCard != null) {
             card = sCard as Card
+            with(NotificationManagerCompat.from(applicationContext)) { cancel(card!!.id!!) }
             binding.apply {
                 tvCardWord.text = card!!.word
                 edWord.setText(card?.word)
