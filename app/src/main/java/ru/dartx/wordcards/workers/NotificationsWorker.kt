@@ -50,7 +50,7 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
                 getPendingIntent(card.id!!, PendingIntent.FLAG_IMMUTABLE)
             }
             val builder = NotificationCompat.Builder(applicationContext, MainActivity.CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_search)
+                .setSmallIcon(R.drawable.ic_icon_50)
                 .setContentTitle(card.word)
                 .setContentText(applicationContext.getString(R.string.time_to_repeat))
                 .setStyle(
