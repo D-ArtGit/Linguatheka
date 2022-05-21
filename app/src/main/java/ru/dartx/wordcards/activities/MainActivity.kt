@@ -40,11 +40,9 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
         startWorker()
         init()
         cardListObserver()
-        onEditResult()
         binding.btFab.setOnClickListener {
             val i = Intent(this, CardActivity::class.java)
-            i.putExtra(CARD_STATE, CARD_STATE_NEW)
-            launcher.launch(i)
+            startActivity(i)
         }
     }
 
@@ -105,26 +103,7 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     override fun onClickCard(card: Card) {
         val i = Intent(this, CardActivity::class.java)
         i.putExtra(CARD_DATA, card)
-        i.putExtra(CARD_STATE, CARD_STATE_VIEW)
-        launcher.launch(i)
-    }
-
-    private fun onEditResult() {
-        launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == RESULT_OK) {
-                when (it.data?.getIntExtra(CARD_STATE, CARD_STATE_VIEW)) {
-                    CARD_STATE_NEW -> {
-                        mainViewModel.insertCard(it.data?.getSerializableExtra(CARD_DATA) as Card)
-                    }
-                    CARD_STATE_DELETE -> {
-                        mainViewModel.deleteCard(it.data?.getStringExtra(CARD_ID)!!.toInt())
-                    }
-                    else -> {
-                        mainViewModel.updateCard(it.data?.getSerializableExtra(CARD_DATA) as Card)
-                    }
-                }
-            }
-        }
+        startActivity(i)
     }
 
     private fun textWatcher(): TextWatcher {
@@ -159,13 +138,6 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     companion object {
         const val CARD_DATA = "card"
         const val CARD_ID = "card_id"
-        const val CARD_STATE = "card_state"
-        const val CARD_STATE_NEW = 1
-        const val CARD_STATE_EDIT = 2
-        const val CARD_STATE_VIEW = 3
-        const val CARD_STATE_DELETE = 4
-        const val CARD_STATE_CHECK = 5
-        const val CARD_STATE_RESET = 6
         const val CHANNEL_ID = "wordCH"
     }
 }

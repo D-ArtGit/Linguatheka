@@ -44,7 +44,6 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
         var resultPendingIntent: PendingIntent?
         notificationCards.forEach { card ->
             resultIntent.putExtra(MainActivity.CARD_DATA, card)
-            resultIntent.putExtra(MainActivity.CARD_STATE, MainActivity.CARD_STATE_VIEW)
             resultPendingIntent = TaskStackBuilder.create(applicationContext).run {
                 addNextIntentWithParentStack(resultIntent)
                 getPendingIntent(card.id!!, PendingIntent.FLAG_IMMUTABLE)
@@ -67,5 +66,4 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
             }
         }
     }
-
 }

@@ -8,10 +8,12 @@ import android.text.style.StyleSpan
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
 import ru.dartx.wordcards.R
+import ru.dartx.wordcards.db.MainViewModel
 import ru.dartx.wordcards.dialogs.ConfirmDialog
 import ru.dartx.wordcards.entities.Card
 import ru.dartx.wordcards.utils.HtmlManager
@@ -25,9 +27,12 @@ class CardActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCardBinding1
     private var ab: ActionBar? = null
     private var card: Card? = null
-    private var cardState = MainActivity.CARD_STATE_VIEW
+    private var cardState = CARD_STATE_VIEW
     private lateinit var daysArray: IntArray
     private var timeToSetRemind = false
+    private val mainViewModel: MainViewModel by viewModels {
+        MainViewModel.MainViewModelFactory((applicationContext as MainApp).database)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,16 +53,16 @@ class CardActivity : AppCompatActivity() {
         val itemEdit = menu?.findItem(R.id.edit)
         val itemReset = menu?.findItem(R.id.reset)
         val itemDelete = menu?.findItem(R.id.delete)
-        if (cardState == MainActivity.CARD_STATE_VIEW) {
+        if (cardState == CARD_STATE_VIEW) {
             itemEdit?.isVisible = true
             itemBold?.isVisible = false
         }
-        if (cardState == MainActivity.CARD_STATE_NEW) {
+        if (cardState == CARD_STATE_NEW) {
             itemReset?.isVisible = false
             itemDelete?.isVisible = false
             itemEdit?.isVisible = false
         }
-        if (cardState == MainActivity.CARD_STATE_EDIT) {
+        if (cardState == CARD_STATE_EDIT) {
             itemBold?.isVisible = true
             itemEdit?.isVisible = false
         }
@@ -89,17 +94,17 @@ class CardActivity : AppCompatActivity() {
                 edTranslation.setText(HtmlManager.getFromHtml(card?.translation_html!!).trim())
             }
             timeToSetRemind = isTimeToSetNewRemind(card!!.remindTime)
-            cardState = if (timeToSetRemind) MainActivity.CARD_STATE_CHECK
-            else MainActivity.CARD_STATE_VIEW
-        } else cardState = MainActivity.CARD_STATE_NEW
+            cardState = if (timeToSetRemind) CARD_STATE_CHECK
+            else CARD_STATE_VIEW
+        } else cardState = CARD_STATE_NEW
     }
 
     private fun fieldState() = with(binding) {
         when (cardState) {
-            MainActivity.CARD_STATE_CHECK -> {
+            CARD_STATE_CHECK -> {
                 btSave.setImageResource(R.drawable.ic_check)
             }
-            MainActivity.CARD_STATE_VIEW -> {
+            CARD_STATE_VIEW -> {
                 btSave.visibility = View.GONE
             }
             else -> {
@@ -122,11 +127,14 @@ class CardActivity : AppCompatActivity() {
             updateCard()
         }
         if (tempCard != null) {
-            val i = Intent().apply {
-                putExtra(MainActivity.CARD_DATA, tempCard)
-                putExtra(MainActivity.CARD_STATE, cardState)
-            }
+            val i = Intent()
             setResult(RESULT_OK, i)
+            if (cardState == CARD_STATE_NEW) {
+                mainViewModel.insertCard(tempCard)
+            } else {
+                mainViewModel.updateCard(tempCard)
+            }
+
             finish()
         }
     }
@@ -136,10 +144,10 @@ class CardActivity : AppCompatActivity() {
         val remindTime = addDays(currentTime, daysArray[0])
         binding.apply {
             if (edWord.text.isNullOrEmpty()) {
-                edWord.error = getString(R.string.type_word)
+                edWord.error = getString(R.string.fill_field)
                 return null
             } else if (edExamples.text.isNullOrEmpty()) {
-                edExamples.error = getString(R.string.examples_hint)
+                edExamples.error = getString(R.string.fill_field)
                 return null
             } else {
                 return Card(
@@ -161,7 +169,7 @@ class CardActivity : AppCompatActivity() {
     private fun updateCard(): Card? = with(binding) {
         var remindTime = addDays(getCurrentTime(), daysArray[0])
         var step = 0
-        if (cardState != MainActivity.CARD_STATE_RESET) {
+        if (cardState != CARD_STATE_RESET) {
             step = card!!.step
             remindTime = card!!.remindTime
             if (timeToSetRemind) {
@@ -174,10 +182,10 @@ class CardActivity : AppCompatActivity() {
             }
         }
         if (edWord.text.isNullOrEmpty()) {
-            edWord.error = getString(R.string.type_word)
+            edWord.error = getString(R.string.fill_field)
             return null
         } else if (edExamples.text.isNullOrEmpty()) {
-            edExamples.error = getString(R.string.examples_hint)
+            edExamples.error = getString(R.string.fill_field)
             return null
         } else {
             return card?.copy(
@@ -197,11 +205,9 @@ class CardActivity : AppCompatActivity() {
         ConfirmDialog.showDialog(
             this, object : ConfirmDialog.Listener {
                 override fun onClick() {
-                    cardState = MainActivity.CARD_STATE_DELETE
-                    val i = Intent().apply {
-                        putExtra(MainActivity.CARD_ID, card?.id.toString())
-                        putExtra(MainActivity.CARD_STATE, cardState)
-                    }
+                    cardState = CARD_STATE_DELETE
+                    val i = Intent()
+                    mainViewModel.deleteCard(card?.id!!)
                     setResult(RESULT_OK, i)
                     finish()
                 }
@@ -213,7 +219,7 @@ class CardActivity : AppCompatActivity() {
     }
 
     private fun editCardState() {
-        cardState = MainActivity.CARD_STATE_EDIT
+        cardState = CARD_STATE_EDIT
         invalidateOptionsMenu()
         ab?.setTitle(R.string.edit_card)
         binding.apply {
@@ -233,7 +239,7 @@ class CardActivity : AppCompatActivity() {
         ConfirmDialog.showDialog(
             this, object : ConfirmDialog.Listener {
                 override fun onClick() {
-                    cardState = MainActivity.CARD_STATE_RESET
+                    cardState = CARD_STATE_RESET
                     setMainResult()
                 }
             },
@@ -274,9 +280,18 @@ class CardActivity : AppCompatActivity() {
         ab = supportActionBar
         ab?.setDisplayHomeAsUpEnabled(true)
         when (cardState) {
-            MainActivity.CARD_STATE_CHECK -> ab?.setTitle(R.string.repeat_card)
-            MainActivity.CARD_STATE_NEW -> ab?.setTitle(R.string.fill_card)
-            MainActivity.CARD_STATE_VIEW -> ab?.setTitle(R.string.view_card)
+            CARD_STATE_CHECK -> ab?.setTitle(R.string.repeat_card)
+            CARD_STATE_NEW -> ab?.setTitle(R.string.fill_card)
+            CARD_STATE_VIEW -> ab?.setTitle(R.string.view_card)
         }
+    }
+
+    companion object {
+        const val CARD_STATE_NEW = 1
+        const val CARD_STATE_EDIT = 2
+        const val CARD_STATE_VIEW = 3
+        const val CARD_STATE_DELETE = 4
+        const val CARD_STATE_CHECK = 5
+        const val CARD_STATE_RESET = 6
     }
 }
