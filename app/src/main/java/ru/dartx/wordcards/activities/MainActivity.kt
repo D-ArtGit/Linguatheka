@@ -7,8 +7,6 @@ import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,7 +23,6 @@ import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var launcher: ActivityResultLauncher<Intent>
     private var edSearch: EditText? = null
     private var adapter: CardAdapter? = null
     private lateinit var textWatcher: TextWatcher
@@ -137,7 +134,6 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
 
     companion object {
         const val CARD_DATA = "card"
-        const val CARD_ID = "card_id"
         const val CHANNEL_ID = "wordCH"
     }
 }

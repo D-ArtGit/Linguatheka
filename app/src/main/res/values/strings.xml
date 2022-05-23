@@ -25,4 +25,6 @@
     <string name="channel_name">main_channel</string>
     <string name="channel_description">Main notifications</string>
     <string name="time_to_repeat">It\'s time to repeat the word</string>
+    <string name="set_delay_time">Set delay time:</string>
+    <string name="delay">Delay</string>
 </resources>

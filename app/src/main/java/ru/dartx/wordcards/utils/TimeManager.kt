@@ -41,4 +41,9 @@ object TimeManager {
         val defDate = LocalDateTime.parse(time)
         return defDate.plusDays(days.toLong()).toString()
     }
+
+    fun addHours(time: String, hours: Int): String {
+        val defDate = LocalDateTime.parse(time)
+        return defDate.plusHours(hours.toLong()).toString()
+    }
 }
