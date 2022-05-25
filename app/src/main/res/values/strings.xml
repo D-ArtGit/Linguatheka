@@ -26,8 +26,8 @@
     <string name="channel_description">Main notifications</string>
     <string name="time_to_repeat">It\'s time to repeat the word</string>
     <string name="set_snooze_time">Set snooze time:</string>
-    <string name="snooze">Snooze</string>
+    <string name="snooze">SNOOZE</string>
     <string name="reminder_snoozed_to">Reminder snoozed to&#160;</string>
     <string name="mark_done">Word was marked as repeated</string>
-    <string name="done">Done</string>
+    <string name="done">DONE</string>
 </resources>

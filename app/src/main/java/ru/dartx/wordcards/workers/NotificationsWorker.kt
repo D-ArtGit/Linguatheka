@@ -46,7 +46,7 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
         val doneIntent = Intent(applicationContext, TapDoneReceiver::class.java).apply {
-            action = "done"
+            action = ACTION_DONE
         }
         var resultPendingIntent: PendingIntent?
         var snoozePendingIntent: PendingIntent?
@@ -65,7 +65,12 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
                 PendingIntent.FLAG_IMMUTABLE
             )
             val donePendingIntent =
-                PendingIntent.getBroadcast(applicationContext, card.id!!, doneIntent, 0)
+                PendingIntent.getBroadcast(
+                    applicationContext,
+                    card.id,
+                    doneIntent,
+                    PendingIntent.FLAG_IMMUTABLE
+                )
             val builder = NotificationCompat.Builder(applicationContext, MainActivity.CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_icon_50)
                 .setContentTitle(card.word)
@@ -93,5 +98,9 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
                 notify(card.id, builder.build())
             }
         }
+    }
+
+    companion object{
+        const val ACTION_DONE = "wc_done"
     }
 }

@@ -3,6 +3,7 @@ package ru.dartx.wordcards.workers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationManagerCompat
 import kotlinx.coroutines.CoroutineScope
@@ -20,6 +21,7 @@ class TapDoneReceiver : BroadcastReceiver(), CoroutineScope {
     private var job = Job()
     override fun onReceive(context: Context, intent: Intent?) {
         val database = MainDataBase.getDataBase(context)
+        Log.d("DArtX", "received")
         val sCard = intent?.getSerializableExtra(MainActivity.CARD_DATA)
         if (sCard != null) {
             val card = sCard as Card
