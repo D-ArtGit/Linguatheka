@@ -8,27 +8,27 @@ import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.appcompat.app.AlertDialog
 import ru.dartx.wordcards.R
-import ru.dartx.wordcards.databinding.DelayDialogBinding
+import ru.dartx.wordcards.databinding.SnoozeDialogBinding
 
-object DelayDialog {
-    fun showDelayDialog(context: Context, listener: Listener) {
+object SnoozeDialog {
+    fun showSnoozeDialog(context: Context, listener: Listener) {
         var dialog: AlertDialog? = null
         val builder = AlertDialog.Builder(context)
-        var delayTime = 2
-        var seekBarText = context.resources.getQuantityString(R.plurals.hours, delayTime, delayTime)
-        val binding = DelayDialogBinding.inflate(LayoutInflater.from(context))
+        var snoozeTime = 2
+        var seekBarText = context.resources.getQuantityString(R.plurals.hours, snoozeTime, snoozeTime)
+        val binding = SnoozeDialogBinding.inflate(LayoutInflater.from(context))
         binding.tvSeekBarValue.text = seekBarText
         val seekBar = binding.seekBar
         seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                delayTime = when (progress) {
+                snoozeTime = when (progress) {
                     0 -> 1
                     2 -> 4
                     3 -> 8
                     else -> 2
                 }
                 seekBarText =
-                    context.resources.getQuantityString(R.plurals.hours, delayTime, delayTime)
+                    context.resources.getQuantityString(R.plurals.hours, snoozeTime, snoozeTime)
                 binding.tvSeekBarValue.text = seekBarText
             }
 
@@ -43,7 +43,7 @@ object DelayDialog {
         builder.setView(binding.root)
         binding.apply {
             btOk.setOnClickListener {
-                listener.onOkClick(delayTime)
+                listener.onOkClick(snoozeTime)
                 dialog?.dismiss()
             }
             btCancel.setOnClickListener {

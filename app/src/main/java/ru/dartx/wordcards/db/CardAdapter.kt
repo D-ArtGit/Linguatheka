@@ -5,14 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.text.bold
-import androidx.core.view.marginBottom
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.databinding.CardItemBinding
 import ru.dartx.wordcards.entities.Card
-import ru.dartx.wordcards.utils.HtmlManager
 import ru.dartx.wordcards.utils.TimeManager
 
 class CardAdapter(private val listener: Listener) :
@@ -36,7 +34,7 @@ class CardAdapter(private val listener: Listener) :
                 }
                 else {
                     val tvTimeText: String =
-                        view.context.getString(R.string.next_time_to_repeat) + TimeManager.getTimeFormat(
+                        view.context.getString(R.string.next_time_to_repeat) + TimeManager.getDateFormat(
                             card.remindTime
                         )
                     tvTime.text = tvTimeText

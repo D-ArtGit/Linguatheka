@@ -12,7 +12,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.activities.CardActivity
-import ru.dartx.wordcards.activities.DelayDialogActivity
+import ru.dartx.wordcards.activities.SnoozeDialogActivity
 import ru.dartx.wordcards.activities.MainActivity
 import ru.dartx.wordcards.db.MainDataBase
 import ru.dartx.wordcards.utils.TimeManager
@@ -42,24 +42,30 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
         val database = MainDataBase.getDataBase(applicationContext)
         val notificationCards = database.getDao().notificationCards(TimeManager.getCurrentTime())
         val resultIntent = Intent(applicationContext, CardActivity::class.java)
-        val delayIntent = Intent(applicationContext, DelayDialogActivity::class.java).apply {
+        val snoozeIntent = Intent(applicationContext, SnoozeDialogActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
+        val doneIntent = Intent(applicationContext, TapDoneReceiver::class.java).apply {
+            action = "done"
+        }
         var resultPendingIntent: PendingIntent?
-        var delayPendingIntent: PendingIntent?
+        var snoozePendingIntent: PendingIntent?
         notificationCards.forEach { card ->
             resultIntent.putExtra(MainActivity.CARD_DATA, card)
-            delayIntent.putExtra(MainActivity.CARD_DATA, card)
+            snoozeIntent.putExtra(MainActivity.CARD_DATA, card)
+            doneIntent.putExtra(MainActivity.CARD_DATA, card)
             resultPendingIntent = TaskStackBuilder.create(applicationContext).run {
                 addNextIntentWithParentStack(resultIntent)
                 getPendingIntent(card.id!!, PendingIntent.FLAG_IMMUTABLE)
             }
-            delayPendingIntent = PendingIntent.getActivity(
+            snoozePendingIntent = PendingIntent.getActivity(
                 applicationContext,
                 card.id!!,
-                delayIntent,
+                snoozeIntent,
                 PendingIntent.FLAG_IMMUTABLE
             )
+            val donePendingIntent =
+                PendingIntent.getBroadcast(applicationContext, card.id!!, doneIntent, 0)
             val builder = NotificationCompat.Builder(applicationContext, MainActivity.CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_icon_50)
                 .setContentTitle(card.word)
@@ -74,9 +80,14 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .addAction(
-                    R.drawable.ic_delay,
-                    applicationContext.getString(R.string.delay),
-                    delayPendingIntent
+                    R.drawable.ic_done,
+                    applicationContext.getString(R.string.done),
+                    donePendingIntent
+                )
+                .addAction(
+                    R.drawable.ic_snooze,
+                    applicationContext.getString(R.string.snooze),
+                    snoozePendingIntent
                 )
             with(NotificationManagerCompat.from(applicationContext)) {
                 notify(card.id, builder.build())

@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.Period
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.*
 
 object TimeManager {
@@ -21,9 +22,16 @@ object TimeManager {
         return date.toString()
     }
 
+    fun getDateFormat(time: String): String {
+        val defDate = LocalDateTime.parse(time)
+        val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
+        return if (defDate != null) defDate.format(formatter)
+        else time
+    }
+
     fun getTimeFormat(time: String): String {
         val defDate = LocalDateTime.parse(time)
-        val formatter = DateTimeFormatter.ofPattern(RUS_DATE_FORMAT)
+        val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
         return if (defDate != null) defDate.format(formatter)
         else time
     }
