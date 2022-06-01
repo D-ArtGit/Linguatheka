@@ -41,7 +41,9 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
     private fun createNotifications() {
         val database = MainDataBase.getDataBase(applicationContext)
         val notificationCards = database.getDao().notificationCards(TimeManager.getCurrentTime())
-        val resultIntent = Intent(applicationContext, CardActivity::class.java)
+        val resultIntent = Intent(applicationContext, CardActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
         val snoozeIntent = Intent(applicationContext, SnoozeDialogActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+    <group
+        android:id="@+id/catalogue_menu"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/new_pair"
+            android:title="@string/new_pair" />
+        <item
+            android:id="@+id/chooser"
+            android:title="@string/choose_pair" />
+    </group>
+
+    <group
+        android:id="@+id/app_menu"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/settings"
+            android:title="@string/settings" />
+        <item
+            android:id="@+id/faq"
+            android:title="@string/how_to_use" />
+        <item
+            android:id="@+id/about"
+            android:title="@string/about_app" />
+        <item
+            android:id="@+id/donate"
+            android:title="@string/donate" />
+    </group>
+
+</menu>
