@@ -39,6 +39,6 @@
     <string name="how_to_use">How to use</string>
     <string name="about_app">About app</string>
     <string name="donate">Donate me</string>
-    <string name="stats_header">Your stats:</string>
+    <string name="stats_header">You\'ve learned:</string>
 
 </resources>

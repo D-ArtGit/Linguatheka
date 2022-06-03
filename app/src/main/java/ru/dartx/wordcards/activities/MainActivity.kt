@@ -4,17 +4,19 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.databinding.ActivityMainBinding
+import ru.dartx.wordcards.databinding.NavHeaderBinding
 import ru.dartx.wordcards.db.CardAdapter
 import ru.dartx.wordcards.db.MainViewModel
 import ru.dartx.wordcards.entities.Card
@@ -23,6 +25,7 @@ import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var nvBinding: NavHeaderBinding
     private var edSearch: EditText? = null
     private var adapter: CardAdapter? = null
     private lateinit var textWatcher: TextWatcher
@@ -33,6 +36,7 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        nvBinding = NavHeaderBinding.bind(binding.navView.getHeaderView(0))
         setContentView(binding.root)
         startWorker()
         init()
@@ -41,15 +45,6 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
             val i = Intent(this, CardActivity::class.java)
             startActivity(i)
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.top_menu, menu)
-        val search = menu!!.findItem(R.id.search)
-        edSearch = search.actionView.findViewById(R.id.edSearch) as EditText
-        search.setOnActionExpandListener(expandActionView())
-        textWatcher = textWatcher()
-        return true
     }
 
     private fun expandActionView(): MenuItem.OnActionExpandListener {
@@ -79,6 +74,25 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
         rcViewCardList.layoutManager = LinearLayoutManager(this@MainActivity)
         adapter = CardAdapter(this@MainActivity)
         rcViewCardList.adapter = adapter
+        toolbar.setNavigationOnClickListener {
+            nvBinding.tvStats.text = statsCount()
+            drawerLayout.openDrawer(GravityCompat.START)
+        }
+        navView.setNavigationItemSelectedListener { menuItem ->
+            menuItem.isChecked = true
+            when (menuItem.itemId) {
+                R.id.settings -> Toast
+                    .makeText(this@MainActivity, "Setting", Toast.LENGTH_SHORT)
+                    .show()
+            }
+            drawerLayout.close()
+            true
+        }
+        toolbar.inflateMenu(R.menu.top_menu)
+        val search = toolbar.menu.findItem(R.id.search)
+        edSearch = search.actionView.findViewById(R.id.edSearch) as EditText
+        search.setOnActionExpandListener(expandActionView())
+        textWatcher = textWatcher()
     }
 
     private fun cardListObserver() {
@@ -95,6 +109,15 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
             }
             adapter?.submitList(tempCardList)
         }
+    }
+
+    private fun statsCount(): String {
+        val tempCardList = mainViewModel.allCards.value
+        var count = 0
+        tempCardList?.forEach { card ->
+            if (card.step == 9) count++
+        }
+        return "$count of ${tempCardList?.size} words"
     }
 
     override fun onClickCard(card: Card) {

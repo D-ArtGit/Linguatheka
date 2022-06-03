@@ -2,8 +2,10 @@
 <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".activities.MainActivity">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -16,6 +18,36 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:context=".MainActivity">
 
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/Theme.WordCards.AppBarOverlay">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:title="@string/app_name"
+                app:navigationIcon="@drawable/ic_menu"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/Theme.WordCards.PopupOverlay"
+                android:elevation="0dp"/>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cardBackgroundColor="@color/blue_50"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:cardCornerRadius="16dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcViewCardList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </androidx.cardview.widget.CardView>
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btFab"
             android:layout_width="wrap_content"
@@ -27,18 +59,6 @@
             app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
             app:srcCompat="@drawable/ic_fab" />
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:cardBackgroundColor="@color/blue_50"
-            app:cardCornerRadius="16dp">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rcViewCardList"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </androidx.cardview.widget.CardView>
-
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.navigation.NavigationView
@@ -47,6 +67,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/nav_header"
+        app:elevation="16dp"
         app:menu="@menu/nav_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
