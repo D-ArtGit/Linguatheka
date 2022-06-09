@@ -30,7 +30,7 @@
     <string name="reminder_snoozed_to">Reminder snoozed to&#160;</string>
     <string name="mark_done">Word was marked as repeated</string>
     <string name="done">DONE</string>
-    
+
     //Nav menu
     <string name="language_pairs">Language pairs</string>
     <string name="new_pair">Add new pair</string>
@@ -40,5 +40,25 @@
     <string name="about_app">About app</string>
     <string name="donate">Donate me</string>
     <string name="stats_header">You\'ve learned:</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="theme_settings_header">Themes</string>
+    <string name="behaviour_setting_header">Behaviour</string>
+    <string name="about_user">About you</string>
+
+    <!-- About user Preferences -->
+    <string name="name_title">Your name</string>
+    <string name="avatar">Your avatar</string>
+
+    <!-- Theme Preferences -->
+    <string name="choose_theme">Choose theme</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
 
 </resources>

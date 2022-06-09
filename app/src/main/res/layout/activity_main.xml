@@ -27,26 +27,26 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:title="@string/app_name"
-                app:navigationIcon="@drawable/ic_menu"
                 android:background="?attr/colorPrimary"
+                android:elevation="0dp"
+                app:navigationIcon="@drawable/ic_menu"
                 app:popupTheme="@style/Theme.WordCards.PopupOverlay"
-                android:elevation="0dp"/>
+                app:title="@string/app_name" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
+            style="@style/CustomCardViewStyle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:cardBackgroundColor="@color/blue_50"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:cardCornerRadius="16dp">
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rcViewCardList"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btFab"
@@ -66,8 +66,8 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:headerLayout="@layout/nav_header"
         app:elevation="16dp"
+        app:headerLayout="@layout/nav_header"
         app:menu="@menu/nav_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -9,7 +9,11 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/ic_icon_100"
         android:supportsRtl="true"
-        android:theme="@style/Theme.WordCards">
+        android:theme="@style/Theme.WordCardsBlue">
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_settings" />
         <activity
             android:name=".activities.CardActivity"
             android:exported="false"
@@ -24,16 +28,19 @@
         <activity
             android:name=".activities.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.WordCards.NoActionBar">
+            android:theme="@style/Theme.WordCardsBlue.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name=".workers.TapDoneReceiver"  android:exported="true">
+
+        <receiver
+            android:name=".workers.TapDoneReceiver"
+            android:exported="true">
             <intent-filter>
-                <action android:name="wc_done"/>
+                <action android:name="wc_done" />
             </intent-filter>
         </receiver>
     </application>

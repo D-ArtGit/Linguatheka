@@ -1,6 +1,7 @@
 package ru.dartx.wordcards.activities
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -10,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
@@ -20,6 +22,7 @@ import ru.dartx.wordcards.databinding.NavHeaderBinding
 import ru.dartx.wordcards.db.CardAdapter
 import ru.dartx.wordcards.db.MainViewModel
 import ru.dartx.wordcards.entities.Card
+import ru.dartx.wordcards.settings.SettingsActivity
 import ru.dartx.wordcards.workers.NotificationsWorker
 import java.util.concurrent.TimeUnit
 
@@ -32,8 +35,13 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     private val mainViewModel: MainViewModel by viewModels {
         MainViewModel.MainViewModelFactory((applicationContext as MainApp).database)
     }
+    private lateinit var defPreference: SharedPreferences
+    private var currentTheme = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        defPreference = PreferenceManager.getDefaultSharedPreferences(this)
+        currentTheme = defPreference.getString("theme", "blue").toString()
+        setTheme(getSelectedTheme())
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         nvBinding = NavHeaderBinding.bind(binding.navView.getHeaderView(0))
@@ -45,6 +53,11 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
             val i = Intent(this, CardActivity::class.java)
             startActivity(i)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (defPreference.getString("theme", "blue") != currentTheme) recreate()
     }
 
     private fun expandActionView(): MenuItem.OnActionExpandListener {
@@ -79,11 +92,13 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
         navView.setNavigationItemSelectedListener { menuItem ->
-            menuItem.isChecked = true
             when (menuItem.itemId) {
-                R.id.settings -> Toast
-                    .makeText(this@MainActivity, "Setting", Toast.LENGTH_SHORT)
-                    .show()
+                R.id.settings -> startActivity(
+                    Intent(
+                        this@MainActivity,
+                        SettingsActivity::class.java
+                    )
+                )
             }
             drawerLayout.close()
             true
@@ -153,6 +168,17 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
             ExistingPeriodicWorkPolicy.KEEP,
             notificationsRequest
         )
+    }
+
+    private fun getSelectedTheme(): Int {
+        return when (defPreference.getString(
+            "theme",
+            "blue"
+        )) {
+            "blue" -> R.style.Theme_WordCardsBlue_NoActionBar
+            "green" -> R.style.Theme_WordCardsGreen_NoActionBar
+            else -> R.style.Theme_WordCardsRed_NoActionBar
+        }
     }
 
     companion object {
