@@ -9,6 +9,7 @@
     tools:context=".activities.MainActivity">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/cLMainActivity"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/blue_500"
@@ -36,6 +37,7 @@
         </com.google.android.material.appbar.AppBarLayout>
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/mcViewMainActivity"
             style="@style/CustomCardViewStyle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

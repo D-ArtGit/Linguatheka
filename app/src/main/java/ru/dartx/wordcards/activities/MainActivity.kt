@@ -7,7 +7,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
 import android.widget.EditText
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -84,6 +83,7 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     }
 
     private fun init() = with(binding) {
+        setThemeColor(currentTheme)
         rcViewCardList.layoutManager = LinearLayoutManager(this@MainActivity)
         adapter = CardAdapter(this@MainActivity)
         rcViewCardList.adapter = adapter
@@ -178,6 +178,28 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
             "blue" -> R.style.Theme_WordCardsBlue_NoActionBar
             "green" -> R.style.Theme_WordCardsGreen_NoActionBar
             else -> R.style.Theme_WordCardsRed_NoActionBar
+        }
+    }
+
+    private fun setThemeColor(theme: String) {
+        binding.apply {
+            when (theme) {
+                "blue" -> {
+                    cLMainActivity.setBackgroundColor(getColor(R.color.blue_700))
+                    toolbar.setBackgroundColor(getColor(R.color.blue_700))
+                    mcViewMainActivity.setCardBackgroundColor(getColor(R.color.blue_50))
+                }
+                "green" -> {
+                    cLMainActivity.setBackgroundColor(getColor(R.color.green_700))
+                    toolbar.setBackgroundColor(getColor(R.color.green_700))
+                    mcViewMainActivity.setCardBackgroundColor(getColor(R.color.green_50))
+                }
+                else -> {
+                    cLMainActivity.setBackgroundColor(getColor(R.color.red_700))
+                    toolbar.setBackgroundColor(getColor(R.color.red_700))
+                    mcViewMainActivity.setCardBackgroundColor(getColor(R.color.red_50))
+                }
+            }
         }
     }
 

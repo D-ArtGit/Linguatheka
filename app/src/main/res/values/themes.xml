@@ -14,7 +14,7 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="Theme.WordCardsBlue.NoActionBar">
+    <style name="Theme.WordCardsBlue.NoActionBar" parent="Theme.WordCardsBlue">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
@@ -29,11 +29,11 @@
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" >?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor" >@color/green_700</item>
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="Theme.WordCardsGreen.NoActionBar">
+    <style name="Theme.WordCardsGreen.NoActionBar" parent="Theme.WordCardsGreen">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
@@ -48,11 +48,11 @@
         <item name="colorSecondaryVariant">@color/rose_700</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" >?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor" >@color/red_700</item>
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="Theme.WordCardsRed.NoActionBar">
+    <style name="Theme.WordCardsRed.NoActionBar" parent="Theme.WordCardsRed">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
