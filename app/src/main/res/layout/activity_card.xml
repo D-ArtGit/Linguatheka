@@ -28,6 +28,7 @@
             app:srcCompat="@drawable/ic_save" />
 
         <LinearLayout
+            android:id="@+id/lLCardActivity"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/blue_100"

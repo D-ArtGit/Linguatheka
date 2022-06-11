@@ -27,20 +27,22 @@
             app:title="@string/choose_theme"
             app:useSimpleSummaryProvider="true" />
 
+        <SwitchPreferenceCompat
+            app:key="night"
+            app:title="@string/night_title" />
+
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/behaviour_setting_header">
 
-        <SwitchPreferenceCompat
-            app:key="sync"
-            app:title="@string/sync_title" />
 
-        <SwitchPreferenceCompat
-            app:dependency="sync"
-            app:key="attachment"
-            app:summaryOff="@string/attachment_summary_off"
-            app:summaryOn="@string/attachment_summary_on"
-            app:title="@string/attachment_title" />
+        <ListPreference
+            app:defaultValue="1"
+            app:entries="@array/snooze_entries"
+            app:entryValues="@array/snooze_values"
+            app:key="snooze"
+            app:title="@string/choose_snooze_delay"
+            app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 

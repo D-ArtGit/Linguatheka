@@ -1,6 +1,7 @@
 package ru.dartx.wordcards.activities
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Spannable
@@ -12,6 +13,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
+import androidx.preference.PreferenceManager
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.db.MainViewModel
 import ru.dartx.wordcards.dialogs.ConfirmDialog
@@ -33,10 +35,14 @@ class CardActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModels {
         MainViewModel.MainViewModelFactory((applicationContext as MainApp).database)
     }
+    private lateinit var defPreference: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        defPreference = PreferenceManager.getDefaultSharedPreferences(this)
+        setTheme(getSelectedTheme())
         super.onCreate(savedInstanceState)
         binding = ActivityCardBinding1.inflate(layoutInflater)
+        setThemeColor(defPreference.getString("theme", "blue").toString())
         setContentView(binding.root)
         daysArray = resources.getIntArray(R.array.remind_days)
         getCard()
@@ -283,6 +289,27 @@ class CardActivity : AppCompatActivity() {
             CARD_STATE_CHECK -> ab?.setTitle(R.string.repeat_card)
             CARD_STATE_NEW -> ab?.setTitle(R.string.fill_card)
             CARD_STATE_VIEW -> ab?.setTitle(R.string.view_card)
+        }
+    }
+
+    private fun getSelectedTheme(): Int {
+        return when (defPreference.getString(
+            "theme",
+            "blue"
+        )) {
+            "blue" -> R.style.Theme_WordCardsBlue
+            "green" -> R.style.Theme_WordCardsGreen
+            else -> R.style.Theme_WordCardsRed
+        }
+    }
+
+    private fun setThemeColor(theme: String) {
+        binding.apply {
+            when (theme) {
+                "blue" -> lLCardActivity.setBackgroundColor(getColor(R.color.blue_100))
+                "green" -> lLCardActivity.setBackgroundColor(getColor(R.color.green_100))
+                else -> lLCardActivity.setBackgroundColor(getColor(R.color.red_100))
+            }
         }
     }
 

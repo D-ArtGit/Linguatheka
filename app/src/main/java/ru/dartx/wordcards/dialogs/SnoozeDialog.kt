@@ -7,18 +7,26 @@ import android.view.LayoutInflater
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.appcompat.app.AlertDialog
+import androidx.preference.PreferenceManager
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.databinding.SnoozeDialogBinding
 
 object SnoozeDialog {
     fun showSnoozeDialog(context: Context, listener: Listener) {
+        val defPreference = PreferenceManager.getDefaultSharedPreferences(context)
         var dialog: AlertDialog? = null
         val builder = AlertDialog.Builder(context)
-        var snoozeTime = 2
+        var snoozeTime = defPreference.getString("snooze", "2")!!.toInt()
         var seekBarText = context.resources.getQuantityString(R.plurals.hours, snoozeTime, snoozeTime)
         val binding = SnoozeDialogBinding.inflate(LayoutInflater.from(context))
         binding.tvSeekBarValue.text = seekBarText
         val seekBar = binding.seekBar
+        seekBar.progress = when (snoozeTime) {
+            1 -> 0
+            4 -> 2
+            8 -> 3
+            else -> 1
+        }
         seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 snoozeTime = when (progress) {
