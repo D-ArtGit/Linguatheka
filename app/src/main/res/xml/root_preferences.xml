@@ -43,6 +43,13 @@
             app:key="snooze"
             app:title="@string/choose_snooze_delay"
             app:useSimpleSummaryProvider="true" />
+        <ListPreference
+            app:defaultValue="15"
+            app:entries="@array/notification_entries"
+            app:entryValues="@array/notification_values"
+            app:key="notifications_repeat_time"
+            app:title="@string/choose_notifications_repeat_time"
+            app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 

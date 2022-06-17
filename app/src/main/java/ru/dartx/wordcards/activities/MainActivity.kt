@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.widget.EditText
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import androidx.core.view.GravityCompat
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -77,8 +78,6 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
                 cardListObserver()
                 return true
             }
-
-
         }
     }
 
@@ -88,6 +87,11 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
         adapter = CardAdapter(this@MainActivity)
         rcViewCardList.adapter = adapter
         toolbar.setNavigationOnClickListener {
+            val name = defPreference.getString("user_name", "")
+            if (!name.isNullOrEmpty()) {
+                val statsHeaderText: String = name + getString(R.string.stats_header_with_name)
+                nvBinding.tvStatsHeader.text = statsHeaderText
+            }
             nvBinding.tvStats.text = statsCount()
             drawerLayout.openDrawer(GravityCompat.START)
         }
@@ -154,13 +158,17 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
             override fun afterTextChanged(s: Editable?) {
 
             }
-
         }
     }
 
     private fun startWorker() {
         val notificationsRequest =
-            PeriodicWorkRequestBuilder<NotificationsWorker>(15, TimeUnit.MINUTES)
+            PeriodicWorkRequestBuilder<NotificationsWorker>(
+                defPreference.getString(
+                    "notifications_repeat_time",
+                    "15"
+                )!!.toLong(), TimeUnit.MINUTES
+            )
                 .addTag("notifications")
                 .build()
         WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(

@@ -6,6 +6,7 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Spannable
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -81,7 +82,9 @@ class CardActivity : AppCompatActivity() {
             R.id.delete -> deleteCard()
             R.id.reset -> resetCardState()
             R.id.edit -> editCardState()
-            R.id.bold -> setBoldForSelectedText()
+            R.id.bold -> {
+                Log.d("DArtX", "Bold")
+                setBoldForSelectedText()}
         }
         return super.onOptionsItemSelected(item)
     }
@@ -254,10 +257,12 @@ class CardActivity : AppCompatActivity() {
     }
 
     private fun setBoldForSelectedText() = with(binding) {
+        Log.d("DArtX", "Focused: ${edExamples.hasFocus()}")
         if (edExamples.hasFocus()) {
             val startPos = edExamples.selectionStart
             val endPos = edExamples.selectionEnd
             val styles = edExamples.text.getSpans(startPos, endPos, StyleSpan::class.java)
+            Log.d("DArtX", "S: $startPos, E: $endPos, ${styles.size}")
             var boldStyle: StyleSpan? = null
             if (styles.isNotEmpty()) edExamples.text.removeSpan(styles[0])
             else boldStyle = StyleSpan(Typeface.BOLD)

@@ -40,6 +40,7 @@
     <string name="about_app">About app</string>
     <string name="donate">Donate me</string>
     <string name="stats_header">You\'ve learned:</string>
+    <string name="stats_header_with_name">, you\'ve learned:</string>
     <string name="title_activity_settings">SettingsActivity</string>
 
     <!-- Preference Titles -->
@@ -58,8 +59,16 @@
     <!-- Behavior Preferences -->
 
     <string name="choose_snooze_delay">Choose default delay for snooze</string>
+    <string name="choose_notifications_repeat_time">Choose default notifications auto repeat time</string>
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="one_hour">1 hour</string>
+    <string name="two_hours">2 hours</string>
+    <string name="four_hours">4 hours</string>
+    <string name="eight_hours">8 hours</string>
+    <string name="fifteen_minutes">15 minutes</string>
+    <string name="thirty_minutes">30 minutes</string>
+
 
 </resources>
