@@ -41,7 +41,7 @@
     <string name="donate">Donate me</string>
     <string name="stats_header">You\'ve learned:</string>
     <string name="stats_header_with_name">, you\'ve learned:</string>
-    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="title_activity_settings">Settings</string>
 
     <!-- Preference Titles -->
     <string name="theme_settings_header">Themes</string>

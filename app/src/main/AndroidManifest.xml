@@ -11,6 +11,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WordCardsBlue">
         <activity
+            android:name=".activities.AvatarActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:taskAffinity=""
+            android:theme="@style/Theme.AppCompat.DayNight.Dialog"/>
+        <activity
             android:name=".settings.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings" />
@@ -18,7 +25,7 @@
             android:name=".activities.CardActivity"
             android:exported="false"
             android:parentActivityName=".activities.MainActivity"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activities.SnoozeDialogActivity"
             android:excludeFromRecents="true"
@@ -43,6 +50,7 @@
                 <action android:name="wc_done" />
             </intent-filter>
         </receiver>
+
     </application>
 
 </manifest>

@@ -2,6 +2,8 @@ package ru.dartx.wordcards.activities
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,7 +11,6 @@ import android.view.MenuItem
 import android.widget.EditText
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.edit
 import androidx.core.view.GravityCompat
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,6 +25,7 @@ import ru.dartx.wordcards.db.MainViewModel
 import ru.dartx.wordcards.entities.Card
 import ru.dartx.wordcards.settings.SettingsActivity
 import ru.dartx.wordcards.workers.NotificationsWorker
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity(), CardAdapter.Listener {
@@ -93,6 +95,11 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
                 nvBinding.tvStatsHeader.text = statsHeaderText
             }
             nvBinding.tvStats.text = statsCount()
+            val imageS = defPreference.getString("avatar", "")
+            if (!imageS.isNullOrEmpty()) {
+                val imageB = decodeToBase64(imageS)
+                nvBinding.ivAvatar.setImageBitmap(imageB)
+            } else nvBinding.ivAvatar.setImageResource(R.drawable.ic_avatar)
             drawerLayout.openDrawer(GravityCompat.START)
         }
         navView.setNavigationItemSelectedListener { menuItem ->
@@ -176,6 +183,11 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
             ExistingPeriodicWorkPolicy.KEEP,
             notificationsRequest
         )
+    }
+
+    private fun decodeToBase64(input: String): Bitmap {
+        val decodedByte = Base64.getDecoder().decode(input)
+        return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.size)
     }
 
     private fun getSelectedTheme(): Int {
