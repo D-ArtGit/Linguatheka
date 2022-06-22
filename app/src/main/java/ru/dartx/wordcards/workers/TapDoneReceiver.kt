@@ -21,11 +21,11 @@ class TapDoneReceiver : BroadcastReceiver(), CoroutineScope {
     private var job = Job()
     override fun onReceive(context: Context, intent: Intent?) {
         val database = MainDataBase.getDataBase(context)
-        Log.d("DArtX", "received")
         val sCard = intent?.getSerializableExtra(MainActivity.CARD_DATA)
         if (sCard != null) {
             val card = sCard as Card
             val step = card.step + 1
+            Log.d("DArtX", "received, id = ${card.id}, word = ${card.word}, step = $step")
             val daysArray = context.resources.getIntArray(R.array.remind_days)
             val remindTime = if (step <= 8) {
                 TimeManager.addDays(TimeManager.getCurrentTime(), daysArray[step])
@@ -34,7 +34,8 @@ class TapDoneReceiver : BroadcastReceiver(), CoroutineScope {
             }
             val tempCard =
                 card.copy(
-                    remindTime = remindTime
+                    remindTime = remindTime,
+                    step = step
                 )
             launch { database.getDao().updateCard(tempCard) }
 

@@ -28,26 +28,24 @@ class AvatarActivity : AppCompatActivity() {
                     val defPreference = PreferenceManager.getDefaultSharedPreferences(this)
                     val editor = defPreference.edit()
                     try {
-                        Log.d("DArtX", "Pick")
-                        Toast.makeText(this, "Image saved", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this,
+                            getString(R.string.avatar_applied),
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
                         val stream =
                             contentResolver.openInputStream(it.data!!.data!!)
                         val realImage: Bitmap = BitmapFactory.decodeStream(stream)
                         editor.putString("avatar", encodeToBase64(realImage))
                         editor.apply()
                     } catch (e: FileNotFoundException) {
-                        Log.d("DArtX", "Pick E1")
                         e.printStackTrace()
-                        editor.putString("avatar", "")
-                        editor.apply()
                     } catch (e: IOException) {
-                        Log.d("DArtX", "Pick E2")
                         e.printStackTrace()
-                        editor.putString("avatar", "")
-                        editor.apply()
                     }
-                    finish()
                 }
+                finish()
             }
         val i = Intent().apply {
             type = "image/*"

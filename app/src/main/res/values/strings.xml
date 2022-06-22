@@ -50,7 +50,8 @@
 
     <!-- About user Preferences -->
     <string name="name_title">Your name</string>
-    <string name="avatar">Your avatar</string>
+    <string name="avatar">Chose avatar</string>
+    <string name="avatar_applied">Your avatar applied</string>
 
     <!-- Theme Preferences -->
     <string name="choose_theme">Choose theme</string>

@@ -82,9 +82,7 @@ class CardActivity : AppCompatActivity() {
             R.id.delete -> deleteCard()
             R.id.reset -> resetCardState()
             R.id.edit -> editCardState()
-            R.id.bold -> {
-                Log.d("DArtX", "Bold")
-                setBoldForSelectedText()}
+            R.id.bold -> setBoldForSelectedText()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -182,7 +180,7 @@ class CardActivity : AppCompatActivity() {
             step = card!!.step
             remindTime = card!!.remindTime
             if (timeToSetRemind) {
-                step = card!!.step + 1
+                step++
                 remindTime = if (step <= 8) {
                     addDays(getCurrentTime(), daysArray[step])
                 } else {
