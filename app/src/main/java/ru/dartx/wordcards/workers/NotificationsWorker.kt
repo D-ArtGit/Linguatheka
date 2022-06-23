@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
@@ -52,7 +53,9 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
         }
         var resultPendingIntent: PendingIntent?
         var snoozePendingIntent: PendingIntent?
+        var donePendingIntent: PendingIntent?
         notificationCards.forEach { card ->
+            Log.d("DArtX", "Notif: id = ${card.id}, word = ${card.word}, step = ${card.step}")
             resultIntent.putExtra(MainActivity.CARD_DATA, card)
             snoozeIntent.putExtra(MainActivity.CARD_DATA, card)
             doneIntent.putExtra(MainActivity.CARD_DATA, card)
@@ -66,7 +69,7 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
                 snoozeIntent,
                 PendingIntent.FLAG_IMMUTABLE
             )
-            val donePendingIntent =
+            donePendingIntent =
                 PendingIntent.getBroadcast(
                     applicationContext,
                     card.id,

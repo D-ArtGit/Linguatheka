@@ -38,6 +38,9 @@ class CardAdapter(private val listener: Listener) :
                             card.remindTime
                         )
                     tvTime.text = tvTimeText
+                    tvTime.visibility = View.VISIBLE
+                    progressBar.visibility = View.VISIBLE
+                    tvExamples.maxLines = 1
                 }
                 if (TimeManager.isTimeToSetNewRemind(card.remindTime)) {
                     tvWord.text = SpannableStringBuilder().bold { append(card.word) }

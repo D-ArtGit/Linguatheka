@@ -24,6 +24,7 @@ class AvatarActivity : AppCompatActivity() {
         setContentView(R.layout.activity_avatar)
         pickImageLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                Log.d("DArtX", "Res = ${it.resultCode}, Data = ${it.data}")
                 if (it.resultCode == Activity.RESULT_OK && it.data != null) {
                     val defPreference = PreferenceManager.getDefaultSharedPreferences(this)
                     val editor = defPreference.edit()
