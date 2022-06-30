@@ -12,10 +12,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import ru.dartx.wordcards.R
-import java.io.ByteArrayOutputStream
+import ru.dartx.wordcards.utils.BitmapManager
 import java.io.FileNotFoundException
 import java.io.IOException
-import java.util.*
 
 class AvatarActivity : AppCompatActivity() {
     private lateinit var pickImageLauncher: ActivityResultLauncher<Intent>
@@ -38,7 +37,7 @@ class AvatarActivity : AppCompatActivity() {
                         val stream =
                             contentResolver.openInputStream(it.data!!.data!!)
                         val realImage: Bitmap = BitmapFactory.decodeStream(stream)
-                        editor.putString("avatar", encodeToBase64(realImage))
+                        editor.putString("avatar", BitmapManager.encodeToBase64(realImage))
                         editor.apply()
                     } catch (e: FileNotFoundException) {
                         e.printStackTrace()
@@ -54,11 +53,5 @@ class AvatarActivity : AppCompatActivity() {
             addCategory(Intent.CATEGORY_OPENABLE)
         }
         pickImageLauncher.launch(i)
-    }
-
-    private fun encodeToBase64(image: Bitmap): String {
-        val baos = ByteArrayOutputStream()
-        image.compress(Bitmap.CompressFormat.PNG, 100, baos)
-        return Base64.getEncoder().encodeToString(baos.toByteArray())
     }
 }
