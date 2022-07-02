@@ -15,7 +15,7 @@
         android:layout_marginEnd="16dp"
         android:gravity="center_horizontal"
         android:text="TextView"
-        android:textColor="@color/black"
+        android:textColor="?attr/mainText"
         android:textSize="20dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"

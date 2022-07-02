@@ -12,7 +12,7 @@
         android:id="@+id/cLMainActivity"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/blue_500"
+        android:background="?attr/actBgColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,7 +28,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
+                android:background="?attr/toolBarBgColor"
                 android:elevation="0dp"
                 app:navigationIcon="@drawable/ic_menu"
                 app:popupTheme="@style/Theme.WordCards.PopupOverlay"
@@ -41,7 +41,7 @@
             style="@style/CustomCardViewStyle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:cardBackgroundColor="@color/blue_50"
+            app:cardBackgroundColor="?attr/cardBgColor"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <androidx.recyclerview.widget.RecyclerView

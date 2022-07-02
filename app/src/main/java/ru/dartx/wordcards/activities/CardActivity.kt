@@ -43,7 +43,6 @@ class CardActivity : AppCompatActivity() {
         setTheme(getSelectedTheme())
         super.onCreate(savedInstanceState)
         binding = ActivityCardBinding1.inflate(layoutInflater)
-        setThemeColor(defPreference.getString("theme", "blue").toString())
         setContentView(binding.root)
         daysArray = resources.getIntArray(R.array.remind_days)
         getCard()
@@ -303,16 +302,6 @@ class CardActivity : AppCompatActivity() {
             "blue" -> R.style.Theme_WordCardsBlue
             "green" -> R.style.Theme_WordCardsGreen
             else -> R.style.Theme_WordCardsRed
-        }
-    }
-
-    private fun setThemeColor(theme: String) {
-        binding.apply {
-            when (theme) {
-                "blue" -> lLCardActivity.setBackgroundColor(getColor(R.color.blue_100))
-                "green" -> lLCardActivity.setBackgroundColor(getColor(R.color.green_100))
-                else -> lLCardActivity.setBackgroundColor(getColor(R.color.red_100))
-            }
         }
     }
 

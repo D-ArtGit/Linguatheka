@@ -22,7 +22,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="6dp"
         android:text="@string/stats_header"
-        android:textColor="@color/black"
+        android:textColor="?attr/mainText"
         android:textSize="16sp" />
 
     <TextView
@@ -33,7 +33,7 @@
         android:layout_marginTop="6dp"
         android:layout_marginBottom="6dp"
         android:text="TextView"
-        android:textColor="@color/black" />
+        android:textColor="?attr/mainText" />
 
     <View
         android:id="@+id/divider"
