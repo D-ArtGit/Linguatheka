@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import ru.dartx.wordcards.R
+import ru.dartx.wordcards.dialogs.AvatarDialog
 import ru.dartx.wordcards.utils.BitmapManager
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -19,14 +20,14 @@ import java.io.IOException
 class AvatarActivity : AppCompatActivity() {
     private lateinit var pickImageLauncher: ActivityResultLauncher<Intent>
     override fun onCreate(savedInstanceState: Bundle?) {
+        val defPreference = PreferenceManager.getDefaultSharedPreferences(this)
+        val editor = defPreference.edit()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_avatar)
         pickImageLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 Log.d("DArtX", "Res = ${it.resultCode}, Data = ${it.data}")
                 if (it.resultCode == Activity.RESULT_OK && it.data != null) {
-                    val defPreference = PreferenceManager.getDefaultSharedPreferences(this)
-                    val editor = defPreference.edit()
                     try {
                         val stream =
                             contentResolver.openInputStream(it.data!!.data!!)
@@ -52,6 +53,20 @@ class AvatarActivity : AppCompatActivity() {
             action = Intent.ACTION_GET_CONTENT
             addCategory(Intent.CATEGORY_OPENABLE)
         }
-        pickImageLauncher.launch(i)
+        AvatarDialog.showDialog(this, object : AvatarDialog.Listener {
+            override fun onClickChoose() {
+                pickImageLauncher.launch(i)
+            }
+
+            override fun onClickClear() {
+                editor.putString("avatar", "")
+                editor.apply()
+                finish()
+            }
+
+            override fun onClickCancel() {
+                finish()
+            }
+        })
     }
 }

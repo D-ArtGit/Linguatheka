@@ -7,4 +7,5 @@
     <attr name="cardBgColor" format="color"/>
     <attr name="itemBgColor" format="color"/>
     <attr name="cardBgColorSecondary" format="color"/>
+    <attr name="dialogBg" format="reference"/>
 </resources>

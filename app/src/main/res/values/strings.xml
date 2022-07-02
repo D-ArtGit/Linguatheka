@@ -30,6 +30,10 @@
     <string name="reminder_snoozed_to">Reminder snoozed to&#160;</string>
     <string name="mark_done">Word was marked as repeated</string>
     <string name="done">DONE</string>
+    <string name="confirm_avatar">Choose action with your avatar:</string>
+    <string name="choose_new">CHOOSE NEW</string>
+    <string name="clear">CLEAR</string>
+    <string name="cancel">CANCEL</string>
 
     //Nav menu
     <string name="language_pairs">Language pairs</string>
