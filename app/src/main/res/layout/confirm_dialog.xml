@@ -38,7 +38,8 @@
             android:layout_weight="1"
             android:insetLeft="6dp"
             android:insetRight="6dp"
-            android:text="@android:string/ok" />
+            android:text="@android:string/ok"
+            app:cornerRadius="16dp" />
 
         <Button
             android:id="@+id/btCancel"
@@ -47,7 +48,8 @@
             android:layout_weight="1"
             android:insetLeft="6dp"
             android:insetRight="6dp"
-            android:text="@android:string/cancel" />
+            android:text="@android:string/cancel"
+            app:cornerRadius="16dp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

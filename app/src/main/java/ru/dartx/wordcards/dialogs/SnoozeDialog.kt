@@ -3,6 +3,7 @@ package ru.dartx.wordcards.dialogs
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
@@ -17,7 +18,8 @@ object SnoozeDialog {
         var dialog: AlertDialog? = null
         val builder = AlertDialog.Builder(context)
         var snoozeTime = defPreference.getString("snooze", "2")!!.toInt()
-        var seekBarText = context.resources.getQuantityString(R.plurals.hours, snoozeTime, snoozeTime)
+        var seekBarText =
+            context.resources.getQuantityString(R.plurals.hours, snoozeTime, snoozeTime)
         val binding = SnoozeDialogBinding.inflate(LayoutInflater.from(context))
         binding.tvSeekBarValue.text = seekBarText
         val seekBar = binding.seekBar
@@ -62,6 +64,13 @@ object SnoozeDialog {
         dialog = builder.create()
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.show()
+        dialog.setOnKeyListener { dialog, keyCode, _ ->
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                listener.onCancelClick()
+                dialog.dismiss()
+            }
+            true
+        }
     }
 
     interface Listener {

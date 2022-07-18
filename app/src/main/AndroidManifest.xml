@@ -31,7 +31,7 @@
             android:excludeFromRecents="true"
             android:launchMode="singleInstance"
             android:taskAffinity=""
-            android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
+            android:theme="@style/Theme.WordCardsDialog" />
         <activity
             android:name=".activities.MainActivity"
             android:exported="true"
