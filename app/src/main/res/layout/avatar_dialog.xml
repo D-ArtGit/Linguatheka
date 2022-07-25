@@ -37,7 +37,7 @@
             android:padding="6dp"
             android:text="@string/choose_new"
             android:textColor="?attr/colorSecondaryVariant"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
         <TextView
@@ -48,7 +48,7 @@
             android:padding="6dp"
             android:text="@string/clear"
             android:textColor="?attr/colorSecondaryVariant"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
         <TextView
@@ -59,7 +59,7 @@
             android:padding="6dp"
             android:text="@string/cancel"
             android:textColor="?attr/colorSecondaryVariant"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textStyle="bold" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

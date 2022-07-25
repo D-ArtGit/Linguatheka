@@ -53,32 +53,33 @@
         app:layout_constraintTop_toBottomOf="@+id/tvSeekBarValue" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/seekBar">
 
         <Button
-            android:id="@+id/btOk"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:insetLeft="6dp"
-            android:insetRight="6dp"
-            android:text="@android:string/ok"
-            app:cornerRadius="16dp" />
-
-        <Button
             android:id="@+id/btCancel"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:insetLeft="6dp"
             android:insetRight="6dp"
             android:text="@android:string/cancel"
+            app:cornerRadius="16dp" />
+
+        <Button
+            android:id="@+id/btOk"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:insetLeft="6dp"
+            android:insetRight="6dp"
+            android:text="@android:string/ok"
             app:cornerRadius="16dp" />
 
 

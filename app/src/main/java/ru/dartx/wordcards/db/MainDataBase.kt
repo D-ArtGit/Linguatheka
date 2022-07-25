@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import ru.dartx.wordcards.entities.Card
 
-@Database(entities = [Card::class], version = 1, exportSchema = false)
+@Database(entities = [Card::class], version = 1, exportSchema = true)
 abstract class MainDataBase: RoomDatabase(){
     abstract fun getDao(): Dao
     companion object {

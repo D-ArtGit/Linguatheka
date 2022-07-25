@@ -29,6 +29,7 @@ object AvatarDialog {
         }
         dialog = builder.create()
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setCanceledOnTouchOutside(false)
         dialog.show()
     }
 
