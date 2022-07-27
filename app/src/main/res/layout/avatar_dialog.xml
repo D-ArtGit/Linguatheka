@@ -29,37 +29,29 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvQuestion">
 
-        <TextView
-            android:id="@+id/tvBChoose"
+        <Button
+            android:id="@+id/btCancel"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:padding="6dp"
-            android:text="@string/choose_new"
-            android:textColor="?attr/colorSecondaryVariant"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:text="@string/cancel" />
 
-        <TextView
-            android:id="@+id/tvBClear"
+        <Button
+            android:id="@+id/btClear"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:padding="6dp"
-            android:text="@string/clear"
-            android:textColor="?attr/colorSecondaryVariant"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:text="@string/clear" />
 
-        <TextView
-            android:id="@+id/tvBCancel"
+        <Button
+            android:id="@+id/btChoose"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:padding="6dp"
-            android:text="@string/cancel"
-            android:textColor="?attr/colorSecondaryVariant"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:text="@string/choose_new" />
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

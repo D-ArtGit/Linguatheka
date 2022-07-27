@@ -2,6 +2,7 @@ package ru.dartx.wordcards.activities
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,6 +10,7 @@ import android.view.MenuItem
 import android.widget.EditText
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,12 +39,15 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     }
     private lateinit var defPreference: SharedPreferences
     private var currentTheme = ""
+    private var currentNightMode = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         defPreference = PreferenceManager.getDefaultSharedPreferences(this)
         currentTheme = defPreference.getString("theme", "blue").toString()
+        currentNightMode = defPreference.getString("night_mode", "system").toString()
         setTheme(getSelectedTheme())
         super.onCreate(savedInstanceState)
+        AppCompatDelegate.setDefaultNightMode(getNightMode())
         binding = ActivityMainBinding.inflate(layoutInflater)
         nvBinding = NavHeaderBinding.bind(binding.navView.getHeaderView(0))
         setContentView(binding.root)
@@ -57,7 +62,15 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
 
     override fun onResume() {
         super.onResume()
-        if (defPreference.getString("theme", "blue") != currentTheme) recreate()
+        if (defPreference.getString(
+                "theme",
+                "blue"
+            ) != currentTheme ||
+            defPreference.getString(
+                "night_mode",
+                "system"
+            ) != currentNightMode
+        ) recreate()
     }
 
     private fun expandActionView(): MenuItem.OnActionExpandListener {
@@ -190,6 +203,14 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
             "blue" -> R.style.Theme_WordCardsBlue_NoActionBar
             "green" -> R.style.Theme_WordCardsGreen_NoActionBar
             else -> R.style.Theme_WordCardsRed_NoActionBar
+        }
+    }
+
+    private fun getNightMode(): Int {
+        return when (defPreference.getString("night_mode", "system")) {
+            "day" -> AppCompatDelegate.MODE_NIGHT_NO
+            "night" -> AppCompatDelegate.MODE_NIGHT_YES
+            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
         }
     }
 

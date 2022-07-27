@@ -14,15 +14,15 @@ object AvatarDialog {
         val binding = AvatarDialogBinding.inflate(LayoutInflater.from(context))
         builder.setView(binding.root)
         binding.apply {
-            tvBChoose.setOnClickListener {
+            btChoose.setOnClickListener {
                 listener.onClickChoose()
                 dialog?.dismiss()
             }
-            tvBClear.setOnClickListener {
+            btClear.setOnClickListener {
                 listener.onClickClear()
                 dialog?.dismiss()
             }
-            tvBCancel.setOnClickListener {
+            btCancel.setOnClickListener {
                 listener.onClickCancel()
                 dialog?.dismiss()
             }
