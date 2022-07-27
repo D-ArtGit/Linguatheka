@@ -2,7 +2,6 @@ package ru.dartx.wordcards.activities
 
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.res.Configuration
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -63,13 +62,8 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     override fun onResume() {
         super.onResume()
         if (defPreference.getString(
-                "theme",
-                "blue"
-            ) != currentTheme ||
-            defPreference.getString(
-                "night_mode",
-                "system"
-            ) != currentNightMode
+                "theme", "blue"
+            ) != currentTheme
         ) recreate()
     }
 

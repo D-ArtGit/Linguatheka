@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
+import android.view.Window
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,6 +24,7 @@ class AvatarActivity : AppCompatActivity() {
         val defPreference = PreferenceManager.getDefaultSharedPreferences(this)
         val editor = defPreference.edit()
         super.onCreate(savedInstanceState)
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.activity_avatar)
         pickImageLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
