@@ -7,10 +7,10 @@
         android:checkableBehavior="none">
         <item
             android:id="@+id/new_pair"
-            android:title="@string/new_pair" />
+            android:title="@string/new_lang" />
         <item
             android:id="@+id/chooser"
-            android:title="@string/choose_pair" />
+            android:title="@string/choose_lang" />
     </group>
 
     <group
