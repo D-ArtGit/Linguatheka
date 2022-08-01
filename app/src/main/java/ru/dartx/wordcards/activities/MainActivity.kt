@@ -24,6 +24,7 @@ import ru.dartx.wordcards.db.MainViewModel
 import ru.dartx.wordcards.entities.Card
 import ru.dartx.wordcards.settings.SettingsActivity
 import ru.dartx.wordcards.utils.BitmapManager
+import ru.dartx.wordcards.utils.ThemeManager
 import ru.dartx.wordcards.workers.NotificationsWorker
 import java.util.concurrent.TimeUnit
 
@@ -44,7 +45,7 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
         defPreference = PreferenceManager.getDefaultSharedPreferences(this)
         currentTheme = defPreference.getString("theme", "blue").toString()
         currentNightMode = defPreference.getString("night_mode", "system").toString()
-        setTheme(getSelectedTheme())
+        setTheme(ThemeManager.getSelectedThemeNoBar(this))
         super.onCreate(savedInstanceState)
         AppCompatDelegate.setDefaultNightMode(getNightMode())
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -88,6 +89,14 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
         }
     }
 
+    override fun onBackPressed() {
+        if (binding.drawerLayout.isDrawerVisible(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     private fun init() = with(binding) {
         rcViewCardList.layoutManager = LinearLayoutManager(this@MainActivity)
         adapter = CardAdapter(this@MainActivity)
@@ -112,6 +121,12 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
                     Intent(
                         this@MainActivity,
                         SettingsActivity::class.java
+                    )
+                )
+                R.id.faq -> startActivity(
+                    Intent(
+                        this@MainActivity,
+                        HowToUseActivity::class.java
                     )
                 )
             }
@@ -189,7 +204,7 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
         )
     }
 
-    private fun getSelectedTheme(): Int {
+/*    private fun getSelectedTheme(): Int {
         return when (defPreference.getString(
             "theme",
             "blue"
@@ -198,7 +213,7 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
             "green" -> R.style.Theme_WordCardsGreen_NoActionBar
             else -> R.style.Theme_WordCardsRed_NoActionBar
         }
-    }
+    }*/
 
     private fun getNightMode(): Int {
         return when (defPreference.getString("night_mode", "system")) {

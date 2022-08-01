@@ -20,6 +20,7 @@ import ru.dartx.wordcards.db.MainViewModel
 import ru.dartx.wordcards.dialogs.ConfirmDialog
 import ru.dartx.wordcards.entities.Card
 import ru.dartx.wordcards.utils.HtmlManager
+import ru.dartx.wordcards.utils.ThemeManager
 import ru.dartx.wordcards.utils.TimeManager
 import ru.dartx.wordcards.utils.TimeManager.addDays
 import ru.dartx.wordcards.utils.TimeManager.getCurrentTime
@@ -40,7 +41,7 @@ class CardActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         defPreference = PreferenceManager.getDefaultSharedPreferences(this)
-        setTheme(getSelectedTheme())
+        setTheme(ThemeManager.getSelectedTheme(this))
         super.onCreate(savedInstanceState)
         binding = ActivityCardBinding1.inflate(layoutInflater)
         setContentView(binding.root)
@@ -291,17 +292,6 @@ class CardActivity : AppCompatActivity() {
             CARD_STATE_CHECK -> ab?.setTitle(R.string.repeat_card)
             CARD_STATE_NEW -> ab?.setTitle(R.string.fill_card)
             CARD_STATE_VIEW -> ab?.setTitle(R.string.view_card)
-        }
-    }
-
-    private fun getSelectedTheme(): Int {
-        return when (defPreference.getString(
-            "theme",
-            "blue"
-        )) {
-            "blue" -> R.style.Theme_WordCardsBlue
-            "green" -> R.style.Theme_WordCardsGreen
-            else -> R.style.Theme_WordCardsRed
         }
     }
 

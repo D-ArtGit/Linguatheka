@@ -2,7 +2,6 @@ package ru.dartx.wordcards.settings
 
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -10,12 +9,13 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import ru.dartx.wordcards.R
+import ru.dartx.wordcards.utils.ThemeManager
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var defPreference: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         defPreference = PreferenceManager.getDefaultSharedPreferences(this)
-        setTheme(getSelectedTheme())
+        setTheme(ThemeManager.getSelectedTheme(this))
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settings_activity)
         if (savedInstanceState == null) {
@@ -59,16 +59,5 @@ class SettingsActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) finish()
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun getSelectedTheme(): Int {
-        return when (defPreference.getString(
-            "theme",
-            "blue"
-        )) {
-            "blue" -> R.style.Theme_WordCardsBlue
-            "green" -> R.style.Theme_WordCardsGreen
-            else -> R.style.Theme_WordCardsRed
-        }
     }
 }

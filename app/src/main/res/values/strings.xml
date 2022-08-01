@@ -33,6 +33,8 @@
     <string name="confirm_avatar">Choose action with your avatar:</string>
     <string name="choose_new">CHOOSE NEW</string>
     <string name="clear">CLEAR</string>
+    <string name="close">CLOSE</string>
+    <string name="not_show">Do not show again</string>
 
     //Nav menu
     <string name="language_pairs">Language pairs</string>

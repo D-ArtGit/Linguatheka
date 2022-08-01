@@ -11,12 +11,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WordCardsBlue">
         <activity
-            android:name=".activities.AvatarActivity"
+            android:name=".activities.HowToUseActivity"
             android:exported="false"
+            android:label="@string/how_to_use" />
+        <activity
+            android:name=".activities.AvatarActivity"
             android:excludeFromRecents="true"
+            android:exported="false"
             android:launchMode="singleInstance"
             android:taskAffinity=""
-            android:theme="@style/Theme.WordCardsDialog"/>
+            android:theme="@style/Theme.WordCardsDialog" />
         <activity
             android:name=".settings.SettingsActivity"
             android:exported="false"
@@ -50,7 +54,6 @@
                 <action android:name="wc_done" />
             </intent-filter>
         </receiver>
-
     </application>
 
 </manifest>
