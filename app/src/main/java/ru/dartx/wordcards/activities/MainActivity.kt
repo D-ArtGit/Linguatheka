@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.MenuItem
 import android.widget.EditText
 import androidx.activity.viewModels
@@ -53,6 +54,8 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
         setContentView(binding.root)
         startWorker()
         init()
+        Log.d("DArtX", "init")
+        showHTU()
         cardListObserver()
         binding.btFab.setOnClickListener {
             val i = Intent(this, CardActivity::class.java)
@@ -184,6 +187,17 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
             override fun afterTextChanged(s: Editable?) {
 
             }
+        }
+    }
+
+    private fun showHTU() {
+        if (!defPreference.getBoolean("not_show_htu", false)) {
+            startActivity(
+                Intent(
+                    this@MainActivity,
+                    HowToUseActivity::class.java
+                )
+            )
         }
     }
 
