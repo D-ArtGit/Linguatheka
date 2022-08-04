@@ -25,9 +25,9 @@
 
     <!-- Theme Preference -->
     <string-array name="theme_entries">
-        <item>Blue</item>
-        <item>Green</item>
-        <item>Red</item>
+        <item>@string/blue</item>
+        <item>@string/green</item>
+        <item>@string/red</item>
     </string-array>
 
     <string-array name="theme_values">
@@ -37,9 +37,9 @@
     </string-array>
 
     <string-array name="night_mode_entries">
-        <item>Day</item>
-        <item>Night</item>
-        <item>Follow system</item>
+        <item>@string/day</item>
+        <item>@string/night</item>
+        <item>@string/system</item>
     </string-array>
 
     <string-array name="night_mode_values">

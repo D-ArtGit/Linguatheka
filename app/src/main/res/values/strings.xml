@@ -6,7 +6,7 @@
     <string name="word">Word</string>
     <string name="phrases">Phrases</string>
     <string name="word_usage_examples">Word usage examples</string>
-    <string name="examples_hint">Enter a few phrases, word usage examples</string>
+    <string name="examples_hint">Enter a few sentences, word usage examples</string>
     <string name="enter_translation">Enter translation</string>
     <string name="translation">Translation</string>
     <string name="save">Save</string>
@@ -36,12 +36,12 @@
     <string name="close">CLOSE</string>
     <string name="not_show">Do not show again</string>
     <string name="htu_text">
-        Вы можете выучить новое слово на чужом языке, потратив всего 90 секунд в течение месяца. \n
-        1) Встретив новое слово, вы создаете его карточку. В контексте. То есть записываете не «слово – перевод», а целое предложение, в котором только что встретилось слово. А само новое слово выделяется жирным шрифтом.  \n
-        2) В течение семи дней с момента создания карточки вы читаете вслух это выражение вслух один-два раза. Да-да, лишь один-два раза! Вы не стараетесь его запомнить, но концентрируетесь на нем и понимаете, чтó именно говорите (а не повторяете механически). На два прочтения уходит 10 секунд (проверено). Вы делаете это в течение семи дней.  \n
-        3) После семи дней ежедневных повторов вы делаете недельный перерыв и через неделю читаете новое выражение вслух еще два-три раза в течение 10 секунд. Да-да, лишь три раза, но вслух, эмоционально, четко и сконцентрировавшись на нем! \n
-        4) И еще через две недели вы снова читате его вслух три раза в течение 10 секунд. \n
-        Итого: 90 секунд (70 + 10 + 10). При такой стратегии нужное слово и предложение буквально зацементируются в вашей памяти. А приложение само напомнит, когда нужно повторить.
+        You can learn a new word in a foreign language by spending only 90 seconds for a month. \n
+        1) When you meet a new word, you should create card for it in the app. In context. It means , you are not writing down a "word – translation", but a whole sentence in which a word has just met. And highlight the new word in bold. \n
+        2) Within seven days from the moment the card was created, you read sentence from this card aloud once or twice. Yes, yes, only once or twice! No need to try to remember it, but you should concentrate on it and understand what you are saying (and not repeating mechanically). It takes 10 seconds for two readings (checked). You\'ve been doing this for seven days. \n
+        3) After seven days of daily repetitions, you take a week break and a week later read card again aloud two or three times for 10 seconds. Yes, yes, only three times, but aloud, emotionally, clearly and concentrating on it! \n
+        4) And two weeks later, you read it aloud again three times within 10 seconds. \n
+        Total: 90 seconds (70 + 10 + 10 ). With this strategy, the word and sentence are literally cemented in your memory. And the app will remind you when to repeat.
     </string>
 
 
@@ -70,14 +70,17 @@
     <!-- Theme Preferences -->
     <string name="choose_theme">Choose theme</string>
     <string name="night_title">Night theme</string>
+    <string name="night">Night mode</string>
+    <string name="day">Day mode</string>
+    <string name="system">Follow system</string>
+    <string name="red">Red</string>
+    <string name="green">Green</string>
+    <string name="blue">Blue</string>
 
     <!-- Behavior Preferences -->
 
     <string name="choose_snooze_delay">Choose default delay for snooze</string>
     <string name="choose_notifications_repeat_time">Choose default notifications auto repeat time</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="one_hour">1 hour</string>
     <string name="two_hours">2 hours</string>
     <string name="four_hours">4 hours</string>
