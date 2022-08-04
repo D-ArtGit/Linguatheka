@@ -12,8 +12,10 @@
         android:theme="@style/Theme.WordCardsBlue">
         <activity
             android:name=".activities.HowToUseActivity"
+            android:excludeFromRecents="true"
             android:exported="false"
-            android:label="@string/how_to_use" />
+            android:label="@string/how_to_use"
+            android:launchMode="singleInstance" />
         <activity
             android:name=".activities.AvatarActivity"
             android:excludeFromRecents="true"
