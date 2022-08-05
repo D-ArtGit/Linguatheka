@@ -161,7 +161,9 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
         tempCardList?.forEach { card ->
             if (card.step == 9) count++
         }
-        return "$count of ${tempCardList?.size} words"
+        return if (tempCardList != null) {
+            "$count ${getString(R.string.of)} ${resources.getQuantityString(R.plurals.words, tempCardList.size, tempCardList.size) }"
+        } else ""
     }
 
     override fun onClickCard(card: Card) {
