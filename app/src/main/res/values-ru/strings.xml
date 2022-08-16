@@ -7,7 +7,7 @@
     <string name="word">Слово</string>
     <string name="phrases">Фразы</string>
     <string name="word_usage_examples">Примеры использования слова</string>
-    <string name="examples_hint">Введите несколько предложений, примеров использования слов</string>
+    <string name="examples_hint">Введите одно или несколько предложений, примеров использования слова</string>
     <string name="enter_translation">Введите перевод</string>
     <string name="translation">Перевод</string>
     <string name="save">Сохранить</string>

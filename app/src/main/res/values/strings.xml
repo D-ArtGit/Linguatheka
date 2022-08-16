@@ -6,7 +6,7 @@
     <string name="word">Word</string>
     <string name="phrases">Phrases</string>
     <string name="word_usage_examples">Word usage examples</string>
-    <string name="examples_hint">Enter a few sentences, word usage examples</string>
+    <string name="examples_hint">Enter one or few sentences, word usage examples</string>
     <string name="enter_translation">Enter translation</string>
     <string name="translation">Translation</string>
     <string name="save">Save</string>

@@ -2,7 +2,9 @@ package ru.dartx.wordcards.activities
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.icu.text.Collator.getDisplayName
 import android.os.Bundle
+import android.os.LocaleList
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -26,7 +28,9 @@ import ru.dartx.wordcards.settings.SettingsActivity
 import ru.dartx.wordcards.utils.BitmapManager
 import ru.dartx.wordcards.utils.ThemeManager
 import ru.dartx.wordcards.workers.NotificationsWorker
+import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     private lateinit var binding: ActivityMainBinding
@@ -53,6 +57,11 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
         Log.d("DArtX", "init")
         showHTU()
         cardListObserver()
+
+        val lang = Locale.getAvailableLocales()
+        for (i in lang.indices) {
+            Log.d("DArtX", "Lang: '${lang[i].toString()}' ${lang[i].displayName}")
+        }
         binding.btFab.setOnClickListener {
             val i = Intent(this, CardActivity::class.java)
             startActivity(i)
