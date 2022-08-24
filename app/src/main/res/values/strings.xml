@@ -68,6 +68,12 @@
     <string name="avatar">Chose avatar</string>
     <string name="avatar_applied">Your avatar applied</string>
 
+    <!-- Languages Preferences -->
+
+    <string name="choose_default_lang">Choose default language to learn</string>
+    <string name="languages">Languages</string>
+    <string name="choose_native_lang">Choose your native language</string>
+
     <!-- Theme Preferences -->
     <string name="choose_theme">Choose theme</string>
     <string name="night_title">Night theme</string>

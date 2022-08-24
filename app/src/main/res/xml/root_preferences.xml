@@ -20,6 +20,22 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="@string/languages">
+
+        <ListPreference
+            app:defaultValue=""
+            app:key="def_lang"
+            app:title="@string/choose_default_lang"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue=""
+            app:key="native_lang"
+            app:title="@string/choose_native_lang"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory app:title="@string/theme_settings_header">
 
         <ListPreference

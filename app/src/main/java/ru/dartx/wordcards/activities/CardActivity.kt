@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,7 @@ import ru.dartx.wordcards.R
 import ru.dartx.wordcards.db.MainViewModel
 import ru.dartx.wordcards.dialogs.ConfirmDialog
 import ru.dartx.wordcards.entities.Card
+import ru.dartx.wordcards.settings.SettingsActivity
 import ru.dartx.wordcards.utils.HtmlManager
 import ru.dartx.wordcards.utils.ThemeManager
 import ru.dartx.wordcards.utils.TimeManager
@@ -46,6 +48,7 @@ class CardActivity : AppCompatActivity() {
         binding = ActivityCardBinding1.inflate(layoutInflater)
         setContentView(binding.root)
         daysArray = resources.getIntArray(R.array.remind_days)
+        showLangSettings()
         getCard()
         fieldState()
         actionBarSettings()
@@ -292,6 +295,21 @@ class CardActivity : AppCompatActivity() {
             CARD_STATE_CHECK -> ab?.setTitle(R.string.repeat_card)
             CARD_STATE_NEW -> ab?.setTitle(R.string.fill_card)
             CARD_STATE_VIEW -> ab?.setTitle(R.string.view_card)
+        }
+    }
+
+    private fun showLangSettings() {
+        if (defPreference.getString("def_lang", "") == "" ||
+            defPreference.getString("native_lang", "") == ""
+        ) {
+            Toast.makeText(this, "Выберите языки в настройках", Toast.LENGTH_LONG).show()
+            startActivity(
+                Intent(
+                    this@CardActivity,
+                    SettingsActivity::class.java
+                )
+            )
+            finish()
         }
     }
 

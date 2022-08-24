@@ -77,4 +77,7 @@
     <string name="green">Зеленая</string>
     <string name="blue">Синяя</string>
     <string name="of">из</string>
+    <string name="choose_default_lang">Выберите язык для изучения по-умолчанию</string>
+    <string name="choose_native_lang">Выберите свой родной язык</string>
+    <string name="languages">Языки</string>
 </resources>

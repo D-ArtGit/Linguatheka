@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import ru.dartx.wordcards.R
+import ru.dartx.wordcards.utils.LanguagesManager
 import ru.dartx.wordcards.utils.ThemeManager
 
 class SettingsActivity : AppCompatActivity() {
@@ -30,6 +32,13 @@ class SettingsActivity : AppCompatActivity() {
     class SettingsFragment : PreferenceFragmentCompat() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
+            val defLangPref: ListPreference = findPreference("def_lang")!!
+            val nativeLangPref: ListPreference = findPreference("native_lang")!!
+            val langArray = LanguagesManager.getLanguages()
+            defLangPref.entryValues = langArray[0]
+            nativeLangPref.entryValues = langArray[0]
+            defLangPref.entries = langArray[1]
+            nativeLangPref.entries = langArray[1]
             val nightMode: Preference? = findPreference("night_mode")
             val themeMode: Preference? = findPreference("theme")
             nightMode?.setOnPreferenceChangeListener { _, value ->

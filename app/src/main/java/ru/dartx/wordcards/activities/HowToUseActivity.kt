@@ -1,10 +1,13 @@
 package ru.dartx.wordcards.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import ru.dartx.wordcards.databinding.ActivityHowToUseBinding
+import ru.dartx.wordcards.settings.SettingsActivity
 import ru.dartx.wordcards.utils.ThemeManager
 
 class HowToUseActivity : AppCompatActivity() {
@@ -23,6 +26,7 @@ class HowToUseActivity : AppCompatActivity() {
                 if (!chBoxDontShow.isChecked) editor.putBoolean("not_show_htu", false)
                 else editor.putBoolean("not_show_htu", true)
                 editor.apply()
+                showLangSettings()
                 finish()
             }
         }
@@ -30,5 +34,20 @@ class HowToUseActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) finish()
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showLangSettings() {
+        val defPreference = PreferenceManager.getDefaultSharedPreferences(this)
+        if (defPreference.getString("def_lang", "") == "" ||
+            defPreference.getString("native_lang", "") == ""
+        ) {
+            Toast.makeText(this, "Выберите языки в настройках", Toast.LENGTH_LONG).show()
+            startActivity(
+                Intent(
+                    this@HowToUseActivity,
+                    SettingsActivity::class.java
+                )
+            )
+        }
     }
 }

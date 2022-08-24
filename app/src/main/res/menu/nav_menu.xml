@@ -2,16 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
-    <group
-        android:id="@+id/catalogue_menu"
-        android:checkableBehavior="none">
-        <item
-            android:id="@+id/new_lang"
-            android:title="@string/new_lang" />
-        <item
-            android:id="@+id/def_lang"
-            android:title="@string/choose_lang" />
-    </group>
 
     <group
         android:id="@+id/app_menu"
