@@ -10,6 +10,8 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBar
@@ -22,6 +24,7 @@ import ru.dartx.wordcards.dialogs.ConfirmDialog
 import ru.dartx.wordcards.entities.Card
 import ru.dartx.wordcards.settings.SettingsActivity
 import ru.dartx.wordcards.utils.HtmlManager
+import ru.dartx.wordcards.utils.LanguagesManager
 import ru.dartx.wordcards.utils.ThemeManager
 import ru.dartx.wordcards.utils.TimeManager
 import ru.dartx.wordcards.utils.TimeManager.addDays
@@ -40,6 +43,9 @@ class CardActivity : AppCompatActivity() {
         MainViewModel.MainViewModelFactory((applicationContext as MainApp).database)
     }
     private lateinit var defPreference: SharedPreferences
+    private val langArray = LanguagesManager.getLanguages()
+    private var index = -1
+    private var defLang = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         defPreference = PreferenceManager.getDefaultSharedPreferences(this)
@@ -47,6 +53,7 @@ class CardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityCardBinding1.inflate(layoutInflater)
         setContentView(binding.root)
+        defLang = defPreference.getString("def_lang", "").toString()
         daysArray = resources.getIntArray(R.array.remind_days)
         showLangSettings()
         getCard()
@@ -96,6 +103,9 @@ class CardActivity : AppCompatActivity() {
             card = sCard as Card
             with(NotificationManagerCompat.from(applicationContext)) { cancel(card!!.id!!) }
             binding.apply {
+                index = langArray[0].indexOf(card!!.lang)
+                if (index < 0) index = langArray[0].indexOf(defLang)
+                tvLang.text = langArray[1][index]
                 tvCardWord.text = card!!.word
                 edWord.setText(card?.word)
                 tvCardExamples.text = HtmlManager.getFromHtml(card?.examples_html!!).trim()
@@ -118,12 +128,37 @@ class CardActivity : AppCompatActivity() {
                 btSave.visibility = View.GONE
             }
             else -> {
+                val spinner = spLang
+                val spinnerArrayAdapter =
+                    ArrayAdapter(this@CardActivity, R.layout.spinner, langArray[1])
+                spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
+                spinner.adapter = spinnerArrayAdapter
+                index = langArray[0].indexOf(defLang)
+                spinner.setSelection(index)
+                spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        index = position
+                        tvLang.text = langArray[1][index]
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+
+                    }
+
+                }
                 tvCardWord.visibility = View.GONE
                 tvCardExamples.visibility = View.GONE
                 tvCardTranslation.visibility = View.GONE
+                tvLang.visibility = View.GONE
                 edWord.visibility = View.VISIBLE
                 edExamples.visibility = View.VISIBLE
                 edTranslation.visibility = View.VISIBLE
+                spLang.visibility = View.VISIBLE
             }
         }
     }
@@ -162,7 +197,7 @@ class CardActivity : AppCompatActivity() {
             } else {
                 return Card(
                     null,
-                    "ru_RU",
+                    langArray[0][index],
                     edWord.text.toString(),
                     edExamples.text.toString(),
                     HtmlManager.toHtml(edExamples.text),
@@ -200,6 +235,7 @@ class CardActivity : AppCompatActivity() {
         } else {
             return card?.copy(
                 word = edWord.text.toString(),
+                lang = langArray[0][index],
                 examples = edExamples.text.toString(),
                 examples_html = HtmlManager.toHtml(edExamples.text),
                 translation = edTranslation.text.toString(),
@@ -233,14 +269,38 @@ class CardActivity : AppCompatActivity() {
         invalidateOptionsMenu()
         ab?.setTitle(R.string.edit_card)
         binding.apply {
+            val spinner = spLang
+            val spinnerArrayAdapter =
+                ArrayAdapter(this@CardActivity, R.layout.spinner, langArray[1])
+            spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
+            spinner.adapter = spinnerArrayAdapter
+            spinner.setSelection(index)
+            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    index = position
+                    tvLang.text = langArray[1][index]
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+
+                }
+
+            }
             btSave.visibility = View.VISIBLE
             btSave.setImageResource(R.drawable.ic_save)
             tvCardWord.visibility = View.GONE
             tvCardExamples.visibility = View.GONE
             tvCardTranslation.visibility = View.GONE
+            tvLang.visibility = View.GONE
             edWord.visibility = View.VISIBLE
             edExamples.visibility = View.VISIBLE
             edTranslation.visibility = View.VISIBLE
+            spLang.visibility = View.VISIBLE
         }
     }
 
@@ -302,7 +362,7 @@ class CardActivity : AppCompatActivity() {
         if (defPreference.getString("def_lang", "") == "" ||
             defPreference.getString("native_lang", "") == ""
         ) {
-            Toast.makeText(this, "Выберите языки в настройках", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.choose_lang_settings), Toast.LENGTH_LONG).show()
             startActivity(
                 Intent(
                     this@CardActivity,

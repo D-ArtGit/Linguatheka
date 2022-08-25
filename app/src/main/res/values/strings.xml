@@ -73,6 +73,7 @@
     <string name="choose_default_lang">Choose default language to learn</string>
     <string name="languages">Languages</string>
     <string name="choose_native_lang">Choose your native language</string>
+    <string name="choose_lang_settings">Choose your language settings</string>
 
     <!-- Theme Preferences -->
     <string name="choose_theme">Choose theme</string>

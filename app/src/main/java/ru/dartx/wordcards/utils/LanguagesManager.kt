@@ -1,8 +1,5 @@
 package ru.dartx.wordcards.utils
 
-import android.util.Log
-import androidx.preference.ListPreference
-import androidx.preference.Preference
 import java.util.*
 
 object LanguagesManager {
@@ -17,12 +14,11 @@ object LanguagesManager {
             if (currentLang != lang[i].language) {
                 currentLang = lang[i].language
                 langValues += lang[i].language
-                langEntries += "${lang[i].language} - ${lang[i].displayLanguage}"
+                langEntries += "${lang[i].displayLanguage} (${lang[i].language})"
             }
         }
         langArray += langValues
         langArray += langEntries
-        Log.d("DArtX", "langArray = ${langArray.indices}")
         return langArray
     }
 

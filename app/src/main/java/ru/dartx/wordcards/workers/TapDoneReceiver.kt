@@ -3,7 +3,6 @@ package ru.dartx.wordcards.workers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationManagerCompat
 import kotlinx.coroutines.CoroutineScope
@@ -25,7 +24,6 @@ class TapDoneReceiver : BroadcastReceiver(), CoroutineScope {
         if (sCard != null) {
             val card = sCard as Card
             val step = card.step + 1
-            Log.d("DArtX", "received, id = ${card.id}, word = ${card.word}, step = $step, card.step = ${card.step}")
             val daysArray = context.resources.getIntArray(R.array.remind_days)
             val remindTime = if (step <= 8) {
                 TimeManager.addDays(TimeManager.getCurrentTime(), daysArray[step])

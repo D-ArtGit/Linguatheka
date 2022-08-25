@@ -1,19 +1,10 @@
 package ru.dartx.wordcards.utils
 
-import android.content.SharedPreferences
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
-import java.text.SimpleDateFormat
 import java.time.LocalDateTime
-import java.time.Period
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.util.*
 
 object TimeManager {
-    private const val RUS_DATE_FORMAT = "d MMM yyyy"
-    private const val RUS_TIME_FORMAT = "HH:mm:ss - dd.MM.yyyy"
     private const val DATE_FORMAT = "yyyy.MM.dd"
     const val ENDLESS_FUTURE = "2999-12-31T00:00:00.000"
 

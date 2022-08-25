@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/spinnerdropdown"
+    style="?android:attr/spinnerDropDownItemStyle"
+    android:layout_width="wrap_content"
+    android:layout_height="48dp"
+    android:textSize="20sp"
+    android:ellipsize="end"
+    android:singleLine="true"
+    android:textColor="?attr/mainText"
+    android:layout_weight="1"
+    />

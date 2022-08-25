@@ -6,6 +6,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
+import ru.dartx.wordcards.R
 import ru.dartx.wordcards.databinding.ActivityHowToUseBinding
 import ru.dartx.wordcards.settings.SettingsActivity
 import ru.dartx.wordcards.utils.ThemeManager
@@ -41,7 +42,7 @@ class HowToUseActivity : AppCompatActivity() {
         if (defPreference.getString("def_lang", "") == "" ||
             defPreference.getString("native_lang", "") == ""
         ) {
-            Toast.makeText(this, "Выберите языки в настройках", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.choose_lang_settings), Toast.LENGTH_LONG).show()
             startActivity(
                 Intent(
                     this@HowToUseActivity,

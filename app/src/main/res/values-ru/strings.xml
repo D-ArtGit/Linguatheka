@@ -80,4 +80,5 @@
     <string name="choose_default_lang">Выберите язык для изучения по-умолчанию</string>
     <string name="choose_native_lang">Выберите свой родной язык</string>
     <string name="languages">Языки</string>
+    <string name="choose_lang_settings">Выберите свои языки в настройках</string>
 </resources>
