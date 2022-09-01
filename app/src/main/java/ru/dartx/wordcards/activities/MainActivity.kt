@@ -23,6 +23,7 @@ import ru.dartx.wordcards.db.MainViewModel
 import ru.dartx.wordcards.entities.Card
 import ru.dartx.wordcards.settings.SettingsActivity
 import ru.dartx.wordcards.utils.BitmapManager
+import ru.dartx.wordcards.utils.LanguagesManager
 import ru.dartx.wordcards.utils.ThemeManager
 import ru.dartx.wordcards.workers.NotificationsWorker
 import java.util.concurrent.TimeUnit
@@ -64,6 +65,7 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
                 "theme", "blue"
             ) != currentTheme
         ) recreate()
+        LanguagesManager.getUsedLanguages(applicationContext)
     }
 
     private fun expandActionView(): MenuItem.OnActionExpandListener {

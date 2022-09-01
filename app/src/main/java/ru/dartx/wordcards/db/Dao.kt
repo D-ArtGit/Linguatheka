@@ -28,4 +28,7 @@ interface Dao {
 
     @Update
     suspend fun updateCard(card: Card)
+
+    @Query("SELECT lang FROM cards ORDER BY lang ASC")
+    fun selectLang(): List<String>
 }

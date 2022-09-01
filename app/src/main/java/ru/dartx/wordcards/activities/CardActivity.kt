@@ -43,7 +43,7 @@ class CardActivity : AppCompatActivity() {
         MainViewModel.MainViewModelFactory((applicationContext as MainApp).database)
     }
     private lateinit var defPreference: SharedPreferences
-    private val langArray = LanguagesManager.getLanguages()
+    private var langArray = emptyArray<Array<String>>()
     private var index = -1
     private var defLang = ""
 
@@ -53,7 +53,9 @@ class CardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityCardBinding1.inflate(layoutInflater)
         setContentView(binding.root)
+        langArray = LanguagesManager.getLanguages()
         defLang = defPreference.getString("def_lang", "").toString()
+        if (defLang.isEmpty()) defLang = "en"
         daysArray = resources.getIntArray(R.array.remind_days)
         showLangSettings()
         getCard()

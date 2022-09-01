@@ -6,15 +6,14 @@ import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.activities.CardActivity
-import ru.dartx.wordcards.activities.SnoozeDialogActivity
 import ru.dartx.wordcards.activities.MainActivity
+import ru.dartx.wordcards.activities.SnoozeDialogActivity
 import ru.dartx.wordcards.db.MainDataBase
 import ru.dartx.wordcards.utils.TimeManager
 
@@ -55,7 +54,6 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
         var snoozePendingIntent: PendingIntent?
         var donePendingIntent: PendingIntent?
         notificationCards.forEach { card ->
-            Log.d("DArtX", "Notif: id = ${card.id}, word = ${card.word}, step = ${card.step}")
             resultIntent.putExtra(MainActivity.CARD_DATA, card)
             snoozeIntent.putExtra(MainActivity.CARD_DATA, card)
             doneIntent.putExtra(MainActivity.CARD_DATA, card)
@@ -105,7 +103,7 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
         }
     }
 
-    companion object{
+    companion object {
         const val ACTION_DONE = "wc_done"
     }
 }
