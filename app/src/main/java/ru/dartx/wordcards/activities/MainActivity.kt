@@ -2,6 +2,7 @@ package ru.dartx.wordcards.activities
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,11 +16,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import ru.dartx.wordcards.BuildConfig
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.databinding.ActivityMainBinding
 import ru.dartx.wordcards.databinding.NavHeaderBinding
 import ru.dartx.wordcards.db.CardAdapter
 import ru.dartx.wordcards.db.MainViewModel
+import ru.dartx.wordcards.dialogs.AboutAppDialog
 import ru.dartx.wordcards.entities.Card
 import ru.dartx.wordcards.settings.SettingsActivity
 import ru.dartx.wordcards.utils.BitmapManager
@@ -129,6 +132,21 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
                         HowToUseActivity::class.java
                     )
                 )
+                R.id.donate -> {
+                    val uriUrl = Uri.parse(getString(R.string.donate_url))
+                    startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            uriUrl
+                        )
+                    )
+                }
+                R.id.about -> {
+                    val message = "${getString(R.string.version)} ${BuildConfig.VERSION_NAME}\n\n" +
+                            "${getString(R.string.author)}\n\n" +
+                            getString(R.string.method)
+                    AboutAppDialog.showDialog(this@MainActivity, message)
+                }
             }
             drawerLayout.close()
             true

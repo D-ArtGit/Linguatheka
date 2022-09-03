@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">WordCards</string>
+    <string name="app_name">Словотека</string>
     <string name="create">Создать</string>
     <string name="search">Поиск</string>
     <string name="enter_word">Введите слово</string>
@@ -81,4 +81,7 @@
     <string name="choose_native_lang">Выберите свой родной язык</string>
     <string name="languages">Языки</string>
     <string name="choose_lang_settings">Выберите свои языки в настройках</string>
+    <string name="version">"Текущая версия: "</string>
+    <string name="author">Автор: Артем Данилов (dartx79@gmail.com)</string>
+    <string name="method">Оригинальная методика: https://www.brejestovski.com</string>
 </resources>

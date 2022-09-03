@@ -6,6 +6,7 @@
         <entry key="..\:/AndroidStudioProjects/Wordcards/app/src/main/res/drawable/ic_dialog_bg.xml" value="0.1785" />
         <entry key="..\:/AndroidStudioProjects/Wordcards/app/src/main/res/drawable/ic_dialog_dark_bg.xml" value="0.1785" />
         <entry key="..\:/AndroidStudioProjects/Wordcards/app/src/main/res/drawable/ic_fab.xml" value="0.1785" />
+        <entry key="..\:/AndroidStudioProjects/Wordcards/app/src/main/res/layout/about_app_dialog.xml" value="0.17447916666666666" />
         <entry key="..\:/AndroidStudioProjects/Wordcards/app/src/main/res/layout/activity_avatar.xml" value="0.17552083333333332" />
         <entry key="..\:/AndroidStudioProjects/Wordcards/app/src/main/res/layout/activity_card.xml" value="0.17552083333333332" />
         <entry key="..\:/AndroidStudioProjects/Wordcards/app/src/main/res/layout/activity_delay_dialog.xml" value="0.16145833333333334" />
@@ -26,6 +27,8 @@
         <entry key="..\:/AndroidStudioProjects/Wordcards/app/src/main/res/menu/card_menu.xml" value="0.17552083333333332" />
         <entry key="..\:/AndroidStudioProjects/Wordcards/app/src/main/res/menu/nav_menu.xml" value="0.17447916666666666" />
         <entry key="..\:/AndroidStudioProjects/Wordcards/app/src/main/res/menu/top_menu.xml" value="0.17552083333333332" />
+        <entry key="..\:/AndroidStudioProjects/Wordcards/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1785" />
+        <entry key="..\:/AndroidStudioProjects/Wordcards/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1785" />
         <entry key="..\:/AndroidStudioProjects/Wordcards/app/src/main/res/xml/root_preferences.xml" value="0.17552083333333332" />
       </map>
     </option>
