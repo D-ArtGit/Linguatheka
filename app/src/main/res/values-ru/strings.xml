@@ -82,6 +82,7 @@
     <string name="languages">Языки</string>
     <string name="choose_lang_settings">Выберите свои языки в настройках</string>
     <string name="version">"Текущая версия: "</string>
-    <string name="author">Автор: Артем Данилов (dartx79@gmail.com)</string>
-    <string name="method">Оригинальная методика: https://www.brejestovski.com</string>
+    <string name="author">Автор:</string>
+    <string name="method">Оригинальная\nметодика:</string>
+    <string name="author_contacts" translatable="false">Артем Данилов (dartx79@gmail.com)</string>
 </resources>

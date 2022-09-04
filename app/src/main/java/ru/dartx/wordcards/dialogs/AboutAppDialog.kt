@@ -16,7 +16,7 @@ object AboutAppDialog {
         val binding = AboutAppDialogBinding.inflate(LayoutInflater.from(context))
         builder.setView(binding.root)
         binding.apply {
-            tvMessage.text = message
+            tvVersion.text = message
             btClose.setOnClickListener {
                 dialog?.dismiss()
             }

@@ -142,9 +142,7 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
                     )
                 }
                 R.id.about -> {
-                    val message = "${getString(R.string.version)} ${BuildConfig.VERSION_NAME}\n\n" +
-                            "${getString(R.string.author)}\n\n" +
-                            getString(R.string.method)
+                    val message = BuildConfig.VERSION_NAME
                     AboutAppDialog.showDialog(this@MainActivity, message)
                 }
             }

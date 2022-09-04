@@ -60,9 +60,11 @@
     <string name="of">of</string>
 
     //About app
-    <string name="version">Current version: </string>
-    <string name="author">Author: Artem Danilov (dartx79@gmail.com)</string>
-    <string name="method">Original method: https://www.brejestovski.com</string>
+    <string name="version">Current version:</string>
+    <string name="author">Author:</string>
+    <string name="author_contacts">Artem Danilov (dartx79@gmail.com)</string>
+    <string name="method">Original method:</string>
+    <string name="link" translatable="false">https://www.brejestovski.com</string>
 
     <!-- Preference Titles -->
     <string name="theme_settings_header">Themes</string>

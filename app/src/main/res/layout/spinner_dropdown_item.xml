@@ -6,8 +6,7 @@
     android:layout_height="48dp"
     android:layout_weight="1"
     android:ellipsize="end"
-    android:gravity="end"
-    android:singleLine="true"
+    android:gravity="start"
     android:textAlignment="gravity"
     android:textColor="?attr/mainText"
     android:textSize="20sp" />
