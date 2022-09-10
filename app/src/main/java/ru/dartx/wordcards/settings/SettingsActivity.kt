@@ -1,6 +1,5 @@
 package ru.dartx.wordcards.settings
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -8,15 +7,13 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceManager
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.utils.LanguagesManager
 import ru.dartx.wordcards.utils.ThemeManager
 
 class SettingsActivity : AppCompatActivity() {
-    private lateinit var defPreference: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        defPreference = PreferenceManager.getDefaultSharedPreferences(this)
         setTheme(ThemeManager.getSelectedTheme(this))
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settings_activity)

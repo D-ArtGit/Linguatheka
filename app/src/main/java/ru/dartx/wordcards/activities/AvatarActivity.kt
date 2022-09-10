@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Window
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
@@ -19,14 +18,13 @@ import java.io.FileNotFoundException
 import java.io.IOException
 
 class AvatarActivity : AppCompatActivity() {
-    private lateinit var pickImageLauncher: ActivityResultLauncher<Intent>
     override fun onCreate(savedInstanceState: Bundle?) {
         val defPreference = PreferenceManager.getDefaultSharedPreferences(this)
         val editor = defPreference.edit()
         super.onCreate(savedInstanceState)
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.activity_avatar)
-        pickImageLauncher =
+        val pickImageLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 Log.d("DArtX", "Res = ${it.resultCode}, Data = ${it.data}")
                 if (it.resultCode == Activity.RESULT_OK && it.data != null) {

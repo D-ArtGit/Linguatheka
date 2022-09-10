@@ -37,27 +37,27 @@ class CardActivity : AppCompatActivity() {
     private var ab: ActionBar? = null
     private var card: Card? = null
     private var cardState = CARD_STATE_VIEW
-    private lateinit var daysArray: IntArray
+    private var daysArray = intArrayOf()
     private var timeToSetRemind = false
     private val mainViewModel: MainViewModel by viewModels {
         MainViewModel.MainViewModelFactory((applicationContext as MainApp).database)
     }
-    private lateinit var defPreference: SharedPreferences
     private var langArray = emptyArray<Array<String>>()
     private var index = -1
     private var defLang = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        defPreference = PreferenceManager.getDefaultSharedPreferences(this)
+        val defPreference = PreferenceManager.getDefaultSharedPreferences(this)
         setTheme(ThemeManager.getSelectedTheme(this))
         super.onCreate(savedInstanceState)
         binding = ActivityCardBinding1.inflate(layoutInflater)
         setContentView(binding.root)
         langArray = LanguagesManager.getLanguages()
+        daysArray = resources.getIntArray(R.array.remind_days)
+        for (i in daysArray.indices) Log.d("DArtX", "${daysArray[i]}")
         defLang = defPreference.getString("def_lang", "").toString()
         if (defLang.isEmpty()) defLang = "en"
-        daysArray = resources.getIntArray(R.array.remind_days)
-        showLangSettings()
+        showLangSettings(defPreference)
         getCard()
         fieldState()
         actionBarSettings()
@@ -360,7 +360,7 @@ class CardActivity : AppCompatActivity() {
         }
     }
 
-    private fun showLangSettings() {
+    private fun showLangSettings(defPreference: SharedPreferences) {
         if (defPreference.getString("def_lang", "") == "" ||
             defPreference.getString("native_lang", "") == ""
         ) {

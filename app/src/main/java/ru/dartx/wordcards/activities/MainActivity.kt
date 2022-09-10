@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     private lateinit var nvBinding: NavHeaderBinding
     private var edSearch: EditText? = null
     private var adapter: CardAdapter? = null
-    private lateinit var textWatcher: TextWatcher
+    private var textWatcher: TextWatcher? = null
     private val mainViewModel: MainViewModel by viewModels {
         MainViewModel.MainViewModelFactory((applicationContext as MainApp).database)
     }
