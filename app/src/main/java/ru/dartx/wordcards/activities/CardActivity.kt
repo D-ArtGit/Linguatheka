@@ -54,7 +54,6 @@ class CardActivity : AppCompatActivity() {
         setContentView(binding.root)
         langArray = LanguagesManager.getLanguages()
         daysArray = resources.getIntArray(R.array.remind_days)
-        for (i in daysArray.indices) Log.d("DArtX", "${daysArray[i]}")
         defLang = defPreference.getString("def_lang", "").toString()
         if (defLang.isEmpty()) defLang = "en"
         showLangSettings(defPreference)

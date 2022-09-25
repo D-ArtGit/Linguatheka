@@ -58,6 +58,8 @@
     <string name="stats_header_with_name">, you\'ve learned:</string>
     <string name="title_activity_settings">Settings</string>
     <string name="of">of</string>
+    <string name="sign_in">Sign with Google</string>
+    <string name="sign_out">Sign out with Google</string>
 
     //About app
     <string name="version">Current version:</string>

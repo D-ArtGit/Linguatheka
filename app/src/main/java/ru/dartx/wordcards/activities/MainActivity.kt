@@ -2,12 +2,21 @@ package ru.dartx.wordcards.activities
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.MenuItem
 import android.widget.EditText
+import android.widget.Toast
+import android.window.OnBackInvokedDispatcher
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -16,6 +25,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import ru.dartx.wordcards.BuildConfig
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.databinding.ActivityMainBinding
@@ -29,7 +40,10 @@ import ru.dartx.wordcards.utils.BitmapManager
 import ru.dartx.wordcards.utils.LanguagesManager
 import ru.dartx.wordcards.utils.ThemeManager
 import ru.dartx.wordcards.workers.NotificationsWorker
+import java.io.FileNotFoundException
+import java.io.IOException
 import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     private lateinit var binding: ActivityMainBinding
@@ -37,6 +51,7 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     private var edSearch: EditText? = null
     private var adapter: CardAdapter? = null
     private var textWatcher: TextWatcher? = null
+    private var singInLauncher: ActivityResultLauncher<Intent>? = null
     private val mainViewModel: MainViewModel by viewModels {
         MainViewModel.MainViewModelFactory((applicationContext as MainApp).database)
     }
@@ -52,7 +67,9 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
         nvBinding = NavHeaderBinding.bind(binding.navView.getHeaderView(0))
         setContentView(binding.root)
         startWorker()
+        googleSignIn()
         init()
+        signInLauncher()
         showHTU()
         cardListObserver()
 
@@ -73,7 +90,7 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
 
     private fun expandActionView(): MenuItem.OnActionExpandListener {
         return object : MenuItem.OnActionExpandListener {
-            override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
+            override fun onMenuItemActionExpand(p0: MenuItem): Boolean {
                 edSearch?.addTextChangedListener(textWatcher)
                 searchListObserver()
                 mainViewModel.allCards.removeObservers(this@MainActivity)
@@ -81,7 +98,7 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
                 return true
             }
 
-            override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
+            override fun onMenuItemActionCollapse(p0: MenuItem): Boolean {
                 edSearch?.removeTextChangedListener(textWatcher)
                 edSearch?.setText("")
                 invalidateOptionsMenu()
@@ -89,14 +106,6 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
                 cardListObserver()
                 return true
             }
-        }
-    }
-
-    override fun onBackPressed() {
-        if (binding.drawerLayout.isDrawerVisible(GravityCompat.START)) {
-            binding.drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
         }
     }
 
@@ -149,11 +158,90 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
             drawerLayout.close()
             true
         }
+        if (Build.VERSION.SDK_INT >= 33) {
+            onBackInvokedDispatcher.registerOnBackInvokedCallback(
+                OnBackInvokedDispatcher.PRIORITY_DEFAULT
+            ) {
+                if (binding.drawerLayout.isDrawerVisible(GravityCompat.START)) {
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                } else finish()
+            }
+        } else {
+            onBackPressedDispatcher.addCallback(
+                this@MainActivity,
+                object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        if (binding.drawerLayout.isDrawerVisible(GravityCompat.START)) {
+                            binding.drawerLayout.closeDrawer(GravityCompat.START)
+                        } else finish()
+                    }
+
+                })
+        }
         toolbar.inflateMenu(R.menu.top_menu)
         val search = toolbar.menu.findItem(R.id.search)
-        edSearch = search.actionView.findViewById(R.id.edSearch) as EditText
+        edSearch = search.actionView?.findViewById(R.id.edSearch) as EditText
         search.setOnActionExpandListener(expandActionView())
         textWatcher = textWatcher()
+    }
+
+    private fun signInLauncher() {
+        singInLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (it.resultCode == RESULT_OK) {
+                val acc = GoogleSignIn.getLastSignedInAccount(this)
+                if (acc != null) {
+                    val editor = defPreference.edit()
+                    editor.putString("user_name", acc.displayName)
+                    if (acc.photoUrl != null) {
+                        thread {
+                            try {
+                                val stream =
+                                    java.net.URL(acc.photoUrl!!.toString()).openStream()
+                                val realImage: Bitmap = BitmapFactory.decodeStream(stream)
+                                editor.putString("avatar", BitmapManager.encodeToBase64(realImage))
+                                editor.apply()
+                            } catch (e: FileNotFoundException) {
+                                e.printStackTrace()
+                            } catch (e: IOException) {
+                                e.printStackTrace()
+                            }
+                        }
+                    }
+                    editor.apply()
+                    nvBinding.btSignIn.text = getString(R.string.sign_out)
+                    binding.drawerLayout.close()
+                }
+            }
+        }
+    }
+
+    private fun googleSignIn() {
+        val account = GoogleSignIn.getLastSignedInAccount(this)
+        if (account != null) {
+            nvBinding.btSignIn.text = getString(R.string.sign_out)
+        }
+        nvBinding.btSignIn.setOnClickListener {
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestProfile()
+                .build()
+            val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+            val tempAccount = GoogleSignIn.getLastSignedInAccount(this)
+            if (tempAccount == null && singInLauncher != null) {
+                val signInIntent = mGoogleSignInClient.signInIntent
+                singInLauncher!!.launch(signInIntent)
+            } else if (tempAccount != null) {
+                mGoogleSignInClient.signOut()
+                val editor = defPreference.edit()
+                editor.putString("user_name", "")
+                editor.putString("avatar", "")
+                editor.apply()
+                nvBinding.btSignIn.text = getString(R.string.sign_in)
+                recreate()
+                binding.drawerLayout.close()
+            }
+        }
     }
 
     private fun cardListObserver() {

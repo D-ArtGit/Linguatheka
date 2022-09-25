@@ -26,7 +26,6 @@ class AvatarActivity : AppCompatActivity() {
         setContentView(R.layout.activity_avatar)
         val pickImageLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                Log.d("DArtX", "Res = ${it.resultCode}, Data = ${it.data}")
                 if (it.resultCode == Activity.RESULT_OK && it.data != null) {
                     try {
                         val stream =
