@@ -231,6 +231,7 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
                             }
                         }
                         editor.apply()
+                        currentHideSignButtonState = true
                     }
                     nvBinding.btSignIn.text = getString(R.string.sign_out)
                     nvBinding.btSignIn.visibility = View.GONE
@@ -242,16 +243,13 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
 
     private fun googleSignIn() {
         nvBinding.btSignIn.setOnClickListener {
-            Log.d("DArtX", "BtClick")
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestProfile()
                 .build()
             val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
             val tempAccount = GoogleSignIn.getLastSignedInAccount(this)
-            Log.d("DArtX", "tempAccount: $tempAccount, signInLauncher: $singInLauncher")
             if (tempAccount == null && singInLauncher != null) {
                 val signInIntent = mGoogleSignInClient.signInIntent
-                Log.d("DArtX", "signInIntent: $signInIntent")
                 singInLauncher!!.launch(signInIntent)
             } else if (tempAccount != null) {
                 mGoogleSignInClient.signOut()
