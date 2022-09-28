@@ -1,14 +1,18 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="@string/about_user">
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/about_user">
 
         <EditTextPreference
+            app:iconSpaceReserved="false"
             app:key="user_name"
             app:title="@string/name_title"
             app:useSimpleSummaryProvider="true" />
 
         <Preference
+            app:iconSpaceReserved="false"
             app:key="avatar"
             app:summary=""
             app:title="@string/avatar">
@@ -18,30 +22,42 @@
                 android:targetPackage="ru.dartx.wordcards" />
         </Preference>
 
+        <CheckBoxPreference
+            app:iconSpaceReserved="false"
+            app:key="hide_login_button"
+            app:title="@string/hide_login_button" />
+
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/languages">
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/languages">
 
         <ListPreference
             app:defaultValue=""
+            app:iconSpaceReserved="false"
             app:key="def_lang"
             app:title="@string/choose_default_lang"
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
             app:defaultValue=""
+            app:iconSpaceReserved="false"
             app:key="native_lang"
             app:title="@string/choose_native_lang"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/theme_settings_header">
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/theme_settings_header">
 
         <ListPreference
             app:defaultValue="blue"
             app:entries="@array/theme_entries"
             app:entryValues="@array/theme_values"
+            app:iconSpaceReserved="false"
             app:key="theme"
             app:title="@string/choose_theme"
             app:useSimpleSummaryProvider="true" />
@@ -50,19 +66,23 @@
             app:defaultValue="system"
             app:entries="@array/night_mode_entries"
             app:entryValues="@array/night_mode_values"
+            app:iconSpaceReserved="false"
             app:key="night_mode"
             app:title="@string/night_title"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/behaviour_setting_header">
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/behaviour_setting_header">
 
 
         <ListPreference
             app:defaultValue="1"
             app:entries="@array/snooze_entries"
             app:entryValues="@array/snooze_values"
+            app:iconSpaceReserved="false"
             app:key="snooze"
             app:title="@string/choose_snooze_delay"
             app:useSimpleSummaryProvider="true" />
@@ -70,6 +90,7 @@
             app:defaultValue="15"
             app:entries="@array/notification_entries"
             app:entryValues="@array/notification_values"
+            app:iconSpaceReserved="false"
             app:key="notifications_repeat_time"
             app:title="@string/choose_notifications_repeat_time"
             app:useSimpleSummaryProvider="true" />

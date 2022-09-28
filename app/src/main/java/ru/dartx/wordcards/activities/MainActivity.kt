@@ -11,8 +11,8 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.widget.EditText
-import android.widget.Toast
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
@@ -57,19 +57,37 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     }
     private lateinit var defPreference: SharedPreferences
     private var currentTheme = ""
+    private var currentHideSignButtonState = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         defPreference = PreferenceManager.getDefaultSharedPreferences(this)
         currentTheme = defPreference.getString("theme", "blue").toString()
+        currentHideSignButtonState = defPreference.getBoolean("hide_login_button", false)
         setTheme(ThemeManager.getSelectedThemeNoBar(this))
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         nvBinding = NavHeaderBinding.bind(binding.navView.getHeaderView(0))
         setContentView(binding.root)
         startWorker()
-        googleSignIn()
         init()
-        signInLauncher()
+        val account = GoogleSignIn.getLastSignedInAccount(this)
+        if (account != null) {
+            nvBinding.btSignIn.text = getString(R.string.sign_out)
+        }
+        if (!defPreference.getBoolean(
+                "hide_login_button",
+                false
+            ) || (defPreference.getBoolean(
+                "sign_in_state",
+                false
+            ) && account == null)
+        ) {
+            nvBinding.btSignIn.visibility = View.VISIBLE
+            googleSignIn()
+            signInLauncher()
+        } else {
+            nvBinding.btSignIn.visibility = View.GONE
+        }
         showHTU()
         cardListObserver()
 
@@ -81,11 +99,14 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
 
     override fun onResume() {
         super.onResume()
+        LanguagesManager.getUsedLanguages(applicationContext)
         if (defPreference.getString(
                 "theme", "blue"
-            ) != currentTheme
+            ) != currentTheme ||
+            defPreference.getBoolean(
+                "hide_login_button", false
+            ) != currentHideSignButtonState
         ) recreate()
-        LanguagesManager.getUsedLanguages(applicationContext)
     }
 
     private fun expandActionView(): MenuItem.OnActionExpandListener {
@@ -192,25 +213,27 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
             if (it.resultCode == RESULT_OK) {
                 val acc = GoogleSignIn.getLastSignedInAccount(this)
                 if (acc != null) {
-                    val editor = defPreference.edit()
-                    editor.putString("user_name", acc.displayName)
-                    if (acc.photoUrl != null) {
-                        thread {
+                    thread {
+                        val editor = defPreference.edit()
+                        editor.putString("user_name", acc.displayName)
+                        editor.putBoolean("hide_login_button", true)
+                        editor.putBoolean("sign_in_state", true)
+                        if (acc.photoUrl != null) {
                             try {
                                 val stream =
                                     java.net.URL(acc.photoUrl!!.toString()).openStream()
                                 val realImage: Bitmap = BitmapFactory.decodeStream(stream)
                                 editor.putString("avatar", BitmapManager.encodeToBase64(realImage))
-                                editor.apply()
                             } catch (e: FileNotFoundException) {
                                 e.printStackTrace()
                             } catch (e: IOException) {
                                 e.printStackTrace()
                             }
                         }
+                        editor.apply()
                     }
-                    editor.apply()
                     nvBinding.btSignIn.text = getString(R.string.sign_out)
+                    nvBinding.btSignIn.visibility = View.GONE
                     binding.drawerLayout.close()
                 }
             }
@@ -218,27 +241,28 @@ class MainActivity : AppCompatActivity(), CardAdapter.Listener {
     }
 
     private fun googleSignIn() {
-        val account = GoogleSignIn.getLastSignedInAccount(this)
-        if (account != null) {
-            nvBinding.btSignIn.text = getString(R.string.sign_out)
-        }
         nvBinding.btSignIn.setOnClickListener {
+            Log.d("DArtX", "BtClick")
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestProfile()
                 .build()
             val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
             val tempAccount = GoogleSignIn.getLastSignedInAccount(this)
+            Log.d("DArtX", "tempAccount: $tempAccount, signInLauncher: $singInLauncher")
             if (tempAccount == null && singInLauncher != null) {
                 val signInIntent = mGoogleSignInClient.signInIntent
+                Log.d("DArtX", "signInIntent: $signInIntent")
                 singInLauncher!!.launch(signInIntent)
             } else if (tempAccount != null) {
                 mGoogleSignInClient.signOut()
                 val editor = defPreference.edit()
                 editor.putString("user_name", "")
                 editor.putString("avatar", "")
+                editor.putBoolean("hide_login_button", false)
+                editor.putBoolean("sign_in_state", false)
                 editor.apply()
                 nvBinding.btSignIn.text = getString(R.string.sign_in)
-                recreate()
+                nvBinding.btSignIn.visibility = View.VISIBLE
                 binding.drawerLayout.close()
             }
         }

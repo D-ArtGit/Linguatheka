@@ -62,8 +62,8 @@
     <string name="avatar_applied">Ваш аватар применен</string>
     <string name="choose_theme">Выбрать тему</string>
     <string name="night_title">Ночной режим</string>
-    <string name="choose_snooze_delay">Выберите время по-умолчанию, чтобы отложить напоминание</string>
-    <string name="choose_notifications_repeat_time">Выберите время автоповтора напоминания</string>
+    <string name="choose_snooze_delay">Выберите время \"Отложить\" по-умолчанию</string>
+    <string name="choose_notifications_repeat_time">Выберите частоту проверки напоминаний</string>
     <string name="one_hour">1 час</string>
     <string name="two_hours">2 часа</string>
     <string name="four_hours">4 часа</string>
@@ -77,8 +77,8 @@
     <string name="green">Зеленая</string>
     <string name="blue">Синяя</string>
     <string name="of">из</string>
-    <string name="choose_default_lang">Выберите язык для изучения по-умолчанию</string>
-    <string name="choose_native_lang">Выберите свой родной язык</string>
+    <string name="choose_default_lang">Выберите язык карточки по-умолчанию</string>
+    <string name="choose_native_lang">Выберите родной язык</string>
     <string name="languages">Языки</string>
     <string name="choose_lang_settings">Выберите свои языки в настройках</string>
     <string name="version">"Текущая версия: "</string>
@@ -87,4 +87,5 @@
     <string name="author_contacts">Артем Данилов (dartx79@gmail.com)</string>
     <string name="sign_in">Войти с Google</string>
     <string name="sign_out">Выйти из Google</string>
+    <string name="hide_login_button">Скрыть кнопку авторизации</string>
 </resources>
