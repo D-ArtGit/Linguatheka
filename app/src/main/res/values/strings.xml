@@ -107,5 +107,10 @@
     <string name="fifteen_minutes">15 minutes</string>
     <string name="thirty_minutes">30 minutes</string>
 
+    <!-- BackUp to GD -->
+    <string name="db_path" translatable="false">/data/data/ru.dartx.wordcards/databases/wordcards.db</string>
+    <string name="db_path_shm" translatable="false">/data/data/ru.dartx.wordcards/databases/wordcards.db-shm</string>
+    <string name="db_path_wal" translatable="false">/data/data/ru.dartx.wordcards/databases/wordcards.db-wal</string>
+
 
 </resources>
