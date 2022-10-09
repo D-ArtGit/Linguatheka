@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
+import androidx.preference.PreferenceManager
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.db.MainViewModel
 import ru.dartx.wordcards.dialogs.SnoozeDialog
@@ -27,14 +28,18 @@ class SnoozeDialogActivity : AppCompatActivity() {
             SnoozeDialog.showSnoozeDialog(
                 this,
                 object : SnoozeDialog.Listener {
-                    override fun onOkClick(snooze: Int) {
+                    override fun onOkClick(delay: Int) {
                         val tempCard =
                             card.copy(
                                 remindTime = TimeManager.addHours(
                                     TimeManager.getCurrentTime(),
-                                    snooze
+                                    delay
                                 )
                             )
+                        val defPreference = PreferenceManager.getDefaultSharedPreferences(this@SnoozeDialogActivity)
+                        val editor = defPreference.edit()
+                        editor.putString("snooze", delay.toString())
+                        editor.apply()
                         mainViewModel.updateCard(tempCard)
                         with(
                             NotificationManagerCompat

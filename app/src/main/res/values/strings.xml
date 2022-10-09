@@ -43,7 +43,7 @@
         4) And two weeks later, you read it aloud again three times within 10 seconds. \n
         Total: 90 seconds (70 + 10 + 10 ). With this strategy, the word and sentence are literally cemented in your memory. And the app will remind you when to repeat.
     </string>
-    <string name="donate_url" translatable="false">https://www.tinkoff.ru/rm/danilov.artem59/ZGfTL94435</string>
+    <string name="donate_url" translatable="false">https://yoomoney.ru/to/410013592247120</string>
 
 
     //Nav menu
@@ -70,7 +70,7 @@
 
     <!-- Preference Titles -->
     <string name="theme_settings_header">Themes</string>
-    <string name="behaviour_setting_header">Behaviour</string>
+    <string name="backup_setting_header">Backup and restore</string>
     <string name="about_user">About you</string>
 
     <!-- About user Preferences -->
@@ -98,8 +98,8 @@
 
     <!-- Behavior Preferences -->
 
-    <string name="choose_snooze_delay">Choose default delay for snooze</string>
-    <string name="choose_notifications_repeat_time">Choose default notifications auto repeat time</string>
+    <string name="auto_backup">Create backup ones per day</string>
+    <string name="backup_now">Create backup manually</string>
     <string name="one_hour">1 hour</string>
     <string name="two_hours">2 hours</string>
     <string name="four_hours">4 hours</string>
@@ -107,10 +107,18 @@
     <string name="fifteen_minutes">15 minutes</string>
     <string name="thirty_minutes">30 minutes</string>
 
-    <!-- BackUp to GD -->
+    <!-- BackUp to GD and Restore -->
+    <string name="path" translatable="false">/data/data/ru.dartx.wordcards/databases</string>
     <string name="db_path" translatable="false">/data/data/ru.dartx.wordcards/databases/wordcards.db</string>
     <string name="db_path_shm" translatable="false">/data/data/ru.dartx.wordcards/databases/wordcards.db-shm</string>
     <string name="db_path_wal" translatable="false">/data/data/ru.dartx.wordcards/databases/wordcards.db-wal</string>
+    <string name="file_name" translatable="false">wordcards.db</string>
+    <string name="file_shm_name" translatable="false">wordcards.db-shm</string>
+    <string name="file_wal_name" translatable="false">wordcards.db-wal</string>
+    <string name="restore_message1">Do you really want to restore cards from Google Drive?</string>
+    <string name="restore_message2">All cards that were created after last backup will be deleted.</string>
+    <string name="login_to_google">Login to Google first to restore cards</string>
+    <string name="restore_item">Restore from Google Drive</string>
 
 
 </resources>

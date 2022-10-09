@@ -75,25 +75,34 @@
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
-        app:title="@string/behaviour_setting_header">
+        app:title="@string/backup_setting_header">
 
 
-        <ListPreference
-            app:defaultValue="1"
-            app:entries="@array/snooze_entries"
-            app:entryValues="@array/snooze_values"
+        <CheckBoxPreference
+            app:defaultValue="true"
             app:iconSpaceReserved="false"
-            app:key="snooze"
-            app:title="@string/choose_snooze_delay"
+            app:key="auto_backup"
+            app:title="@string/auto_backup"
             app:useSimpleSummaryProvider="true" />
-        <ListPreference
-            app:defaultValue="15"
-            app:entries="@array/notification_entries"
-            app:entryValues="@array/notification_values"
+        <Preference
             app:iconSpaceReserved="false"
-            app:key="notifications_repeat_time"
-            app:title="@string/choose_notifications_repeat_time"
-            app:useSimpleSummaryProvider="true" />
+            app:summary=""
+            app:title="@string/backup_now">
+        <intent
+            android:action="BackupActivity"
+            android:targetClass="ru.dartx.wordcards.activities.BackupActivity"
+            android:targetPackage="ru.dartx.wordcards" />
+        </Preference>
+
+        <Preference
+            app:iconSpaceReserved="false"
+            app:summary=""
+            app:title="@string/restore_item">
+            <intent
+                android:action="RestoreActivity"
+                android:targetClass="ru.dartx.wordcards.activities.RestoreActivity"
+                android:targetPackage="ru.dartx.wordcards" />
+        </Preference>
 
     </PreferenceCategory>
 

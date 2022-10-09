@@ -3,6 +3,8 @@
     package="ru.dartx.wordcards">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:name=".activities.MainApp"
         android:allowBackup="true"
@@ -11,6 +13,21 @@
         android:roundIcon="@drawable/ic_icon_100"
         android:supportsRtl="true"
         android:theme="@style/Theme.WordCardsBlue">
+        <activity
+            android:name=".activities.BackupActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:taskAffinity=""
+            android:theme="@style/Theme.WordCardsDialog"/>
+
+        <activity
+            android:name=".activities.RestoreActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:taskAffinity=""
+            android:theme="@style/Theme.WordCardsDialog" />
         <activity
             android:name=".activities.HowToUseActivity"
             android:excludeFromRecents="true"

@@ -3,7 +3,12 @@ package ru.dartx.wordcards.activities
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import ru.dartx.wordcards.db.MainDataBase
+import ru.dartx.wordcards.workers.NotificationsWorker
+import java.util.concurrent.TimeUnit
 
 class MainApp : Application() {
     val database by lazy { MainDataBase.getDataBase(this) }
@@ -17,6 +22,21 @@ class MainApp : Application() {
                 "night" -> AppCompatDelegate.MODE_NIGHT_YES
                 else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             }
+        )
+        startWorker()
+    }
+
+    private fun startWorker() {
+        val notificationsRequest =
+            PeriodicWorkRequestBuilder<NotificationsWorker>(
+                15, TimeUnit.MINUTES
+            )
+                .addTag("notifications")
+                .build()
+        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+            "notifications",
+            ExistingPeriodicWorkPolicy.KEEP,
+            notificationsRequest
         )
     }
 }

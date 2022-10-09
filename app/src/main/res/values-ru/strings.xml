@@ -55,15 +55,15 @@
     <string name="stats_header_with_name">, Вы выучили:</string>
     <string name="title_activity_settings">Настройки</string>
     <string name="theme_settings_header">Темы</string>
-    <string name="behaviour_setting_header">Поведение</string>
+    <string name="backup_setting_header">Резервная копия</string>
     <string name="about_user">О Вас</string>
     <string name="name_title">Ваше имя</string>
     <string name="avatar">Выбрать аватар</string>
     <string name="avatar_applied">Ваш аватар применен</string>
     <string name="choose_theme">Выбрать тему</string>
     <string name="night_title">Ночной режим</string>
-    <string name="choose_snooze_delay">Выберите время \"Отложить\" по-умолчанию</string>
-    <string name="choose_notifications_repeat_time">Выберите частоту проверки напоминаний</string>
+    <string name="auto_backup">Делать резервную копию ежедневно</string>
+    <string name="backup_now">Сделать копию сейчас</string>
     <string name="one_hour">1 час</string>
     <string name="two_hours">2 часа</string>
     <string name="four_hours">4 часа</string>
@@ -88,4 +88,8 @@
     <string name="sign_in">Войти с Google</string>
     <string name="sign_out">Выйти из Google</string>
     <string name="hide_login_button">Скрыть кнопку авторизации</string>
+    <string name="restore_message1">Подтверждаете восстановление карточек из копии Google Drive?</string>
+    <string name="restore_message2">Все карточки, введенные после создания последней копии, будут удалены.</string>
+    <string name="login_to_google">Чтобы восстановить карточки сначала войдите в Google</string>
+    <string name="restore_item">Восстановить из Google Drive</string>
 </resources>

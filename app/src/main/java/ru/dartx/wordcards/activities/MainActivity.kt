@@ -22,24 +22,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.Scope
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-import com.google.api.client.googleapis.json.GoogleJsonResponseException
-import com.google.api.client.http.FileContent
-import com.google.api.client.http.javanet.NetHttpTransport
-import com.google.api.client.json.gson.GsonFactory
-import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 import ru.dartx.wordcards.BuildConfig
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.databinding.ActivityMainBinding
@@ -52,11 +40,8 @@ import ru.dartx.wordcards.settings.SettingsActivity
 import ru.dartx.wordcards.utils.BitmapManager
 import ru.dartx.wordcards.utils.LanguagesManager
 import ru.dartx.wordcards.utils.ThemeManager
-import ru.dartx.wordcards.workers.NotificationsWorker
 import java.io.FileNotFoundException
 import java.io.IOException
-import java.util.*
-import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAdapter.Listener {
@@ -83,13 +68,11 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
         binding = ActivityMainBinding.inflate(layoutInflater)
         nvBinding = NavHeaderBinding.bind(binding.navView.getHeaderView(0))
         setContentView(binding.root)
-        startWorker()
         init()
         val account = GoogleSignIn.getLastSignedInAccount(this)
         if (account != null) {
             Log.d("DArtX", "First account: ${account.account}")
             nvBinding.btSignIn.text = getString(R.string.sign_out)
-            googleDriveClient(account)
         }
         if (!defPreference.getBoolean(
                 "hide_login_button",
@@ -249,7 +232,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                         }
                         editor.apply()
                         currentHideSignButtonState = true
-                        googleDriveClient(acc)
                     }
                     nvBinding.btSignIn.text = getString(R.string.sign_out)
                     nvBinding.btSignIn.visibility = View.GONE
@@ -263,10 +245,12 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
         nvBinding.btSignIn.setOnClickListener {
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestProfile()
+                .requestEmail()
                 .requestScopes(Scope(DriveScopes.DRIVE_FILE), Scope(DriveScopes.DRIVE_APPDATA))
                 .build()
             val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
             val tempAccount = GoogleSignIn.getLastSignedInAccount(this)
+            Log.d("DArtX", "TempAcc: $tempAccount")
             if (tempAccount == null && singInLauncher != null) {
                 val signInIntent = mGoogleSignInClient.signInIntent
                 singInLauncher!!.launch(signInIntent)
@@ -282,71 +266,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                 nvBinding.btSignIn.visibility = View.VISIBLE
                 currentHideSignButtonState = false
                 binding.drawerLayout.close()
-            }
-        }
-    }
-
-    private fun googleDriveClient(account: GoogleSignInAccount) {
-        Log.d("DArtX", "Before Click")
-        val credentials = GoogleAccountCredential.usingOAuth2(this, listOf(DriveScopes.DRIVE_FILE))
-        credentials.selectedAccount = account.account
-        Log.d("DArtX", "Account: ${account.account}")
-        val googleDriveService = Drive.Builder(
-            NetHttpTransport(),
-            GsonFactory.getDefaultInstance(),
-            credentials
-        )
-            .setApplicationName(getString(R.string.app_name))
-            .build()
-        if (googleDriveService != null) {
-            nvBinding.btUpload.setOnClickListener {
-                Log.d("DArtX", "Click")
-                upload(googleDriveService)
-            }
-        }
-    }
-
-    private fun upload(googleDriveService: Drive) {
-        Log.d("DArtX", "Upload")
-        val dbPath = getString(R.string.db_path)
-        val dbPathShm = getString(R.string.db_path_shm)
-        val dbPathWal = getString(R.string.db_path_wal)
-
-        val storageFile = com.google.api.services.drive.model.File()
-        storageFile.parents = Collections.singletonList("appDataFolder")
-        storageFile.name = "wordcards.db"
-        val storageFileShm = com.google.api.services.drive.model.File()
-        storageFileShm.parents = Collections.singletonList("appDataFolder")
-        storageFileShm.name = "wordcards.db-shm"
-        val storageFileWal = com.google.api.services.drive.model.File()
-        storageFileWal.parents = Collections.singletonList("appDataFolder")
-        storageFileWal.name = "wordcards.db-wal"
-
-        val filePath = java.io.File(dbPath)
-        val filePathShm = java.io.File(dbPathShm)
-        val filePathWal = java.io.File(dbPathWal)
-        val mediaContent = FileContent("", filePath)
-        val mediaContentShm = FileContent("", filePathShm)
-        val mediaContentWal = FileContent("", filePathWal)
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                Log.d("DArtX", "Try upload")
-                val file =
-                    googleDriveService.files().create(storageFile, mediaContent).setFields("id")
-                        .execute()
-                println("Filename: " + file.id)
-                val fileShm =
-                    googleDriveService.files().create(storageFileShm, mediaContentShm).setFields("id")
-                        .execute()
-                println("Filename: " + fileShm.id)
-                val fileWal =
-                    googleDriveService.files().create(storageFileWal, mediaContentWal).setFields("id")
-                        .execute()
-                println("Filename: " + fileWal.id)
-            } catch (e: GoogleJsonResponseException) {
-                Log.d("DArtX", "Try e1")
-                println("Unable upload: " + e.details)
-                throw e
             }
         }
     }
@@ -415,23 +334,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                 )
             )
         }
-    }
-
-    private fun startWorker() {
-        val notificationsRequest =
-            PeriodicWorkRequestBuilder<NotificationsWorker>(
-                defPreference.getString(
-                    "notifications_repeat_time",
-                    "15"
-                )!!.toLong(), TimeUnit.MINUTES
-            )
-                .addTag("notifications")
-                .build()
-        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
-            "notifications",
-            ExistingPeriodicWorkPolicy.KEEP,
-            notificationsRequest
-        )
     }
 
     companion object {
