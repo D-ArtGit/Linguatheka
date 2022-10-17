@@ -1,6 +1,8 @@
 package ru.dartx.wordcards.utils
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.util.Log
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
@@ -10,7 +12,7 @@ import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import ru.dartx.wordcards.R
 
-object GoogleDriveService {
+object BackupAndRestoreManager {
     fun googleDriveClient(account: GoogleSignInAccount, context: Context): Drive? {
         Log.d("DArtX", "GoogleDriveService")
         val credentials =
@@ -24,5 +26,25 @@ object GoogleDriveService {
         )
             .setApplicationName(context.getString(R.string.app_name))
             .build()
+    }
+
+    fun isOnline(context: Context):Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val capabilities =
+            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+        if (capabilities != null) {
+            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
+                return true
+            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
+                return true
+            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
+                return true
+            }
+        }
+        return false
     }
 }

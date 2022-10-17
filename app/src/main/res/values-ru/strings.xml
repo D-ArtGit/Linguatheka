@@ -92,4 +92,11 @@
     <string name="restore_message2">Все карточки, введенные после создания последней копии, будут удалены.</string>
     <string name="login_to_google">Чтобы восстановить карточки сначала войдите в Google</string>
     <string name="restore_item">Восстановить из Google Drive</string>
+    <string name="restored_success">Карточки успешно восстановлены</string>
+    <string name="backup_success">Резервная копия успешно сохранена</string>
+    <string name="restore_failed">Восстановление карточек не удалось</string>
+    <string name="backup_failed">Сохранение резервной копии не удалось</string>
+    <string name="no_internet">Нет подключения к интернету</string>
+    <string name="restore_started">Восстановление запущено</string>
+    <string name="backup_started">Сохранение запущено</string>
 </resources>

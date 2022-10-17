@@ -10,9 +10,10 @@ import com.google.api.services.drive.Drive
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.dialogs.RestoreDialog
-import ru.dartx.wordcards.utils.GoogleDriveService
+import ru.dartx.wordcards.utils.BackupAndRestoreManager
 import java.io.FileOutputStream
 import java.io.IOException
 
@@ -35,11 +36,24 @@ class RestoreActivity : AppCompatActivity() {
                 override fun onClickOk() {
                     Log.d("DArtX", "Restore Click")
                     val googleDriveService =
-                        GoogleDriveService.googleDriveClient(account, this@RestoreActivity)
-                    if (googleDriveService != null) {
-                        restore(googleDriveService)
+                        BackupAndRestoreManager.googleDriveClient(account, this@RestoreActivity)
+                    if (googleDriveService != null
+                        && BackupAndRestoreManager.isOnline(this@RestoreActivity)
+                    ) {
+                        Toast.makeText(
+                            this@RestoreActivity,
+                            getString(R.string.restore_started),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        CoroutineScope(Dispatchers.Main).launch { restore(googleDriveService) }
                         //delete(googleDriveService)
                         finish()
+                    } else {
+                        Toast.makeText(
+                            this@RestoreActivity,
+                            getString(R.string.no_internet),
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
 
@@ -50,15 +64,16 @@ class RestoreActivity : AppCompatActivity() {
         }
     }
 
-    private fun restore(googleDriveService: Drive) {
+    private suspend fun restore(googleDriveService: Drive) {
         Log.d("DArtX", "Restore started")
-        CoroutineScope(Dispatchers.IO).launch {
+        var restoreSuccess = false
+        val success = withContext(Dispatchers.IO) {
             val files = googleDriveService.files().list()
                 .setSpaces("appDataFolder")
                 .setPageSize(10)
                 .execute()
-            if (files.files.size != 0) {
-                Log.d("DArtX", "Files exist")
+            if (files.files.size == 3) {
+                Log.d("DArtX", "Files exist: ${files.files.size}")
                 try {
                     val dir = java.io.File(getString(R.string.path))
                     if (dir.isDirectory) {
@@ -90,12 +105,29 @@ class RestoreActivity : AppCompatActivity() {
                             }
                         }
                     }
+                    restoreSuccess = true
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
 
             }
-            Log.d("DArtX", "After restore")
+            restoreSuccess
+        }
+        withContext(Dispatchers.Main) {
+            Log.d("DArtX", success.toString())
+            if (success) {
+                Toast.makeText(
+                    this@RestoreActivity,
+                    getString(R.string.restored_success),
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
+                Toast.makeText(
+                    this@RestoreActivity,
+                    getString(R.string.restore_failed),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
     }
 
