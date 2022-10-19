@@ -87,6 +87,7 @@
         <Preference
             app:iconSpaceReserved="false"
             app:summary=""
+            app:key="backup"
             app:title="@string/backup_now">
         <intent
             android:action="BackupActivity"

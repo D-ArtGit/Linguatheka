@@ -55,7 +55,7 @@
     <string name="stats_header_with_name">, Вы выучили:</string>
     <string name="title_activity_settings">Настройки</string>
     <string name="theme_settings_header">Темы</string>
-    <string name="backup_setting_header">Резервная копия</string>
+    <string name="backup_setting_header">Резервная копия в Google Drive</string>
     <string name="about_user">О Вас</string>
     <string name="name_title">Ваше имя</string>
     <string name="avatar">Выбрать аватар</string>
@@ -99,4 +99,5 @@
     <string name="no_internet">Нет подключения к интернету</string>
     <string name="restore_started">Восстановление запущено</string>
     <string name="backup_started">Сохранение запущено</string>
+    <string name="last_backup">"Последняя копия: "</string>
 </resources>

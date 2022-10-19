@@ -70,7 +70,7 @@
 
     <!-- Preference Titles -->
     <string name="theme_settings_header">Themes</string>
-    <string name="backup_setting_header">Backup and restore</string>
+    <string name="backup_setting_header">Backup and restore with Google Drive</string>
     <string name="about_user">About you</string>
 
     <!-- About user Preferences -->
@@ -126,6 +126,7 @@
     <string name="no_internet">There is no connection to Internet</string>
     <string name="restore_started">Restore started</string>
     <string name="backup_started">Backup started</string>
+    <string name="last_backup">Last copy: </string>
 
 
 </resources>

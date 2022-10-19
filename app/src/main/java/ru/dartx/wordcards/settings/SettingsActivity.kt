@@ -7,9 +7,16 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.dartx.wordcards.R
+import ru.dartx.wordcards.utils.BackupAndRestoreManager
 import ru.dartx.wordcards.utils.LanguagesManager
 import ru.dartx.wordcards.utils.ThemeManager
+import ru.dartx.wordcards.utils.TimeManager
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -58,6 +65,41 @@ class SettingsActivity : AppCompatActivity() {
                 )
                 activity?.recreate()
                 true
+            }
+            val account = GoogleSignIn.getLastSignedInAccount(requireContext())
+            if (account != null) {
+                val googleDriveService =
+                    BackupAndRestoreManager.googleDriveClient(account, requireContext())
+                if (googleDriveService != null
+                    && BackupAndRestoreManager.isOnline(requireContext())
+                ) {
+                    var backupTime = ""
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val success = withContext(Dispatchers.IO) {
+                            val files = googleDriveService.files().list()
+                                .setSpaces("appDataFolder")
+                                .setFields("files(id, name, createdTime)")
+                                .setPageSize(10)
+                                .execute()
+                            for (file in files.files) {
+                                when (file.name) {
+                                    getString(R.string.file_name) -> {
+                                        backupTime = getString(R.string.last_backup) +
+                                            TimeManager.getTimeWithZone(file.createdTime.toString())
+                                    }
+                                }
+                            }
+                            true
+                        }
+                        withContext(Dispatchers.Main) {
+                            if (success) {
+                                val backup: Preference? = findPreference("backup")
+                                backup?.summary = backupTime
+                            }
+                        }
+                    }
+
+                }
             }
         }
     }
