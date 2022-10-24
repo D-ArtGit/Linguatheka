@@ -1,27 +1,31 @@
 package ru.dartx.wordcards.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
 import android.view.Window
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.api.services.drive.Drive
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import ru.dartx.wordcards.R
+import ru.dartx.wordcards.databinding.ActivityRestoreBinding
+import ru.dartx.wordcards.db.MainDataBase
 import ru.dartx.wordcards.dialogs.RestoreDialog
 import ru.dartx.wordcards.utils.BackupAndRestoreManager
 import java.io.FileOutputStream
 import java.io.IOException
 
 class RestoreActivity : AppCompatActivity() {
+    lateinit var binding: ActivityRestoreBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
-        setContentView(R.layout.activity_restore)
+        binding = ActivityRestoreBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         Log.d("DArtX", "Start Restore")
         val account = GoogleSignIn.getLastSignedInAccount(this)
         if (account == null) {
@@ -45,15 +49,15 @@ class RestoreActivity : AppCompatActivity() {
                             getString(R.string.restore_started),
                             Toast.LENGTH_SHORT
                         ).show()
+                        binding.pbLoading.visibility = View.VISIBLE
                         CoroutineScope(Dispatchers.Main).launch { restore(googleDriveService) }
-                        //delete(googleDriveService)
-                        finish()
                     } else {
                         Toast.makeText(
                             this@RestoreActivity,
                             getString(R.string.no_internet),
                             Toast.LENGTH_LONG
                         ).show()
+                        finish()
                     }
                 }
 
@@ -72,15 +76,16 @@ class RestoreActivity : AppCompatActivity() {
                 .setSpaces("appDataFolder")
                 .setPageSize(10)
                 .execute()
-            if (files.files.size == 3) {
+            if (files.files.size == 1) {
                 Log.d("DArtX", "Files exist: ${files.files.size}")
+                MainDataBase.destroyInstance()
                 try {
                     val dir = java.io.File(getString(R.string.path))
                     if (dir.isDirectory) {
                         val children = dir.list()
                         if (children != null) {
                             for (i in children.indices) {
-                                println("File ${java.io.File(dir, children[i]).name} deleted")
+                                println("File ${java.io.File(dir, children[i]).name} deleted from db")
                                 java.io.File(dir, children[i]).delete()
                             }
                         }
@@ -92,19 +97,23 @@ class RestoreActivity : AppCompatActivity() {
                                 val outputStream = FileOutputStream(getString(R.string.db_path))
                                 googleDriveService.files().get(file.id)
                                     .executeMediaAndDownloadTo(outputStream)
+                                outputStream.close()
                             }
-                            getString(R.string.file_shm_name) -> {
+                            /*getString(R.string.file_shm_name) -> {
                                 val outputStream = FileOutputStream(getString(R.string.db_path_shm))
                                 googleDriveService.files().get(file.id)
                                     .executeMediaAndDownloadTo(outputStream)
+                                outputStream.close()
                             }
                             getString(R.string.file_wal_name) -> {
                                 val outputStream = FileOutputStream(getString(R.string.db_path_wal))
                                 googleDriveService.files().get(file.id)
                                     .executeMediaAndDownloadTo(outputStream)
-                            }
+                                outputStream.close()
+                            }*/
                         }
                     }
+                    delay(1000)
                     restoreSuccess = true
                 } catch (e: IOException) {
                     e.printStackTrace()
@@ -121,36 +130,18 @@ class RestoreActivity : AppCompatActivity() {
                     getString(R.string.restored_success),
                     Toast.LENGTH_LONG
                 ).show()
+                val i = Intent(this@RestoreActivity, MainActivity::class.java)
+                i.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+                i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(i)
             } else {
                 Toast.makeText(
                     this@RestoreActivity,
                     getString(R.string.restore_failed),
                     Toast.LENGTH_LONG
                 ).show()
+                finish()
             }
-        }
-    }
-
-    private fun delete(googleDriveService: Drive) {
-        Log.d("DArtX", "Delete started")
-        CoroutineScope(Dispatchers.IO).launch {
-            val files = googleDriveService.files().list()
-                .setSpaces("appDataFolder")
-                .setPageSize(10)
-                .execute()
-            if (files.files.size != 0) {
-                Log.d("DArtX", "Files exist")
-                try {
-                    for (file in files.files) {
-                        println("File deleted: " + file.name + " " + file.id)
-                        googleDriveService.files().delete(file.id).execute()
-                    }
-                    googleDriveService.files().emptyTrash().execute()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-            }
-            Log.d("DArtX", "After delete")
         }
     }
 }

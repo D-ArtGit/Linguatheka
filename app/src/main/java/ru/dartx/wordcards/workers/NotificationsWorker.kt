@@ -19,7 +19,6 @@ import ru.dartx.wordcards.utils.TimeManager
 
 class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
-
     override fun doWork(): Result {
         createChannel()
         createNotifications()

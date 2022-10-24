@@ -47,7 +47,6 @@
 
 
     //Nav menu
-    <string name="language_pairs">Language pairs</string>
     <string name="new_lang">Add new language</string>
     <string name="choose_lang">Choose default language</string>
     <string name="settings">Settings</string>
@@ -60,6 +59,8 @@
     <string name="of">of</string>
     <string name="sign_in">Sign with Google</string>
     <string name="sign_out">Sign out of Google</string>
+    <string name="drawer_open" translatable="false">Drawer open</string>
+    <string name="drawer_close" translatable="false">Drawer close</string>
 
     //About app
     <string name="version">Current version:</string>
@@ -70,7 +71,7 @@
 
     <!-- Preference Titles -->
     <string name="theme_settings_header">Themes</string>
-    <string name="backup_setting_header">Backup and restore with Google Drive</string>
+    <string name="backup_setting_header">Google Drive backup and restore</string>
     <string name="about_user">About you</string>
 
     <!-- About user Preferences -->

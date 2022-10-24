@@ -1,12 +1,14 @@
 package ru.dartx.wordcards.activities
 
 import android.app.Application
+import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import ru.dartx.wordcards.db.MainDataBase
+import ru.dartx.wordcards.utils.BackupAndRestoreManager
 import ru.dartx.wordcards.workers.NotificationsWorker
 import java.util.concurrent.TimeUnit
 
@@ -23,10 +25,14 @@ class MainApp : Application() {
                 else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             }
         )
-        startWorker()
+        startNotificationsWorker()
+        if (defPreference.getBoolean("auto_backup", false)) {
+            Log.d("DArtX", "Start backup worker")
+            BackupAndRestoreManager.startBackupWorker(applicationContext)
+        }
     }
 
-    private fun startWorker() {
+    private fun startNotificationsWorker() {
         val notificationsRequest =
             PeriodicWorkRequestBuilder<NotificationsWorker>(
                 15, TimeUnit.MINUTES

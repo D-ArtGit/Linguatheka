@@ -18,8 +18,10 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -33,6 +35,7 @@ import ru.dartx.wordcards.R
 import ru.dartx.wordcards.databinding.ActivityMainBinding
 import ru.dartx.wordcards.databinding.NavHeaderBinding
 import ru.dartx.wordcards.db.CardAdapter
+import ru.dartx.wordcards.db.MainDataBase
 import ru.dartx.wordcards.db.MainViewModel
 import ru.dartx.wordcards.dialogs.AboutAppDialog
 import ru.dartx.wordcards.entities.Card
@@ -40,6 +43,7 @@ import ru.dartx.wordcards.settings.SettingsActivity
 import ru.dartx.wordcards.utils.BitmapManager
 import ru.dartx.wordcards.utils.LanguagesManager
 import ru.dartx.wordcards.utils.ThemeManager
+import java.io.Closeable
 import java.io.FileNotFoundException
 import java.io.IOException
 import kotlin.concurrent.thread
@@ -52,7 +56,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
     private var textWatcher: TextWatcher? = null
     private var singInLauncher: ActivityResultLauncher<Intent>? = null
     private val mainViewModel: MainViewModel by viewModels {
-        MainViewModel.MainViewModelFactory((applicationContext as MainApp).database)
+        MainViewModel.MainViewModelFactory(MainDataBase.getDataBase(applicationContext as MainApp))
     }
     private lateinit var defPreference: SharedPreferences
     private var currentTheme = ""
@@ -109,6 +113,16 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
         ) recreate()
     }
 
+    override fun onPause() {
+        super.onPause()
+        Log.d("DArtX", "OnPause")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("DArtX", "OnDestroy")
+    }
+
     private fun expandActionView(): MenuItem.OnActionExpandListener {
         return object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(p0: MenuItem): Boolean {
@@ -135,19 +149,26 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
         adapter = CardAdapter(this@MainActivity)
         rcViewCardList.adapter = adapter
         toolbar.setNavigationOnClickListener {
-            val name = defPreference.getString("user_name", "")
-            if (!name.isNullOrEmpty()) {
-                val statsHeaderText: String = name + getString(R.string.stats_header_with_name)
-                nvBinding.tvStatsHeader.text = statsHeaderText
-            }
-            nvBinding.tvStats.text = statsCount()
-            val imageS = defPreference.getString("avatar", "")
-            if (!imageS.isNullOrEmpty()) {
-                val imageB = BitmapManager.decodeToBase64(imageS)
-                nvBinding.ivAvatar.setImageBitmap(imageB)
-            } else nvBinding.ivAvatar.setImageResource(R.drawable.ic_avatar)
             drawerLayout.openDrawer(GravityCompat.START)
         }
+        val drawerToggle = object :
+            ActionBarDrawerToggle(
+                this@MainActivity,
+                drawerLayout,
+                toolbar,
+                R.string.drawer_open,
+                R.string.drawer_close
+            ) {
+            override fun onDrawerStateChanged(newState: Int) {
+                if (newState == DrawerLayout.STATE_SETTLING) {
+                    if (!drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                        onDrawerOpen()
+                    }
+                }
+                super.onDrawerStateChanged(newState)
+            }
+        }
+        drawerLayout.addDrawerListener(drawerToggle)
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.settings -> startActivity(
@@ -204,6 +225,20 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
         edSearch = search.actionView?.findViewById(R.id.edSearch) as EditText
         search.setOnActionExpandListener(expandActionView())
         textWatcher = textWatcher()
+    }
+
+    private fun onDrawerOpen() {
+        val name = defPreference.getString("user_name", "")
+        if (!name.isNullOrEmpty()) {
+            val statsHeaderText: String = name + getString(R.string.stats_header_with_name)
+            nvBinding.tvStatsHeader.text = statsHeaderText
+        }
+        nvBinding.tvStats.text = statsCount()
+        val imageS = defPreference.getString("avatar", "")
+        if (!imageS.isNullOrEmpty()) {
+            val imageB = BitmapManager.decodeToBase64(imageS)
+            nvBinding.ivAvatar.setImageBitmap(imageB)
+        } else nvBinding.ivAvatar.setImageResource(R.drawable.ic_avatar)
     }
 
     private fun signInLauncher() {

@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.dartx.wordcards.R
+import ru.dartx.wordcards.db.MainDataBase
 import ru.dartx.wordcards.utils.BackupAndRestoreManager
 import java.util.*
 
@@ -44,6 +45,7 @@ class BackupActivity : AppCompatActivity() {
         Log.d("DArtX", "Upload")
         if (BackupAndRestoreManager.isOnline(this)) {
             Toast.makeText(this, getString(R.string.backup_started), Toast.LENGTH_SHORT).show()
+            MainDataBase.destroyInstance()
             val dbPath = getString(R.string.db_path)
             val dbPathShm = getString(R.string.db_path_shm)
             val dbPathWal = getString(R.string.db_path_wal)
@@ -79,13 +81,13 @@ class BackupActivity : AppCompatActivity() {
                         println("Filename: " + file.id)
                         if (!file.id.isNullOrEmpty()) {
                             for (uploadedFile in uploadedFiles.files) {
-                                if (uploadedFile.id != file.id && uploadedFile.name == getString(R.string.file_name)) {
+                                if (uploadedFile.id != file.id /*&& uploadedFile.name == getString(R.string.file_name)*/) {
                                     googleDriveService.files().delete(uploadedFile.id).execute()
                                     println("File deleted: " + uploadedFile.name + " " + uploadedFile.id)
                                 }
                             }
                         }
-                        val fileShm =
+                        /*val fileShm =
                             googleDriveService.files().create(storageFileShm, mediaContentShm)
                                 .setFields("id")
                                 .execute()
@@ -114,7 +116,7 @@ class BackupActivity : AppCompatActivity() {
                                     println("File deleted: " + uploadedFile.name + " " + uploadedFile.id)
                                 }
                             }
-                        }
+                        }*/
                         true
                     } catch (e: GoogleJsonResponseException) {
                         Log.d("DArtX", "Try e1")

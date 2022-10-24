@@ -2,6 +2,7 @@ package ru.dartx.wordcards.utils
 
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -29,9 +30,7 @@ object TimeManager {
     }
 
     fun getTimeWithZone(time: String): String {
-        val timeForChange = time.substring(0, time.length - 1)
-        val defDate = LocalDateTime.parse(timeForChange)
-        val zonedUTC = defDate.atZone(ZoneId.of("UTC"))
+        val zonedUTC = ZonedDateTime.parse(time)
         val zonedLocal = zonedUTC.withZoneSameInstant(ZoneId.systemDefault())
         val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
         return zonedLocal.format(formatter)

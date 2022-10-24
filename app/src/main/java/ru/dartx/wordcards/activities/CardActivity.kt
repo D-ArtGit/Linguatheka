@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
 import androidx.preference.PreferenceManager
 import ru.dartx.wordcards.R
+import ru.dartx.wordcards.db.MainDataBase
 import ru.dartx.wordcards.db.MainViewModel
 import ru.dartx.wordcards.dialogs.ConfirmDialog
 import ru.dartx.wordcards.entities.Card
@@ -30,27 +31,29 @@ import ru.dartx.wordcards.utils.TimeManager
 import ru.dartx.wordcards.utils.TimeManager.addDays
 import ru.dartx.wordcards.utils.TimeManager.getCurrentTime
 import ru.dartx.wordcards.utils.TimeManager.isTimeToSetNewRemind
-import ru.dartx.wordcards.databinding.ActivityCardBinding as ActivityCardBinding1
+import ru.dartx.wordcards.databinding.ActivityCardBinding as ActivityCardBinding
 
 class CardActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityCardBinding1
+    private lateinit var binding: ActivityCardBinding
     private var ab: ActionBar? = null
     private var card: Card? = null
     private var cardState = CARD_STATE_VIEW
     private var daysArray = intArrayOf()
     private var timeToSetRemind = false
+
     private val mainViewModel: MainViewModel by viewModels {
-        MainViewModel.MainViewModelFactory((applicationContext as MainApp).database)
+        MainViewModel.MainViewModelFactory(MainDataBase.getDataBase(applicationContext as MainApp))
     }
     private var langArray = emptyArray<Array<String>>()
     private var index = -1
     private var defLang = ""
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val defPreference = PreferenceManager.getDefaultSharedPreferences(this)
         setTheme(ThemeManager.getSelectedTheme(this))
         super.onCreate(savedInstanceState)
-        binding = ActivityCardBinding1.inflate(layoutInflater)
+        binding = ActivityCardBinding.inflate(layoutInflater)
         setContentView(binding.root)
         langArray = LanguagesManager.getLanguages()
         daysArray = resources.getIntArray(R.array.remind_days)
@@ -173,8 +176,6 @@ class CardActivity : AppCompatActivity() {
             updateCard()
         }
         if (tempCard != null) {
-            val i = Intent()
-            setResult(RESULT_OK, i)
             if (cardState == CARD_STATE_NEW) {
                 mainViewModel.insertCard(tempCard)
             } else {
@@ -253,9 +254,7 @@ class CardActivity : AppCompatActivity() {
             this, object : ConfirmDialog.Listener {
                 override fun onClick() {
                     cardState = CARD_STATE_DELETE
-                    val i = Intent()
                     mainViewModel.deleteCard(card?.id!!)
-                    setResult(RESULT_OK, i)
                     finish()
                 }
             },

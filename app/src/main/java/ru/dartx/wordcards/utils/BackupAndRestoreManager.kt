@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
+import androidx.work.*
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.http.javanet.NetHttpTransport
@@ -11,6 +12,9 @@ import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import ru.dartx.wordcards.R
+import ru.dartx.wordcards.db.MainDataBase
+import ru.dartx.wordcards.workers.BackupWorker
+import java.util.concurrent.TimeUnit
 
 object BackupAndRestoreManager {
     fun googleDriveClient(account: GoogleSignInAccount, context: Context): Drive? {
@@ -46,5 +50,23 @@ object BackupAndRestoreManager {
             }
         }
         return false
+    }
+
+    fun startBackupWorker(context: Context) {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .setRequiresBatteryNotLow(true)
+            .build()
+        val backupRequest = PeriodicWorkRequestBuilder<BackupWorker>(
+            24, TimeUnit.HOURS
+        )
+            .setConstraints(constraints)
+            .addTag("backup_cards")
+            .build()
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            "backup_cards",
+            ExistingPeriodicWorkPolicy.KEEP,
+            backupRequest
+        )
     }
 }

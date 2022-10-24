@@ -1,12 +1,14 @@
 package ru.dartx.wordcards.settings
 
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.work.WorkManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,6 +47,7 @@ class SettingsActivity : AppCompatActivity() {
             nativeLangPref.entries = langArray[1]
             val nightMode: Preference? = findPreference("night_mode")
             val themeMode: Preference? = findPreference("theme")
+            val autoBackup: Preference? = findPreference("auto_backup")
             nightMode?.setOnPreferenceChangeListener { _, value ->
                 AppCompatDelegate.setDefaultNightMode(
                     when (value as String) {
@@ -66,6 +69,16 @@ class SettingsActivity : AppCompatActivity() {
                 activity?.recreate()
                 true
             }
+            autoBackup?.setOnPreferenceChangeListener { _, newValue ->
+                if (!(newValue as Boolean)) {
+                    Log.d("DArtX", "Cancel worker")
+                    WorkManager.getInstance(requireContext()).cancelAllWorkByTag("backup_cards")
+                } else {
+                    BackupAndRestoreManager.startBackupWorker(requireContext())
+                }
+                true
+            }
+
             val account = GoogleSignIn.getLastSignedInAccount(requireContext())
             if (account != null) {
                 val googleDriveService =
@@ -85,7 +98,7 @@ class SettingsActivity : AppCompatActivity() {
                                 when (file.name) {
                                     getString(R.string.file_name) -> {
                                         backupTime = getString(R.string.last_backup) +
-                                            TimeManager.getTimeWithZone(file.createdTime.toString())
+                                                TimeManager.getTimeWithZone(file.createdTime.toString())
                                     }
                                 }
                             }
