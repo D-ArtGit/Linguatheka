@@ -2,6 +2,7 @@ package ru.dartx.wordcards.activities
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.Window
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -14,15 +15,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.dartx.wordcards.R
+import ru.dartx.wordcards.databinding.ActivityBackupBinding
 import ru.dartx.wordcards.db.MainDataBase
 import ru.dartx.wordcards.utils.BackupAndRestoreManager
 import java.util.*
 
 class BackupActivity : AppCompatActivity() {
+    lateinit var binding: ActivityBackupBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
-        setContentView(R.layout.activity_backup)
+        binding = ActivityBackupBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         Log.d("DArtX", "Start Backup")
         val account = GoogleSignIn.getLastSignedInAccount(this)
         if (account == null) {
@@ -33,9 +37,23 @@ class BackupActivity : AppCompatActivity() {
             Log.d("DArtX", "Backup account: ${account.account}")
             val googleDriveService =
                 BackupAndRestoreManager.googleDriveClient(account, this)
-            if (googleDriveService != null) {
+            if (googleDriveService != null && BackupAndRestoreManager.isOnline(this)) {
+                binding.pbLoading.visibility = View.VISIBLE
                 backup(googleDriveService)
-                //delete(googleDriveService)
+            } else {
+                when (BackupAndRestoreManager.isOnline(this)) {
+                    true -> Toast.makeText(
+                        this,
+                        getString(R.string.relogin_to_google),
+                        Toast.LENGTH_LONG
+                    )
+                        .show()
+                    false -> Toast.makeText(
+                        this,
+                        getString(R.string.no_internet),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
                 finish()
             }
         }
@@ -47,25 +65,13 @@ class BackupActivity : AppCompatActivity() {
             Toast.makeText(this, getString(R.string.backup_started), Toast.LENGTH_SHORT).show()
             MainDataBase.destroyInstance()
             val dbPath = getString(R.string.db_path)
-            val dbPathShm = getString(R.string.db_path_shm)
-            val dbPathWal = getString(R.string.db_path_wal)
 
             val storageFile = com.google.api.services.drive.model.File()
             storageFile.parents = Collections.singletonList("appDataFolder")
             storageFile.name = getString(R.string.file_name)
-            val storageFileShm = com.google.api.services.drive.model.File()
-            storageFileShm.parents = Collections.singletonList("appDataFolder")
-            storageFileShm.name = getString(R.string.file_shm_name)
-            val storageFileWal = com.google.api.services.drive.model.File()
-            storageFileWal.parents = Collections.singletonList("appDataFolder")
-            storageFileWal.name = getString(R.string.file_wal_name)
 
             val filePath = java.io.File(dbPath)
-            val filePathShm = java.io.File(dbPathShm)
-            val filePathWal = java.io.File(dbPathWal)
             val mediaContent = FileContent("", filePath)
-            val mediaContentShm = FileContent("", filePathShm)
-            val mediaContentWal = FileContent("", filePathWal)
             CoroutineScope(Dispatchers.IO).launch {
                 val success = withContext(Dispatchers.IO) {
                     try {
@@ -81,42 +87,12 @@ class BackupActivity : AppCompatActivity() {
                         println("Filename: " + file.id)
                         if (!file.id.isNullOrEmpty()) {
                             for (uploadedFile in uploadedFiles.files) {
-                                if (uploadedFile.id != file.id /*&& uploadedFile.name == getString(R.string.file_name)*/) {
+                                if (uploadedFile.id != file.id) {
                                     googleDriveService.files().delete(uploadedFile.id).execute()
                                     println("File deleted: " + uploadedFile.name + " " + uploadedFile.id)
                                 }
                             }
                         }
-                        /*val fileShm =
-                            googleDriveService.files().create(storageFileShm, mediaContentShm)
-                                .setFields("id")
-                                .execute()
-                        println("Filename: " + fileShm.id)
-                        if (!file.id.isNullOrEmpty()) {
-                            for (uploadedFile in uploadedFiles.files) {
-                                if (uploadedFile.id != fileShm.id
-                                    && uploadedFile.name == getString(R.string.file_shm_name)
-                                ) {
-                                    googleDriveService.files().delete(uploadedFile.id).execute()
-                                    println("File deleted: " + uploadedFile.name + " " + uploadedFile.id)
-                                }
-                            }
-                        }
-                        val fileWal =
-                            googleDriveService.files().create(storageFileWal, mediaContentWal)
-                                .setFields("id")
-                                .execute()
-                        println("Filename: " + fileWal.id)
-                        if (!file.id.isNullOrEmpty()) {
-                            for (uploadedFile in uploadedFiles.files) {
-                                if (uploadedFile.id != fileWal.id
-                                    && uploadedFile.name == getString(R.string.file_wal_name)
-                                ) {
-                                    googleDriveService.files().delete(uploadedFile.id).execute()
-                                    println("File deleted: " + uploadedFile.name + " " + uploadedFile.id)
-                                }
-                            }
-                        }*/
                         true
                     } catch (e: GoogleJsonResponseException) {
                         Log.d("DArtX", "Try e1")
@@ -139,6 +115,7 @@ class BackupActivity : AppCompatActivity() {
                             Toast.LENGTH_LONG
                         ).show()
                     }
+                    finish()
                 }
             }
         } else {

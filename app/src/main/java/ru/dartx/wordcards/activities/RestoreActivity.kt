@@ -3,7 +3,6 @@ package ru.dartx.wordcards.activities
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
 import android.widget.Toast
@@ -52,11 +51,18 @@ class RestoreActivity : AppCompatActivity() {
                         binding.pbLoading.visibility = View.VISIBLE
                         CoroutineScope(Dispatchers.Main).launch { restore(googleDriveService) }
                     } else {
-                        Toast.makeText(
-                            this@RestoreActivity,
-                            getString(R.string.no_internet),
-                            Toast.LENGTH_LONG
-                        ).show()
+                        when (BackupAndRestoreManager.isOnline(this@RestoreActivity)) {
+                            true -> Toast.makeText(
+                                this@RestoreActivity,
+                                getString(R.string.relogin_to_google),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            false -> Toast.makeText(
+                                this@RestoreActivity,
+                                getString(R.string.no_internet),
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                         finish()
                     }
                 }
@@ -85,40 +91,33 @@ class RestoreActivity : AppCompatActivity() {
                         val children = dir.list()
                         if (children != null) {
                             for (i in children.indices) {
-                                println("File ${java.io.File(dir, children[i]).name} deleted from db")
+                                println(
+                                    "File ${
+                                        java.io.File(
+                                            dir,
+                                            children[i]
+                                        ).name
+                                    } deleted from db"
+                                )
                                 java.io.File(dir, children[i]).delete()
                             }
                         }
                     }
                     for (file in files.files) {
-                        println("File restored: " + file.name + " " + file.id)
                         when (file.name) {
                             getString(R.string.file_name) -> {
                                 val outputStream = FileOutputStream(getString(R.string.db_path))
                                 googleDriveService.files().get(file.id)
                                     .executeMediaAndDownloadTo(outputStream)
                                 outputStream.close()
+                                println("File restored: " + file.name + " " + file.id)
                             }
-                            /*getString(R.string.file_shm_name) -> {
-                                val outputStream = FileOutputStream(getString(R.string.db_path_shm))
-                                googleDriveService.files().get(file.id)
-                                    .executeMediaAndDownloadTo(outputStream)
-                                outputStream.close()
-                            }
-                            getString(R.string.file_wal_name) -> {
-                                val outputStream = FileOutputStream(getString(R.string.db_path_wal))
-                                googleDriveService.files().get(file.id)
-                                    .executeMediaAndDownloadTo(outputStream)
-                                outputStream.close()
-                            }*/
                         }
                     }
-                    delay(1000)
                     restoreSuccess = true
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
-
             }
             restoreSuccess
         }

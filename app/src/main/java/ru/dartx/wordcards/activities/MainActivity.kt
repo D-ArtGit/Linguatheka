@@ -43,7 +43,6 @@ import ru.dartx.wordcards.settings.SettingsActivity
 import ru.dartx.wordcards.utils.BitmapManager
 import ru.dartx.wordcards.utils.LanguagesManager
 import ru.dartx.wordcards.utils.ThemeManager
-import java.io.Closeable
 import java.io.FileNotFoundException
 import java.io.IOException
 import kotlin.concurrent.thread

@@ -12,7 +12,6 @@ import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import ru.dartx.wordcards.R
-import ru.dartx.wordcards.db.MainDataBase
 import ru.dartx.wordcards.workers.BackupWorker
 import java.util.concurrent.TimeUnit
 
@@ -56,6 +55,7 @@ object BackupAndRestoreManager {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .setRequiresBatteryNotLow(true)
+            .setRequiresDeviceIdle(true)
             .build()
         val backupRequest = PeriodicWorkRequestBuilder<BackupWorker>(
             24, TimeUnit.HOURS

@@ -6,8 +6,6 @@ import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
 import ru.dartx.wordcards.databinding.AboutAppDialogBinding
-import ru.dartx.wordcards.databinding.AvatarDialogBinding
-import ru.dartx.wordcards.databinding.ConfirmDialogBinding
 
 object AboutAppDialog {
     fun showDialog(context: Context, message: String) {

@@ -2,8 +2,6 @@ package ru.dartx.wordcards.utils
 
 import android.text.Html
 import android.text.Spanned
-import android.text.style.StyleSpan
-import android.util.Log
 
 object HtmlManager {
     fun getFromHtml(text: String): Spanned {

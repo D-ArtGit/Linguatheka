@@ -44,7 +44,6 @@
         4) И еще через две недели вы снова читате его вслух три раза в течение 10 секунд.\n
         Итого: 90 секунд (70 + 10 + 10). При такой стратегии нужное слово и предложение буквально зацементируются в вашей памяти. А приложение само напомнит, когда нужно повторить.
     </string>
-    <string name="language_pairs">Пара языков</string>
     <string name="new_lang">Добавить новый язык</string>
     <string name="choose_lang">Выбрать язык по-умолчанию</string>
     <string name="settings">Настройки</string>
@@ -68,8 +67,6 @@
     <string name="two_hours">2 часа</string>
     <string name="four_hours">4 часа</string>
     <string name="eight_hours">8 часов</string>
-    <string name="fifteen_minutes">15 минут</string>
-    <string name="thirty_minutes">30 минут</string>
     <string name="night">Ночной режим</string>
     <string name="day">Дневной режим</string>
     <string name="system">Как в системе</string>
@@ -100,4 +97,5 @@
     <string name="restore_started">Восстановление запущено</string>
     <string name="backup_started">Сохранение запущено</string>
     <string name="last_backup">"Последняя копия: "</string>
+    <string name="relogin_to_google">Выйдите и войдите в Google повторно, предоставив разрешения</string>
 </resources>

@@ -1,5 +1,6 @@
 package ru.dartx.wordcards.settings
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -15,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.dartx.wordcards.R
+import ru.dartx.wordcards.activities.BackupActivity
 import ru.dartx.wordcards.utils.BackupAndRestoreManager
 import ru.dartx.wordcards.utils.LanguagesManager
 import ru.dartx.wordcards.utils.ThemeManager
@@ -36,6 +38,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
+        private var refreshSummary = true
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
             val defLangPref: ListPreference = findPreference("def_lang")!!
@@ -48,6 +51,7 @@ class SettingsActivity : AppCompatActivity() {
             val nightMode: Preference? = findPreference("night_mode")
             val themeMode: Preference? = findPreference("theme")
             val autoBackup: Preference? = findPreference("auto_backup")
+            val backup: Preference? = findPreference("backup")
             nightMode?.setOnPreferenceChangeListener { _, value ->
                 AppCompatDelegate.setDefaultNightMode(
                     when (value as String) {
@@ -78,7 +82,24 @@ class SettingsActivity : AppCompatActivity() {
                 }
                 true
             }
+            backup?.setOnPreferenceClickListener {
+                refreshSummary = true
+                val i = Intent(context, BackupActivity::class.java)
+                startActivity(i)
+                true
+            }
+        }
 
+        override fun onResume() {
+            super.onResume()
+            Log.d("DArtX", "onResume = $refreshSummary")
+            if (refreshSummary) {
+                backupSummary()
+                refreshSummary = false
+            }
+        }
+
+        private fun backupSummary() {
             val account = GoogleSignIn.getLastSignedInAccount(requireContext())
             if (account != null) {
                 val googleDriveService =
@@ -106,12 +127,11 @@ class SettingsActivity : AppCompatActivity() {
                         }
                         withContext(Dispatchers.Main) {
                             if (success) {
-                                val backup: Preference? = findPreference("backup")
-                                backup?.summary = backupTime
+                                val backupSummary: Preference? = findPreference("backup")
+                                backupSummary?.summary = backupTime
                             }
                         }
                     }
-
                 }
             }
         }

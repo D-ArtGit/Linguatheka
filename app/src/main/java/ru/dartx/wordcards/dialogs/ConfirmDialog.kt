@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
-import ru.dartx.wordcards.R
 import ru.dartx.wordcards.databinding.ConfirmDialogBinding
 
 
