@@ -85,6 +85,7 @@
         <item name="mainText">@color/white</item>
         <item name="dialogBg">@drawable/ic_dialog_dark_bg</item>
         <item name="colorSecondaryVariant">@color/sea_700</item>
+        <item name="android:windowBackground">@color/transparent</item>
     </style>
 
     <style name="Theme.WordCards.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

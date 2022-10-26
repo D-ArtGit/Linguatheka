@@ -2,23 +2,24 @@ package ru.dartx.wordcards.utils
 
 import android.content.Context
 import android.util.Pair
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.dartx.wordcards.db.MainDataBase
 import java.util.*
-import kotlin.concurrent.thread
 
 object LanguagesManager {
     private var langArray = emptyArray<Array<String>>()
     private var usedLanguages = ArrayList<String>()
 
     fun getUsedLanguages(context: Context) {
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             val database = MainDataBase.getDataBase(context).getDao()
             val usedLanguagesTmp: ArrayList<String> = database.selectLang() as ArrayList<String>
             val hashedLanguages = HashSet<String>()
             hashedLanguages.addAll(usedLanguagesTmp)
             usedLanguagesTmp.clear()
             usedLanguagesTmp.addAll(hashedLanguages)
-            usedLanguagesTmp.sort()
             if (usedLanguages.size != usedLanguagesTmp.size) {
                 langArray = emptyArray()
             }
@@ -54,6 +55,7 @@ object LanguagesManager {
                 }
             }
         }
+        finalLangList.sortBy { it.second }
         tmpLangList.sortBy { it.second }
         finalLangList.addAll(tmpLangList)
         for (i in finalLangList.indices) {

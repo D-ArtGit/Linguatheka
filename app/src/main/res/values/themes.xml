@@ -84,6 +84,7 @@
     <style name="Theme.WordCardsDialog" parent="Theme.AppCompat.DayNight.Dialog">
         <item name="mainText">@color/black</item>
         <item name="dialogBg">@drawable/ic_dialog_bg</item>
+        <item name="colorSecondaryVariant">@color/sea_700</item>
         <item name="android:windowBackground">@color/transparent</item>
     </style>
 

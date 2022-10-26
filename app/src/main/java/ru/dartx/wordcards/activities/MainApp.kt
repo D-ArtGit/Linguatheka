@@ -1,7 +1,6 @@
 package ru.dartx.wordcards.activities
 
 import android.app.Application
-import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -27,7 +26,6 @@ class MainApp : Application() {
         )
         startNotificationsWorker()
         if (defPreference.getBoolean("auto_backup", false)) {
-            Log.d("DArtX", "Start backup worker")
             BackupAndRestoreManager.startBackupWorker(applicationContext)
         }
     }

@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
@@ -74,7 +73,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
         init()
         val account = GoogleSignIn.getLastSignedInAccount(this)
         if (account != null) {
-            Log.d("DArtX", "First account: ${account.account}")
             nvBinding.btSignIn.text = getString(R.string.sign_out)
         }
         if (!defPreference.getBoolean(
@@ -102,7 +100,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
 
     override fun onResume() {
         super.onResume()
-        LanguagesManager.getUsedLanguages(applicationContext)
+        LanguagesManager.getUsedLanguages(applicationContext as MainApp)
         if (defPreference.getString(
                 "theme", "blue"
             ) != currentTheme ||
@@ -110,16 +108,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                 "hide_login_button", false
             ) != currentHideSignButtonState
         ) recreate()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d("DArtX", "OnPause")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("DArtX", "OnDestroy")
     }
 
     private fun expandActionView(): MenuItem.OnActionExpandListener {
@@ -284,7 +272,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                 .build()
             val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
             val tempAccount = GoogleSignIn.getLastSignedInAccount(this)
-            Log.d("DArtX", "TempAcc: $tempAccount")
             if (tempAccount == null && singInLauncher != null) {
                 val signInIntent = mGoogleSignInClient.signInIntent
                 singInLauncher!!.launch(signInIntent)

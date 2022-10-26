@@ -88,11 +88,17 @@
             app:iconSpaceReserved="false"
             app:summary=""
             app:key="backup"
-            app:title="@string/backup_now"/>
+            app:title="@string/backup_now">
+            <intent
+                android:action="BackupActivity"
+                android:targetClass="ru.dartx.wordcards.activities.BackupActivity"
+                android:targetPackage="ru.dartx.wordcards" />
+        </Preference>
 
         <Preference
             app:iconSpaceReserved="false"
             app:summary=""
+            app:key="restore"
             app:title="@string/restore_item">
             <intent
                 android:action="RestoreActivity"

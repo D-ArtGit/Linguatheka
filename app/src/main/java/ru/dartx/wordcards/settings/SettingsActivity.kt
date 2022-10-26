@@ -1,8 +1,6 @@
 package ru.dartx.wordcards.settings
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -16,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.dartx.wordcards.R
-import ru.dartx.wordcards.activities.BackupActivity
 import ru.dartx.wordcards.utils.BackupAndRestoreManager
 import ru.dartx.wordcards.utils.LanguagesManager
 import ru.dartx.wordcards.utils.ThemeManager
@@ -38,9 +35,9 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
-        private var refreshSummary = true
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
+            backupSummary()
             val defLangPref: ListPreference = findPreference("def_lang")!!
             val nativeLangPref: ListPreference = findPreference("native_lang")!!
             val langArray = LanguagesManager.getLanguages()
@@ -51,7 +48,6 @@ class SettingsActivity : AppCompatActivity() {
             val nightMode: Preference? = findPreference("night_mode")
             val themeMode: Preference? = findPreference("theme")
             val autoBackup: Preference? = findPreference("auto_backup")
-            val backup: Preference? = findPreference("backup")
             nightMode?.setOnPreferenceChangeListener { _, value ->
                 AppCompatDelegate.setDefaultNightMode(
                     when (value as String) {
@@ -75,27 +71,11 @@ class SettingsActivity : AppCompatActivity() {
             }
             autoBackup?.setOnPreferenceChangeListener { _, newValue ->
                 if (!(newValue as Boolean)) {
-                    Log.d("DArtX", "Cancel worker")
                     WorkManager.getInstance(requireContext()).cancelAllWorkByTag("backup_cards")
                 } else {
                     BackupAndRestoreManager.startBackupWorker(requireContext())
                 }
                 true
-            }
-            backup?.setOnPreferenceClickListener {
-                refreshSummary = true
-                val i = Intent(context, BackupActivity::class.java)
-                startActivity(i)
-                true
-            }
-        }
-
-        override fun onResume() {
-            super.onResume()
-            Log.d("DArtX", "onResume = $refreshSummary")
-            if (refreshSummary) {
-                backupSummary()
-                refreshSummary = false
             }
         }
 

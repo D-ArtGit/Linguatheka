@@ -9,7 +9,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.api.services.drive.Drive
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.databinding.ActivityRestoreBinding
 import ru.dartx.wordcards.db.MainDataBase
@@ -130,8 +133,7 @@ class RestoreActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG
                 ).show()
                 val i = Intent(this@RestoreActivity, MainActivity::class.java)
-                i.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
-                i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                i.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(i)
             } else {
                 Toast.makeText(
@@ -139,8 +141,8 @@ class RestoreActivity : AppCompatActivity() {
                     getString(R.string.restore_failed),
                     Toast.LENGTH_LONG
                 ).show()
-                finish()
             }
+            finish()
         }
     }
 }
