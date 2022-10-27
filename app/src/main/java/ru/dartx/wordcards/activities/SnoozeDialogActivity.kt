@@ -1,5 +1,6 @@
 package ru.dartx.wordcards.activities
 
+import android.os.Build
 import android.os.Bundle
 import android.view.Window
 import android.widget.Toast
@@ -22,9 +23,12 @@ class SnoozeDialogActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.activity_snooze_dialog)
-        val sCard = intent.getSerializableExtra(MainActivity.CARD_DATA)
-        if (sCard != null) {
-            val card = sCard as Card
+        val card = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getSerializableExtra(MainActivity.CARD_DATA, Card::class.java)
+        } else {
+            @Suppress("DEPRECATION") intent.getSerializableExtra(MainActivity.CARD_DATA) as Card?
+        }
+        if (card != null) {
             SnoozeDialog.showSnoozeDialog(
                 this,
                 object : SnoozeDialog.Listener {

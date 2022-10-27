@@ -3,6 +3,7 @@ package ru.dartx.wordcards.activities
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
 import android.text.style.StyleSpan
@@ -102,9 +103,12 @@ class CardActivity : AppCompatActivity() {
     }
 
     private fun getCard() {
-        val sCard = intent.getSerializableExtra(MainActivity.CARD_DATA)
-        if (sCard != null) {
-            card = sCard as Card
+        card = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getSerializableExtra(MainActivity.CARD_DATA, Card::class.java)
+        } else {
+            @Suppress("DEPRECATION") intent.getSerializableExtra(MainActivity.CARD_DATA) as Card?
+        }
+        if (card != null) {
             with(NotificationManagerCompat.from(applicationContext)) { cancel(card!!.id!!) }
             binding.apply {
                 index = langArray[0].indexOf(card!!.lang)
