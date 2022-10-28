@@ -19,7 +19,8 @@ abstract class MainDataBase : RoomDatabase() {
                     context.applicationContext,
                     MainDataBase::class.java,
                     "wordcards.db"
-                ).build()
+                ).createFromAsset("new.db")
+                    .build()
                 INSTANCE = instance
                 instance
             }
