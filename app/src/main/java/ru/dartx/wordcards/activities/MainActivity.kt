@@ -187,12 +187,19 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
             drawerLayout.close()
             true
         }
+        toolbar.inflateMenu(R.menu.top_menu)
+        val search = toolbar.menu.findItem(R.id.search)
+        edSearch = search.actionView?.findViewById(R.id.edSearch) as EditText
+        search.setOnActionExpandListener(expandActionView())
+        textWatcher = textWatcher()
         if (Build.VERSION.SDK_INT >= 33) {
             onBackInvokedDispatcher.registerOnBackInvokedCallback(
                 OnBackInvokedDispatcher.PRIORITY_DEFAULT
             ) {
                 if (binding.drawerLayout.isDrawerVisible(GravityCompat.START)) {
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
+                } else if (search.isActionViewExpanded) {
+                    search.collapseActionView()
                 } else finish()
             }
         } else {
@@ -202,16 +209,12 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                     override fun handleOnBackPressed() {
                         if (binding.drawerLayout.isDrawerVisible(GravityCompat.START)) {
                             binding.drawerLayout.closeDrawer(GravityCompat.START)
+                        } else if (search.isActionViewExpanded) {
+                            search.collapseActionView()
                         } else finish()
                     }
-
                 })
         }
-        toolbar.inflateMenu(R.menu.top_menu)
-        val search = toolbar.menu.findItem(R.id.search)
-        edSearch = search.actionView?.findViewById(R.id.edSearch) as EditText
-        search.setOnActionExpandListener(expandActionView())
-        textWatcher = textWatcher()
     }
 
     private fun onDrawerOpen() {
