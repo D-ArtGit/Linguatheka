@@ -13,6 +13,7 @@ import androidx.preference.PreferenceManager
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.dialogs.AvatarDialog
 import ru.dartx.wordcards.utils.BitmapManager
+import ru.dartx.wordcards.utils.ThemeManager
 import java.io.FileNotFoundException
 import java.io.IOException
 
@@ -20,6 +21,7 @@ class AvatarActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val defPreference = PreferenceManager.getDefaultSharedPreferences(this)
         val editor = defPreference.edit()
+        setTheme(ThemeManager.getSelectedDialogTheme(this))
         super.onCreate(savedInstanceState)
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.activity_avatar)

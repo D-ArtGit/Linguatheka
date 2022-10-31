@@ -9,6 +9,10 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.work.WorkManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.Scope
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAuthIOException
+import com.google.api.services.drive.DriveScopes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -88,22 +92,34 @@ class SettingsActivity : AppCompatActivity() {
                     && BackupAndRestoreManager.isOnline(requireContext())
                 ) {
                     var backupTime = ""
-                    CoroutineScope(Dispatchers.IO).launch {
+                    CoroutineScope(Dispatchers.Main).launch {
                         val success = withContext(Dispatchers.IO) {
-                            val files = googleDriveService.files().list()
-                                .setSpaces("appDataFolder")
-                                .setFields("files(id, name, createdTime)")
-                                .setPageSize(10)
-                                .execute()
-                            for (file in files.files) {
-                                when (file.name) {
-                                    getString(R.string.file_name) -> {
-                                        backupTime = getString(R.string.last_backup) +
-                                                TimeManager.getTimeWithZone(file.createdTime.toString())
+                            try {
+                                val files = googleDriveService.files().list()
+                                    .setSpaces("appDataFolder")
+                                    .setFields("files(id, name, createdTime)")
+                                    .setPageSize(10)
+                                    .execute()
+                                for (file in files.files) {
+                                    when (file.name) {
+                                        getString(R.string.file_name) -> {
+                                            backupTime = getString(R.string.last_backup) +
+                                                    TimeManager.getTimeWithZone(file.createdTime.toString())
+                                        }
                                     }
                                 }
+                                true
+                            } catch (e: GoogleAuthIOException) {
+                                println("Authorisation error: ${e.message}")
+                                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                    .requestProfile()
+                                    .requestEmail()
+                                    .requestScopes(Scope(DriveScopes.DRIVE_FILE), Scope(DriveScopes.DRIVE_APPDATA))
+                                    .build()
+                                val mGoogleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
+                                mGoogleSignInClient.signOut()
+                                false
                             }
-                            true
                         }
                         withContext(Dispatchers.Main) {
                             if (success) {

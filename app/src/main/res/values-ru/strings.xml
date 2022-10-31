@@ -44,7 +44,6 @@
         4) И еще через две недели вы снова читате его вслух три раза в течение 10 секунд.\n
         Итого: 90 секунд (70 + 10 + 10). При такой стратегии нужное слово и предложение буквально зацементируются в вашей памяти. А приложение само напомнит, когда нужно повторить.
     </string>
-    <string name="new_lang">Добавить новый язык</string>
     <string name="choose_lang">Выбрать язык по-умолчанию</string>
     <string name="settings">Настройки</string>
     <string name="how_to_use">Как пользоваться приложением</string>
@@ -81,7 +80,7 @@
     <string name="version">"Текущая версия: "</string>
     <string name="author">Автор:</string>
     <string name="method">Оригинальная\nметодика:</string>
-    <string name="author_contacts">Артем Данилов (dartx79@gmail.com)</string>
+    <string name="author_contacts">Артем Данилов (dartx.apps@gmail.com)</string>
     <string name="sign_in">Войти с Google</string>
     <string name="sign_out">Выйти из Google</string>
     <string name="hide_login_button">Скрыть кнопку авторизации</string>

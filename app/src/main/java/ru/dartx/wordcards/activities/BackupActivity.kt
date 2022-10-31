@@ -2,7 +2,6 @@ package ru.dartx.wordcards.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.Window
 import android.widget.Toast
@@ -19,23 +18,22 @@ import ru.dartx.wordcards.R
 import ru.dartx.wordcards.databinding.ActivityBackupBinding
 import ru.dartx.wordcards.db.MainDataBase
 import ru.dartx.wordcards.utils.BackupAndRestoreManager
+import ru.dartx.wordcards.utils.ThemeManager
 import java.util.*
 
 class BackupActivity : AppCompatActivity() {
     lateinit var binding: ActivityBackupBinding
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(ThemeManager.getSelectedDialogTheme(this))
         super.onCreate(savedInstanceState)
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         binding = ActivityBackupBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        Log.d("DArtX", "Start Backup")
         val account = GoogleSignIn.getLastSignedInAccount(this)
         if (account == null) {
-            Log.d("DArtX", "Backup account null")
             Toast.makeText(this, getString(R.string.login_to_google), Toast.LENGTH_LONG).show()
             finish()
         } else {
-            Log.d("DArtX", "Backup account: ${account.account}")
             val googleDriveService =
                 BackupAndRestoreManager.googleDriveClient(account, this)
             if (googleDriveService != null && BackupAndRestoreManager.isOnline(this)) {
@@ -61,8 +59,6 @@ class BackupActivity : AppCompatActivity() {
     }
 
     private fun backup(googleDriveService: Drive) {
-        Log.d("DArtX", "Upload")
-
         Toast.makeText(this, getString(R.string.backup_started), Toast.LENGTH_SHORT).show()
         MainDataBase.destroyInstance()
         val dbPath = getString(R.string.db_path)
@@ -73,10 +69,9 @@ class BackupActivity : AppCompatActivity() {
 
         val filePath = java.io.File(dbPath)
         val mediaContent = FileContent("", filePath)
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.Main).launch {
             val success = withContext(Dispatchers.IO) {
                 try {
-                    Log.d("DArtX", "Try upload")
                     val uploadedFiles = googleDriveService.files().list()
                         .setSpaces("appDataFolder")
                         .setPageSize(10)
@@ -96,13 +91,11 @@ class BackupActivity : AppCompatActivity() {
                     }
                     true
                 } catch (e: GoogleJsonResponseException) {
-                    Log.d("DArtX", "Try e1")
                     println("Unable upload: " + e.details)
-                    throw e
+                    false
                 }
             }
             withContext(Dispatchers.Main) {
-                Log.d("DArtX", success.toString())
                 if (success) {
                     Toast.makeText(
                         this@BackupActivity,

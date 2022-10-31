@@ -2,7 +2,6 @@ package ru.dartx.wordcards.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.Window
 import android.widget.Toast
@@ -18,29 +17,27 @@ import ru.dartx.wordcards.databinding.ActivityRestoreBinding
 import ru.dartx.wordcards.db.MainDataBase
 import ru.dartx.wordcards.dialogs.RestoreDialog
 import ru.dartx.wordcards.utils.BackupAndRestoreManager
+import ru.dartx.wordcards.utils.ThemeManager
 import java.io.FileOutputStream
 import java.io.IOException
 
 class RestoreActivity : AppCompatActivity() {
     lateinit var binding: ActivityRestoreBinding
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(ThemeManager.getSelectedDialogTheme(this))
         super.onCreate(savedInstanceState)
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         binding = ActivityRestoreBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        Log.d("DArtX", "Start Restore")
         val account = GoogleSignIn.getLastSignedInAccount(this)
         if (account == null) {
-            Log.d("DArtX", "Restore account null")
             Toast.makeText(this, getString(R.string.login_to_google), Toast.LENGTH_SHORT).show()
             finish()
         } else {
-            Log.d("DArtX", "Restore account: ${account.account}")
             val message1 = getString(R.string.restore_message1)
             val message2 = getString(R.string.restore_message2)
             RestoreDialog.showDialog(this, object : RestoreDialog.Listener {
                 override fun onClickOk() {
-                    Log.d("DArtX", "Restore Click")
                     val googleDriveService =
                         BackupAndRestoreManager.googleDriveClient(account, this@RestoreActivity)
                     if (googleDriveService != null
@@ -78,7 +75,6 @@ class RestoreActivity : AppCompatActivity() {
     }
 
     private suspend fun restore(googleDriveService: Drive) {
-        Log.d("DArtX", "Restore started")
         var restoreSuccess = false
         val success = withContext(Dispatchers.IO) {
             val files = googleDriveService.files().list()
@@ -86,7 +82,6 @@ class RestoreActivity : AppCompatActivity() {
                 .setPageSize(10)
                 .execute()
             if (files.files.size == 1) {
-                Log.d("DArtX", "Files exist: ${files.files.size}")
                 MainDataBase.destroyInstance()
                 try {
                     val dir = java.io.File(getString(R.string.path))
@@ -120,12 +115,12 @@ class RestoreActivity : AppCompatActivity() {
                     restoreSuccess = true
                 } catch (e: IOException) {
                     e.printStackTrace()
+                    restoreSuccess = false
                 }
             }
             restoreSuccess
         }
         withContext(Dispatchers.Main) {
-            Log.d("DArtX", success.toString())
             if (success) {
                 Toast.makeText(
                     this@RestoreActivity,

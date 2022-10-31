@@ -47,7 +47,9 @@
         android:gravity="center_horizontal"
         android:max="3"
         android:progress="1"
+        android:progressTint="?attr/colorSecondaryVariant"
         android:theme="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:thumbTint="?attr/colorSecondaryVariant"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvSeekBarValue" />
@@ -69,6 +71,7 @@
             android:insetLeft="6dp"
             android:insetRight="6dp"
             android:text="@android:string/cancel"
+            android:textColor="?attr/colorSecondaryVariant"
             app:cornerRadius="16dp" />
 
         <Button
@@ -80,6 +83,7 @@
             android:insetLeft="6dp"
             android:insetRight="6dp"
             android:text="@android:string/ok"
+            android:textColor="?attr/colorSecondaryVariant"
             app:cornerRadius="16dp" />
 
 

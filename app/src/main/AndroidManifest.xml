@@ -20,7 +20,7 @@
             android:exported="false"
             android:launchMode="singleInstance"
             android:taskAffinity=""
-            android:theme="@style/Theme.WordCardsDialog"/>
+            android:theme="@style/Theme.WordCardsDialogBlue"/>
 
         <activity
             android:name=".activities.RestoreActivity"
@@ -28,7 +28,7 @@
             android:exported="false"
             android:launchMode="singleInstance"
             android:taskAffinity=""
-            android:theme="@style/Theme.WordCardsDialog" />
+            android:theme="@style/Theme.WordCardsDialogBlue" />
         <activity
             android:name=".activities.HowToUseActivity"
             android:excludeFromRecents="true"
@@ -41,7 +41,7 @@
             android:exported="false"
             android:launchMode="singleInstance"
             android:taskAffinity=""
-            android:theme="@style/Theme.WordCardsDialog" />
+            android:theme="@style/Theme.WordCardsDialogBlue" />
         <activity
             android:name=".settings.SettingsActivity"
             android:exported="false"
@@ -56,7 +56,7 @@
             android:excludeFromRecents="true"
             android:launchMode="singleInstance"
             android:taskAffinity=""
-            android:theme="@style/Theme.WordCardsDialog" />
+            android:theme="@style/Theme.WordCardsDialogBlue" />
         <activity
             android:name=".activities.MainActivity"
             android:exported="true"

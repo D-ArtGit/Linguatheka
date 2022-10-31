@@ -12,6 +12,7 @@ import ru.dartx.wordcards.R
 import ru.dartx.wordcards.db.MainViewModel
 import ru.dartx.wordcards.dialogs.SnoozeDialog
 import ru.dartx.wordcards.entities.Card
+import ru.dartx.wordcards.utils.ThemeManager
 import ru.dartx.wordcards.utils.TimeManager
 
 class SnoozeDialogActivity : AppCompatActivity() {
@@ -20,6 +21,7 @@ class SnoozeDialogActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(ThemeManager.getSelectedDialogTheme(this))
         super.onCreate(savedInstanceState)
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.activity_snooze_dialog)

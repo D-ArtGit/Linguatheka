@@ -54,7 +54,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@android:string/cancel" />
+            android:text="@android:string/cancel"
+            android:textColor="?attr/colorSecondaryVariant" />
 
 
         <Button
@@ -63,7 +64,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@android:string/ok" />
+            android:text="@android:string/ok"
+            android:textColor="?attr/colorSecondaryVariant" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
