@@ -20,6 +20,7 @@
         <item name="itemBgColor">@color/dark_gray</item>
         <item name="cardBgColorSecondary">@color/dark_blue_100</item>
         <item name="dialogBg">@drawable/ic_dialog_dark_bg</item>
+        <item name="btSignIn">@drawable/common_google_signin_btn_text_dark</item>
     </style>
 
     <style name="Theme.WordCardsBlue.NoActionBar" parent="Theme.WordCardsBlue">
@@ -47,6 +48,7 @@
         <item name="itemBgColor">@color/dark_gray</item>
         <item name="cardBgColorSecondary">@color/dark_green_100</item>
         <item name="dialogBg">@drawable/ic_dialog_dark_bg</item>
+        <item name="btSignIn">@drawable/common_google_signin_btn_text_dark</item>
     </style>
 
     <style name="Theme.WordCardsGreen.NoActionBar" parent="Theme.WordCardsGreen">
@@ -74,6 +76,7 @@
         <item name="itemBgColor">@color/dark_gray</item>
         <item name="cardBgColorSecondary">@color/dark_red_100</item>
         <item name="dialogBg">@drawable/ic_dialog_dark_bg</item>
+        <item name="btSignIn">@drawable/common_google_signin_btn_text_dark</item>
     </style>
 
     <style name="Theme.WordCardsRed.NoActionBar" parent="Theme.WordCardsRed">

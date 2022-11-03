@@ -9,4 +9,5 @@
     <attr name="cardBgColorSecondary" format="color"/>
     <attr name="btnBgColorSecondary" format="color"/>
     <attr name="dialogBg" format="reference"/>
+    <attr name="btSignIn" format="reference"/>
 </resources>
