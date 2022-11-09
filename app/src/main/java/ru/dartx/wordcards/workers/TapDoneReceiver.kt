@@ -3,6 +3,7 @@ package ru.dartx.wordcards.workers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.widget.Toast
 import androidx.core.app.NotificationManagerCompat
 import kotlinx.coroutines.CoroutineScope
@@ -20,9 +21,12 @@ class TapDoneReceiver : BroadcastReceiver(), CoroutineScope {
     private var job = Job()
     override fun onReceive(context: Context, intent: Intent?) {
         val database = MainDataBase.getDataBase(context)
-        val sCard = intent?.getSerializableExtra(MainActivity.CARD_DATA)
-        if (sCard != null) {
-            val card = sCard as Card
+        val card = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent?.getSerializableExtra(MainActivity.CARD_DATA, Card::class.java)
+        } else {
+            @Suppress("DEPRECATION") intent?.getSerializableExtra(MainActivity.CARD_DATA) as Card?
+        }
+        if (card != null) {
             val step = card.step + 1
             val daysArray = context.resources.getIntArray(R.array.remind_days)
             val remindTime = if (step <= 8) {
