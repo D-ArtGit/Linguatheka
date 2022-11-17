@@ -33,7 +33,7 @@ class MainApp : Application() {
     private fun startNotificationsWorker() {
         val notificationsRequest =
             PeriodicWorkRequestBuilder<NotificationsWorker>(
-                15, TimeUnit.MINUTES
+                30, TimeUnit.MINUTES, 5, TimeUnit.MINUTES
             )
                 .addTag("notifications")
                 .build()

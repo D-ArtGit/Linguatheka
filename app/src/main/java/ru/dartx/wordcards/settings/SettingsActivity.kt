@@ -77,7 +77,7 @@ class SettingsActivity : AppCompatActivity() {
                 if (!(newValue as Boolean)) {
                     WorkManager.getInstance(requireContext()).cancelAllWorkByTag("backup_cards")
                 } else {
-                    BackupAndRestoreManager.startBackupWorker(requireContext())
+                    BackupAndRestoreManager.startBackupWorker(requireContext().applicationContext)
                 }
                 true
             }

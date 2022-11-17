@@ -58,7 +58,7 @@ object BackupAndRestoreManager {
             .setRequiresDeviceIdle(true)
             .build()
         val backupRequest = PeriodicWorkRequestBuilder<BackupWorker>(
-            24, TimeUnit.HOURS
+            24, TimeUnit.HOURS, 1, TimeUnit.HOURS
         )
             .setConstraints(constraints)
             .addTag("backup_cards")
