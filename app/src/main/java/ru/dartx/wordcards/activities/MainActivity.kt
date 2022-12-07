@@ -285,6 +285,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                 editor.putString("avatar", "")
                 editor.putBoolean("hide_login_button", false)
                 editor.putBoolean("sign_in_state", false)
+                editor.putBoolean("auto_backup", false)
                 editor.apply()
                 nvBinding.btSignIn.text = getString(R.string.sign_in)
                 nvBinding.btSignIn.visibility = View.VISIBLE

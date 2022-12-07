@@ -79,7 +79,7 @@
 
 
         <CheckBoxPreference
-            app:defaultValue="true"
+            app:defaultValue="false"
             app:iconSpaceReserved="false"
             app:key="auto_backup"
             app:title="@string/auto_backup"

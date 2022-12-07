@@ -111,7 +111,7 @@
     <string name="file_name" translatable="false">wordcards.db</string>
     <string name="restore_message1">Do you really want to restore cards from Google Drive?</string>
     <string name="restore_message2">All cards that were created after last backup will be deleted.</string>
-    <string name="login_to_google">Login to Google first to restore cards</string>
+    <string name="login_to_google">Login to Google first to backup and restore cards</string>
     <string name="relogin_to_google">Re-login to Google and accept all permissions</string>
     <string name="restore_item">Restore from Google Drive</string>
     <string name="restored_success">Cards have been restored successfully</string>

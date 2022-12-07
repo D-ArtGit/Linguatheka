@@ -2,6 +2,7 @@ package ru.dartx.wordcards.settings
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.ListPreference
@@ -74,12 +75,24 @@ class SettingsActivity : AppCompatActivity() {
                 true
             }
             autoBackup?.setOnPreferenceChangeListener { _, newValue ->
-                if (!(newValue as Boolean)) {
-                    WorkManager.getInstance(requireContext()).cancelAllWorkByTag("backup_cards")
+                var result = true
+                if (newValue as Boolean) {
+                    val account = GoogleSignIn.getLastSignedInAccount(requireContext())
+                    if (account == null) {
+                        Toast.makeText(
+                            requireActivity(),
+                            getString(R.string.login_to_google),
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
+                        result = false
+                    } else {
+                        BackupAndRestoreManager.startBackupWorker(requireContext().applicationContext)
+                    }
                 } else {
-                    BackupAndRestoreManager.startBackupWorker(requireContext().applicationContext)
+                    WorkManager.getInstance(requireContext()).cancelAllWorkByTag("backup_cards")
                 }
-                true
+                result
             }
         }
 
@@ -111,12 +124,17 @@ class SettingsActivity : AppCompatActivity() {
                                 true
                             } catch (e: GoogleAuthIOException) {
                                 println("Authorisation error: ${e.message}")
-                                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                                    .requestProfile()
-                                    .requestEmail()
-                                    .requestScopes(Scope(DriveScopes.DRIVE_FILE), Scope(DriveScopes.DRIVE_APPDATA))
-                                    .build()
-                                val mGoogleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
+                                val gso =
+                                    GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                        .requestProfile()
+                                        .requestEmail()
+                                        .requestScopes(
+                                            Scope(DriveScopes.DRIVE_FILE),
+                                            Scope(DriveScopes.DRIVE_APPDATA)
+                                        )
+                                        .build()
+                                val mGoogleSignInClient =
+                                    GoogleSignIn.getClient(requireContext(), gso)
                                 mGoogleSignInClient.signOut()
                                 false
                             }

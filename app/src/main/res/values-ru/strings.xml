@@ -12,7 +12,7 @@
     <string name="translation">Перевод</string>
     <string name="save">Сохранить</string>
     <string name="edit">Редактировать</string>
-    <string name="bold">Выделение</string>
+    <string name="bold">Выделить</string>
     <string name="delete">Удалить</string>
     <string name="reset_progress">Сбросить прогресс</string>
     <string name="repeat_card">Повторить карточку</string>
@@ -86,7 +86,7 @@
     <string name="hide_login_button">Скрыть кнопку авторизации</string>
     <string name="restore_message1">Подтверждаете восстановление карточек из копии Google Drive?</string>
     <string name="restore_message2">Все карточки, введенные после создания последней копии, будут удалены.</string>
-    <string name="login_to_google">Чтобы восстановить карточки сначала войдите в Google</string>
+    <string name="login_to_google">Чтобы сохранять и восстанавливать карточки войдите в Google</string>
     <string name="restore_item">Восстановить из Google Drive</string>
     <string name="restored_success">Карточки успешно восстановлены</string>
     <string name="backup_success">Резервная копия успешно сохранена</string>

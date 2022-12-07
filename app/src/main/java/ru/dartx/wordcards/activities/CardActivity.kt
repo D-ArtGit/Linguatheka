@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.style.StyleSpan
 import android.util.Log
+import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -129,45 +130,10 @@ class CardActivity : AppCompatActivity() {
 
     private fun fieldState() = with(binding) {
         when (cardState) {
-            CARD_STATE_CHECK -> {
-                btSave.setImageResource(R.drawable.ic_check)
-            }
-            CARD_STATE_VIEW -> {
-                btSave.visibility = View.GONE
-            }
-            else -> {
-                val spinner = spLang
-                val spinnerArrayAdapter =
-                    ArrayAdapter(this@CardActivity, R.layout.spinner, langArray[1])
-                spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
-                spinner.adapter = spinnerArrayAdapter
-                index = langArray[0].indexOf(defLang)
-                spinner.setSelection(index)
-                spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        index = position
-                        tvLang.text = langArray[1][index]
-                    }
+            CARD_STATE_CHECK -> btSave.setImageResource(R.drawable.ic_check)
 
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-
-                    }
-
-                }
-                tvCardWord.visibility = View.GONE
-                tvCardExamples.visibility = View.GONE
-                tvCardTranslation.visibility = View.GONE
-                tvLang.visibility = View.GONE
-                edWord.visibility = View.VISIBLE
-                edExamples.visibility = View.VISIBLE
-                edTranslation.visibility = View.VISIBLE
-                spLang.visibility = View.VISIBLE
-            }
+            CARD_STATE_VIEW -> btSave.visibility = View.GONE
+            else -> editScreenState()
         }
     }
 
@@ -264,48 +230,13 @@ class CardActivity : AppCompatActivity() {
             },
             message
         )
-
-
     }
 
     private fun editCardState() {
         cardState = CARD_STATE_EDIT
         invalidateOptionsMenu()
         ab?.setTitle(R.string.edit_card)
-        binding.apply {
-            val spinner = spLang
-            val spinnerArrayAdapter =
-                ArrayAdapter(this@CardActivity, R.layout.spinner, langArray[1])
-            spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
-            spinner.adapter = spinnerArrayAdapter
-            spinner.setSelection(index)
-            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    index = position
-                    tvLang.text = langArray[1][index]
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-
-                }
-
-            }
-            btSave.visibility = View.VISIBLE
-            btSave.setImageResource(R.drawable.ic_save)
-            tvCardWord.visibility = View.GONE
-            tvCardExamples.visibility = View.GONE
-            tvCardTranslation.visibility = View.GONE
-            tvLang.visibility = View.GONE
-            edWord.visibility = View.VISIBLE
-            edExamples.visibility = View.VISIBLE
-            edTranslation.visibility = View.VISIBLE
-            spLang.visibility = View.VISIBLE
-        }
+        editScreenState()
     }
 
     private fun resetCardState() {
@@ -360,6 +291,104 @@ class CardActivity : AppCompatActivity() {
             CARD_STATE_NEW -> ab?.setTitle(R.string.fill_card)
             CARD_STATE_VIEW -> ab?.setTitle(R.string.view_card)
         }
+    }
+
+    private fun editScreenState() {
+        binding.apply {
+            val spinner = spLang
+            val spinnerArrayAdapter =
+                ArrayAdapter(this@CardActivity, R.layout.spinner, langArray[1])
+            spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
+            spinner.adapter = spinnerArrayAdapter
+            index = langArray[0].indexOf(defLang)
+            spinner.setSelection(index)
+            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    index = position
+                    tvLang.text = langArray[1][index]
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+
+                }
+            }
+            btSave.visibility = View.VISIBLE
+            btSave.setImageResource(R.drawable.ic_save)
+            tvCardWord.visibility = View.GONE
+            tvCardExamples.visibility = View.GONE
+            tvCardTranslation.visibility = View.GONE
+            tvLang.visibility = View.GONE
+            edWord.visibility = View.VISIBLE
+            edExamples.visibility = View.VISIBLE
+            edTranslation.visibility = View.VISIBLE
+            spLang.visibility = View.VISIBLE
+            edExamples.customSelectionActionModeCallback = getActionModeCallback()
+            edTranslation.customSelectionActionModeCallback = getActionModeCallback()
+        }
+    }
+
+    private fun getActionModeCallback(): ActionMode.Callback {
+        return object : ActionMode.Callback {
+            override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+                return if (mode != null) {
+                    mode.menuInflater.inflate(R.menu.selected_text_menu, menu)
+                    true
+                } else false
+            }
+
+            override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+                return if (menu != null) {
+                    selectedTextActionPrepare(menu)
+                    true
+                } else false
+            }
+
+            override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
+                return if (item!!.itemId == R.id.bold) {
+                    setBoldForSelectedText()
+                    true
+                } else false
+            }
+
+            override fun onDestroyActionMode(mode: ActionMode?) {
+
+            }
+        }
+    }
+
+    private fun selectedTextActionPrepare(menu: Menu) {
+        while (menu.getItem(0).order < 50) {
+            val item = menu.getItem(0)
+            menu.removeItem(item.itemId)
+            when (item.itemId) {
+                android.R.id.paste -> addMenuItem(menu, item.groupId, item.itemId, 52, item.title)
+                android.R.id.copy -> addMenuItem(menu, item.groupId, item.itemId, 53, item.title)
+                android.R.id.cut -> addMenuItem(menu, item.groupId, item.itemId, 54, item.title)
+                android.R.id.textAssist -> addMenuItem(
+                    menu,
+                    item.groupId,
+                    item.itemId,
+                    55,
+                    item.title
+                )
+                else -> addMenuItem(menu, item.groupId, item.itemId, 100 + item.order, item.title)
+            }
+        }
+    }
+
+    private fun addMenuItem(
+        menu: Menu,
+        groupId: Int,
+        itemId: Int,
+        order: Int,
+        title: CharSequence?
+    ) {
+        menu.add(groupId, itemId, order, title)
     }
 
     private fun showLangSettings(defPreference: SharedPreferences) {
