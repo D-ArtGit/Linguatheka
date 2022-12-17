@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
 import androidx.preference.PreferenceManager
 import ru.dartx.wordcards.R
+import ru.dartx.wordcards.db.MainDataBase
 import ru.dartx.wordcards.db.MainViewModel
 import ru.dartx.wordcards.dialogs.SnoozeDialog
 import ru.dartx.wordcards.entities.Card
@@ -17,7 +18,7 @@ import ru.dartx.wordcards.utils.TimeManager
 
 class SnoozeDialogActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModels {
-        MainViewModel.MainViewModelFactory((applicationContext as MainApp).database)
+        MainViewModel.MainViewModelFactory(MainDataBase.getDataBase(applicationContext as MainApp))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

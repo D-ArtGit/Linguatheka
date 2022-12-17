@@ -1,5 +1,7 @@
 package ru.dartx.wordcards.activities
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
@@ -11,6 +13,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.OnBackPressedCallback
@@ -27,8 +30,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.Scope
 import com.google.api.services.drive.DriveScopes
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.*
 import ru.dartx.wordcards.BuildConfig
 import ru.dartx.wordcards.R
 import ru.dartx.wordcards.databinding.ActivityMainBinding
@@ -44,7 +46,7 @@ import ru.dartx.wordcards.utils.LanguagesManager
 import ru.dartx.wordcards.utils.ThemeManager
 import java.io.FileNotFoundException
 import java.io.IOException
-import kotlin.concurrent.thread
+import java.net.URL
 
 class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAdapter.Listener {
     private lateinit var binding: ActivityMainBinding
@@ -53,6 +55,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
     private var adapter: CardAdapter? = null
     private var textWatcher: TextWatcher? = null
     private var singInLauncher: ActivityResultLauncher<Intent>? = null
+    private var width = 0
     private val mainViewModel: MainViewModel by viewModels {
         MainViewModel.MainViewModelFactory(MainDataBase.getDataBase(applicationContext as MainApp))
     }
@@ -71,24 +74,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
         nvBinding = NavHeaderBinding.bind(binding.navView.getHeaderView(0))
         setContentView(binding.root)
         init()
-        val account = GoogleSignIn.getLastSignedInAccount(this)
-        if (account != null) {
-            nvBinding.btSignIn.text = getString(R.string.sign_out)
-        }
-        if (!defPreference.getBoolean(
-                "hide_login_button",
-                false
-            ) || (defPreference.getBoolean(
-                "sign_in_state",
-                false
-            ) && account == null)
-        ) {
-            nvBinding.btSignIn.visibility = View.VISIBLE
-            googleSignIn()
-            signInLauncher()
-        } else {
-            nvBinding.btSignIn.visibility = View.GONE
-        }
+        width = resources.displayMetrics.widthPixels
         showHTU()
         cardListObserver()
 
@@ -113,6 +99,12 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
     private fun expandActionView(): MenuItem.OnActionExpandListener {
         return object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(p0: MenuItem): Boolean {
+                edSearch?.width = width
+                edSearch?.post {
+                    edSearch?.requestFocus()
+                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.showSoftInput(edSearch, InputMethodManager.SHOW_IMPLICIT)
+                }
                 edSearch?.addTextChangedListener(textWatcher)
                 searchListObserver()
                 mainViewModel.allCards.removeObservers(this@MainActivity)
@@ -126,6 +118,13 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                 invalidateOptionsMenu()
                 mainViewModel.foundCards.removeObservers(this@MainActivity)
                 cardListObserver()
+                edSearch?.post {
+                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(
+                        currentFocus?.windowToken,
+                        InputMethodManager.HIDE_NOT_ALWAYS
+                    )
+                }
                 return true
             }
         }
@@ -215,6 +214,24 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                     }
                 })
         }
+        val account = GoogleSignIn.getLastSignedInAccount(this@MainActivity)
+        if (account != null) {
+            nvBinding.btSignIn.text = getString(R.string.sign_out)
+        }
+        if (!defPreference.getBoolean(
+                "hide_login_button",
+                false
+            ) || (defPreference.getBoolean(
+                "sign_in_state",
+                false
+            ) && account == null)
+        ) {
+            nvBinding.btSignIn.visibility = View.VISIBLE
+            googleSignIn()
+            signInLauncher()
+        } else {
+            nvBinding.btSignIn.visibility = View.GONE
+        }
     }
 
     private fun onDrawerOpen() {
@@ -238,17 +255,21 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
             if (it.resultCode == RESULT_OK) {
                 val acc = GoogleSignIn.getLastSignedInAccount(this)
                 if (acc != null) {
-                    thread {
+                    launch {
                         val editor = defPreference.edit()
                         editor.putString("user_name", acc.displayName)
                         editor.putBoolean("hide_login_button", true)
                         editor.putBoolean("sign_in_state", true)
                         if (acc.photoUrl != null) {
                             try {
-                                val stream =
-                                    java.net.URL(acc.photoUrl!!.toString()).openStream()
-                                val realImage: Bitmap = BitmapFactory.decodeStream(stream)
-                                editor.putString("avatar", BitmapManager.encodeToBase64(realImage))
+                                withContext(Dispatchers.IO) {
+                                    val stream = URL(acc.photoUrl!!.toString()).openStream()
+                                    val realImage: Bitmap = BitmapFactory.decodeStream(stream)
+                                    editor.putString(
+                                        "avatar",
+                                        BitmapManager.encodeToBase64(realImage)
+                                    )
+                                }
                             } catch (e: FileNotFoundException) {
                                 e.printStackTrace()
                             } catch (e: IOException) {
@@ -340,7 +361,27 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
 
             }
 
+            @SuppressLint("ClickableViewAccessibility")
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (edSearch != null) {
+                    if (!s.isNullOrEmpty()) {
+                        edSearch!!.setCompoundDrawablesWithIntrinsicBounds(
+                            0,
+                            0,
+                            R.drawable.ic_close,
+                            0
+                        )
+                        val iconSize = edSearch!!.compoundDrawables[2].bounds.width()
+                        edSearch!!.setOnTouchListener { _, motionEvent ->
+                            if (motionEvent.rawX >= width - iconSize) {
+                                edSearch!!.setText("")
+                                true
+                            } else false
+                        }
+                    } else {
+                        edSearch!!.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+                    }
+                }
                 mainViewModel.searchCard("%$s%")
             }
 

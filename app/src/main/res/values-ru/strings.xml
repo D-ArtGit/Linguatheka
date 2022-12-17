@@ -80,7 +80,7 @@
     <string name="version">"Текущая версия: "</string>
     <string name="author">Автор:</string>
     <string name="method">Оригинальная\nметодика:</string>
-    <string name="author_contacts">Артем Данилов (dartx.apps@gmail.com)</string>
+    <string name="author_contacts">Артем Данилов\n(dartx.apps@gmail.com)</string>
     <string name="sign_in">Войти с Google</string>
     <string name="sign_out">Выйти из Google</string>
     <string name="hide_login_button">Скрыть кнопку авторизации</string>
