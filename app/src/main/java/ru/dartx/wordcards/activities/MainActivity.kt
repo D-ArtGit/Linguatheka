@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -74,7 +75,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
         nvBinding = NavHeaderBinding.bind(binding.navView.getHeaderView(0))
         setContentView(binding.root)
         init()
-        width = resources.displayMetrics.widthPixels
         showHTU()
         cardListObserver()
 
@@ -96,9 +96,16 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
         ) recreate()
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        width = resources.displayMetrics.widthPixels
+        edSearch?.width = width
+    }
+
     private fun expandActionView(): MenuItem.OnActionExpandListener {
         return object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(p0: MenuItem): Boolean {
+                width = resources.displayMetrics.widthPixels
                 edSearch?.width = width
                 edSearch?.post {
                     edSearch?.requestFocus()
@@ -114,6 +121,9 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
 
             override fun onMenuItemActionCollapse(p0: MenuItem): Boolean {
                 edSearch?.removeTextChangedListener(textWatcher)
+                edSearch?.setCompoundDrawablesWithIntrinsicBounds(
+                    0, 0, 0, 0
+                )
                 edSearch?.setText("")
                 invalidateOptionsMenu()
                 mainViewModel.foundCards.removeObservers(this@MainActivity)
@@ -379,7 +389,9 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                             } else false
                         }
                     } else {
-                        edSearch!!.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+                        edSearch!!.setCompoundDrawablesWithIntrinsicBounds(
+                            0, 0, 0, 0
+                        )
                     }
                 }
                 mainViewModel.searchCard("%$s%")
