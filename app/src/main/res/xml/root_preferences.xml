@@ -18,8 +18,8 @@
             app:title="@string/avatar">
             <intent
                 android:action="AvatarActivity"
-                android:targetClass="ru.dartx.wordcards.activities.AvatarActivity"
-                android:targetPackage="ru.dartx.wordcards" />
+                android:targetClass="ru.dartx.linguatheka.activities.AvatarActivity"
+                android:targetPackage="ru.dartx.linguatheka" />
         </Preference>
 
         <CheckBoxPreference
@@ -91,8 +91,8 @@
             app:title="@string/backup_now">
             <intent
                 android:action="BackupActivity"
-                android:targetClass="ru.dartx.wordcards.activities.BackupActivity"
-                android:targetPackage="ru.dartx.wordcards" />
+                android:targetClass="ru.dartx.linguatheka.activities.BackupActivity"
+                android:targetPackage="ru.dartx.linguatheka" />
         </Preference>
 
         <Preference
@@ -102,8 +102,8 @@
             app:title="@string/restore_item">
             <intent
                 android:action="RestoreActivity"
-                android:targetClass="ru.dartx.wordcards.activities.RestoreActivity"
-                android:targetPackage="ru.dartx.wordcards" />
+                android:targetClass="ru.dartx.linguatheka.activities.RestoreActivity"
+                android:targetPackage="ru.dartx.linguatheka" />
         </Preference>
 
     </PreferenceCategory>

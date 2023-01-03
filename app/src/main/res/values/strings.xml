@@ -5,7 +5,7 @@
     <string name="enter_word">Enter word</string>
     <string name="word">Word</string>
     <string name="phrases">Phrases</string>
-    <string name="word_usage_examples">Word usage examples</string>
+    <string name="word_usage_examples">Examples</string>
     <string name="examples_hint">Enter one or few sentences, word usage examples</string>
     <string name="enter_translation">Enter translation</string>
     <string name="translation">Translation</string>
