@@ -1,13 +1,16 @@
 <resources>
-    <string name="app_name">Linguatheka</string>
+    <string name="app_name">Linguatheka Beta</string>
     <string name="create">Create</string>
     <string name="search">Search</string>
     <string name="enter_word">Enter word</string>
     <string name="word">Word</string>
     <string name="phrases">Phrases</string>
     <string name="word_usage_examples">Examples</string>
-    <string name="examples_hint">Enter one or few sentences, word usage examples</string>
-    <string name="enter_translation">Enter translation</string>
+    <string name="example">Example</string>
+    <string name="add_example">Add example</string>
+    <string name="text">Text</string>
+    <string name="no_examples">Enter at least one examples</string>
+    <string name="no_example">Enter example text</string>
     <string name="translation">Translation</string>
     <string name="save">Save</string>
     <string name="edit">Edit</string>
@@ -106,9 +109,9 @@
     <string name="eight_hours">8 hours</string>
 
     <!-- BackUp to GD and Restore -->
-    <string name="path" translatable="false">/data/data/ru.dartx.wordcards/databases</string>
-    <string name="db_path" translatable="false">/data/data/ru.dartx.wordcards/databases/wordcards.db</string>
-    <string name="file_name" translatable="false">wordcards.db</string>
+    <string name="path" translatable="false">/data/data/ru.dartx.linguatheka/databases</string>
+    <string name="db_path" translatable="false">/data/data/ru.dartx.linguatheka/databases/linguatheka.db</string>
+    <string name="file_name" translatable="false">linguatheka.db</string>
     <string name="restore_message1">Do you really want to restore cards from Google Drive?</string>
     <string name="restore_message2">All cards that were created after last backup will be deleted.</string>
     <string name="login_to_google">Login to Google first to backup and restore cards</string>

@@ -6,7 +6,7 @@
         <item name="colorPrimaryVariant">@color/blue_700</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/sea_200</item>
+        <item name="colorSecondary">@color/sea_500</item>
         <item name="colorSecondaryVariant">@color/sea_700</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
@@ -34,7 +34,7 @@
         <item name="colorPrimaryVariant">@color/green_700</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondary">@color/teal_500</item>
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
@@ -62,7 +62,7 @@
         <item name="colorPrimaryVariant">@color/red_700</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/rose_200</item>
+        <item name="colorSecondary">@color/rose_500</item>
         <item name="colorSecondaryVariant">@color/rose_700</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->

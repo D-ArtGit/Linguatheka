@@ -15,12 +15,8 @@ data class Card(
     val word: String,
     @ColumnInfo(name = "examples")
     val examples: String,
-    @ColumnInfo(name = "examples_html")
-    val examples_html: String,
     @ColumnInfo(name = "translation")
     val translation: String,
-    @ColumnInfo(name = "translation_html")
-    val translation_html: String,
     @ColumnInfo(name = "createTime")
     val createTime: String,
     @ColumnInfo(name = "remindTime")

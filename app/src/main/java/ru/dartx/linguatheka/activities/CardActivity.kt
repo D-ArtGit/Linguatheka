@@ -1,17 +1,15 @@
 package ru.dartx.linguatheka.activities
 
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
-import android.text.Spannable
-import android.text.style.StyleSpan
-import android.util.Log
-import android.view.ActionMode
+import android.text.Spanned
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -20,28 +18,31 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.*
 import ru.dartx.linguatheka.R
+import ru.dartx.linguatheka.databinding.ActivityCardBinding
+import ru.dartx.linguatheka.db.ExampleAdapter
 import ru.dartx.linguatheka.db.MainDataBase
 import ru.dartx.linguatheka.db.MainViewModel
 import ru.dartx.linguatheka.dialogs.ConfirmDialog
 import ru.dartx.linguatheka.entities.Card
+import ru.dartx.linguatheka.entities.Example
+import ru.dartx.linguatheka.model.ExampleItem
 import ru.dartx.linguatheka.settings.SettingsActivity
-import ru.dartx.linguatheka.utils.HtmlManager
-import ru.dartx.linguatheka.utils.LanguagesManager
-import ru.dartx.linguatheka.utils.ThemeManager
-import ru.dartx.linguatheka.utils.TimeManager
+import ru.dartx.linguatheka.utils.*
 import ru.dartx.linguatheka.utils.TimeManager.addDays
 import ru.dartx.linguatheka.utils.TimeManager.getCurrentTime
 import ru.dartx.linguatheka.utils.TimeManager.isTimeToSetNewRemind
-import ru.dartx.linguatheka.databinding.ActivityCardBinding as ActivityCardBinding
 
-class CardActivity : AppCompatActivity() {
+class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     private lateinit var binding: ActivityCardBinding
     private var ab: ActionBar? = null
     private var card: Card? = null
     private var cardState = CARD_STATE_VIEW
     private var daysArray = intArrayOf()
     private var timeToSetRemind = false
+    private var adapter: ExampleAdapter? = null
 
     private val mainViewModel: MainViewModel by viewModels {
         MainViewModel.MainViewModelFactory(MainDataBase.getDataBase(applicationContext as MainApp))
@@ -49,6 +50,8 @@ class CardActivity : AppCompatActivity() {
     private var langArray = emptyArray<Array<String>>()
     private var index = -1
     private var defLang = ""
+    private val exampleList: ArrayList<ExampleItem> = arrayListOf()
+    private var requestFocusOnAddedExample = true
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,23 +65,20 @@ class CardActivity : AppCompatActivity() {
         defLang = defPreference.getString("def_lang", "").toString()
         if (defLang.isEmpty()) defLang = "en"
         showLangSettings(defPreference)
+        setAdapter()
         getCard()
         fieldState()
         actionBarSettings()
-        binding.btSave.setOnClickListener {
-            setMainResult()
-        }
+        setOnClickListeners()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.card_menu, menu)
-        val itemBold = menu?.findItem(R.id.bold)
         val itemEdit = menu?.findItem(R.id.edit)
         val itemReset = menu?.findItem(R.id.reset)
         val itemDelete = menu?.findItem(R.id.delete)
         if (cardState == CARD_STATE_VIEW) {
             itemEdit?.isVisible = true
-            itemBold?.isVisible = false
         }
         if (cardState == CARD_STATE_NEW) {
             itemReset?.isVisible = false
@@ -86,7 +86,6 @@ class CardActivity : AppCompatActivity() {
             itemEdit?.isVisible = false
         }
         if (cardState == CARD_STATE_EDIT) {
-            itemBold?.isVisible = true
             itemEdit?.isVisible = false
         }
         return super.onCreateOptionsMenu(menu)
@@ -98,7 +97,6 @@ class CardActivity : AppCompatActivity() {
             R.id.delete -> deleteCard()
             R.id.reset -> resetCardState()
             R.id.edit -> editCardState()
-            R.id.bold -> setBoldForSelectedText()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -111,16 +109,39 @@ class CardActivity : AppCompatActivity() {
         }
         if (card != null) {
             with(NotificationManagerCompat.from(applicationContext)) { cancel(card!!.id!!) }
+            println("GetCard: ${card!!.id}")
             binding.apply {
                 index = langArray[0].indexOf(card!!.lang)
                 if (index < 0) index = langArray[0].indexOf(defLang)
                 tvLang.text = langArray[1][index]
                 tvCardWord.text = card!!.word
                 edWord.setText(card?.word)
-                tvCardExamples.text = HtmlManager.getFromHtml(card?.examples_html!!).trim()
-                edExamples.setText(HtmlManager.getFromHtml(card?.examples_html!!).trim())
-                tvCardTranslation.text = HtmlManager.getFromHtml(card?.translation_html!!).trim()
-                edTranslation.setText(HtmlManager.getFromHtml(card?.translation_html!!).trim())
+            }
+            CoroutineScope(Dispatchers.Main).launch {
+                val foundExamples = withContext(Dispatchers.IO) {
+                    val examplesForCard = mainViewModel.findExampleByCardId(card!!.id!!)
+                    examplesForCard
+                }
+                withContext(Dispatchers.Main) {
+                    if (foundExamples.isNotEmpty()) {
+                        foundExamples.forEachIndexed { index, example ->
+                            exampleList.add(
+                                ExampleItem(
+                                    example.id,
+                                    example.card_id,
+                                    HtmlManager.getFromHtml(example.example).trim() as Spanned,
+                                    HtmlManager.getFromHtml(example.translation).trim() as Spanned,
+                                    View.VISIBLE,
+                                    View.GONE,
+                                    null,
+                                    false,
+                                    example.finished
+                                )
+                            )
+                            adapter?.notifyItemInserted(index)
+                        }
+                    }
+                }
             }
             timeToSetRemind = isTimeToSetNewRemind(card!!.remindTime)
             cardState = if (timeToSetRemind) CARD_STATE_CHECK
@@ -128,30 +149,72 @@ class CardActivity : AppCompatActivity() {
         } else cardState = CARD_STATE_NEW
     }
 
+    private fun setAdapter() = with(binding) {
+        rvCardItems.layoutManager = LinearLayoutManager(this@CardActivity)
+        adapter = ExampleAdapter(exampleList)
+        rvCardItems.adapter = adapter
+    }
+
     private fun fieldState() = with(binding) {
         when (cardState) {
             CARD_STATE_CHECK -> btSave.setImageResource(R.drawable.ic_check)
-
             CARD_STATE_VIEW -> btSave.visibility = View.GONE
             else -> editScreenState()
         }
     }
 
+    private fun setOnClickListeners() {
+        binding.btAddExample.setOnClickListener {
+            exampleListAddEmpty()
+        }
+        binding.btSave.setOnClickListener {
+            setMainResult()
+        }
+    }
+
     private fun setMainResult() {
-        binding.edExamples.clearComposingText()
-        binding.edTranslation.clearComposingText()
+        binding.edWord.requestFocus()
         val tempCard = if (card == null) {
             newCard()
         } else {
             updateCard()
         }
         if (tempCard != null) {
-            if (cardState == CARD_STATE_NEW) {
-                mainViewModel.insertCard(tempCard)
-            } else {
-                mainViewModel.updateCard(tempCard)
+            when (cardState) {
+                CARD_STATE_NEW -> {
+                    val tmpExampleList: ArrayList<Example> = arrayListOf()
+                    exampleList.forEachIndexed { index, exampleItem ->
+                        tmpExampleList.add(
+                            Example(
+                                index + 1,
+                                0,
+                                HtmlManager.toHtml(exampleItem.example),
+                                HtmlManager.toHtml(exampleItem.translation),
+                                false
+                            )
+                        )
+                    }
+                    mainViewModel.insertCard(tempCard, tmpExampleList)
+                }
+                CARD_STATE_EDIT, CARD_STATE_EDIT_AND_RESET -> {
+                    val tmpExampleList: ArrayList<Example> = arrayListOf()
+                    exampleList.forEachIndexed { index, exampleItem ->
+                        tmpExampleList.add(
+                            Example(
+                                index + 1,
+                                exampleItem.card_id,
+                                HtmlManager.toHtml(exampleItem.example),
+                                HtmlManager.toHtml(exampleItem.translation),
+                                exampleItem.finished
+                            )
+                        )
+                    }
+                    mainViewModel.updateCardWithItems(tempCard, tmpExampleList)
+                }
+                else -> {
+                    mainViewModel.updateCard(tempCard)
+                }
             }
-
             finish()
         }
     }
@@ -160,25 +223,52 @@ class CardActivity : AppCompatActivity() {
         val currentTime = getCurrentTime()
         val remindTime = addDays(currentTime, daysArray[0])
         binding.apply {
+            val removedEmptyItem =
+                exampleList.removeIf { it.example.isEmpty() && it.translation.isEmpty() }
             if (edWord.text.isNullOrEmpty()) {
                 edWord.error = getString(R.string.fill_field)
                 return null
-            } else if (edExamples.text.isNullOrEmpty()) {
-                edExamples.error = getString(R.string.fill_field)
+            } else if (exampleList.isEmpty()) {
+                Toast.makeText(
+                    this@CardActivity,
+                    getString(R.string.no_examples),
+                    Toast.LENGTH_LONG
+                )
+                    .show()
+                exampleListAddEmpty()
                 return null
             } else {
-                return Card(
-                    null,
-                    langArray[0][index],
-                    edWord.text.toString(),
-                    edExamples.text.toString(),
-                    HtmlManager.toHtml(edExamples.text),
-                    edTranslation.text.toString(),
-                    HtmlManager.toHtml(edTranslation.text),
-                    currentTime,
-                    remindTime,
-                    0
-                )
+                var examplesForCard = ""
+                var translationForCard = ""
+                var exampleIsEmpty = false
+                exampleList.forEachIndexed { index, it ->
+                    if (it.example.isEmpty()) {
+                        it.error = getString(R.string.no_example)
+                        exampleIsEmpty = true
+                        if (removedEmptyItem) adapter?.notifyDataSetChanged()
+                        else adapter?.notifyItemChanged(index)
+                    } else {
+                        if (!it.error.isNullOrEmpty()) {
+                            it.error = null
+                            if (removedEmptyItem) adapter?.notifyDataSetChanged()
+                            else adapter?.notifyItemChanged(index)
+                        }
+                        examplesForCard += "${it.example}\n"
+                        translationForCard += "${it.translation}\n"
+                    }
+                }
+                return if (exampleIsEmpty) null
+                else
+                    return Card(
+                        null,
+                        langArray[0][index],
+                        edWord.text.toString(),
+                        examplesForCard,
+                        translationForCard,
+                        currentTime,
+                        remindTime,
+                        0
+                    )
             }
         }
     }
@@ -186,7 +276,7 @@ class CardActivity : AppCompatActivity() {
     private fun updateCard(): Card? = with(binding) {
         var remindTime = addDays(getCurrentTime(), daysArray[0])
         var step = 0
-        if (cardState != CARD_STATE_RESET) {
+        if (cardState != CARD_STATE_RESET && cardState != CARD_STATE_EDIT_AND_RESET) {
             step = card!!.step
             remindTime = card!!.remindTime
             if (timeToSetRemind) {
@@ -194,24 +284,51 @@ class CardActivity : AppCompatActivity() {
                 remindTime = if (step <= 8) {
                     addDays(getCurrentTime(), daysArray[step])
                 } else {
+                    cardState = CARD_STATE_EDIT
                     TimeManager.ENDLESS_FUTURE
                 }
             }
         }
+
+        val removedEmptyItem = exampleList.removeIf { it.example.isEmpty() && it.translation.isEmpty() }
+
         if (edWord.text.isNullOrEmpty()) {
             edWord.error = getString(R.string.fill_field)
             return null
-        } else if (edExamples.text.isNullOrEmpty()) {
-            edExamples.error = getString(R.string.fill_field)
+        } else if (exampleList.isEmpty()) {
+            Toast.makeText(this@CardActivity, getString(R.string.no_examples), Toast.LENGTH_LONG)
+                .show()
+            exampleListAddEmpty()
             return null
         } else {
-            return card?.copy(
+            var examplesForCard = ""
+            var translationForCard = ""
+            var exampleIsEmpty = false
+            exampleList.forEachIndexed { index, it ->
+                if (it.example.isEmpty()) {
+                    it.error = getString(R.string.no_example)
+                    exampleIsEmpty = true
+                    if (removedEmptyItem) adapter?.notifyDataSetChanged()
+                    else adapter?.notifyItemChanged(index)
+                } else {
+                    if (!it.error.isNullOrEmpty()) {
+                        it.error = null
+                        if (removedEmptyItem) adapter?.notifyDataSetChanged()
+                        else adapter?.notifyItemChanged(index)
+                    }
+                    examplesForCard += "${it.example}\n"
+                    translationForCard += "${it.translation}\n"
+                    if (step > 8) {
+                        it.finished = true
+                    }
+                }
+            }
+            return if (exampleIsEmpty) null
+            else card?.copy(
                 word = edWord.text.toString(),
                 lang = langArray[0][index],
-                examples = edExamples.text.toString(),
-                examples_html = HtmlManager.toHtml(edExamples.text),
-                translation = edTranslation.text.toString(),
-                translation_html = HtmlManager.toHtml(edTranslation.text),
+                examples = examplesForCard,
+                translation = translationForCard,
                 remindTime = remindTime,
                 step = step
             )
@@ -223,7 +340,6 @@ class CardActivity : AppCompatActivity() {
         ConfirmDialog.showDialog(
             this, object : ConfirmDialog.Listener {
                 override fun onClick() {
-                    cardState = CARD_STATE_DELETE
                     mainViewModel.deleteCard(card?.id!!)
                     finish()
                 }
@@ -244,43 +360,13 @@ class CardActivity : AppCompatActivity() {
         ConfirmDialog.showDialog(
             this, object : ConfirmDialog.Listener {
                 override fun onClick() {
-                    cardState = CARD_STATE_RESET
+                    cardState = if (cardState == CARD_STATE_EDIT) CARD_STATE_EDIT_AND_RESET
+                    else CARD_STATE_RESET
                     setMainResult()
                 }
             },
             message
         )
-    }
-
-    private fun setBoldForSelectedText() = with(binding) {
-        Log.d("DArtX", "Focused: ${edExamples.hasFocus()}")
-        if (edExamples.hasFocus()) {
-            val startPos = edExamples.selectionStart
-            val endPos = edExamples.selectionEnd
-            val styles = edExamples.text.getSpans(startPos, endPos, StyleSpan::class.java)
-            Log.d("DArtX", "S: $startPos, E: $endPos, ${styles.size}")
-            var boldStyle: StyleSpan? = null
-            if (styles.isNotEmpty()) edExamples.text.removeSpan(styles[0])
-            else boldStyle = StyleSpan(Typeface.BOLD)
-            edExamples.text.setSpan(boldStyle, startPos, endPos, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-            edExamples.text.trim()
-            edExamples.setSelection(startPos)
-        } else if (edTranslation.hasFocus()) {
-            val startPos = edTranslation.selectionStart
-            val endPos = edTranslation.selectionEnd
-            val styles = edTranslation.text.getSpans(startPos, endPos, StyleSpan::class.java)
-            var boldStyle: StyleSpan? = null
-            if (styles.isNotEmpty()) edTranslation.text.removeSpan(styles[0])
-            else boldStyle = StyleSpan(Typeface.BOLD)
-            edTranslation.text.setSpan(
-                boldStyle,
-                startPos,
-                endPos,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-            edTranslation.text.trim()
-            edTranslation.setSelection(startPos)
-        }
     }
 
     private fun actionBarSettings() {
@@ -317,78 +403,27 @@ class CardActivity : AppCompatActivity() {
 
                 }
             }
+            btAddExample.visibility = View.VISIBLE
             btSave.visibility = View.VISIBLE
             btSave.setImageResource(R.drawable.ic_save)
             tvCardWord.visibility = View.GONE
-            tvCardExamples.visibility = View.GONE
-            tvCardTranslation.visibility = View.GONE
             tvLang.visibility = View.GONE
             edWord.visibility = View.VISIBLE
-            edExamples.visibility = View.VISIBLE
-            edTranslation.visibility = View.VISIBLE
             spLang.visibility = View.VISIBLE
-            edExamples.customSelectionActionModeCallback = getActionModeCallback()
-            edTranslation.customSelectionActionModeCallback = getActionModeCallback()
+            if (cardState == CARD_STATE_NEW) {
+                requestFocusOnAddedExample = false
+                exampleListAddEmpty()
+                edWord.requestFocus()
+            } else editListState()
         }
     }
 
-    private fun getActionModeCallback(): ActionMode.Callback {
-        return object : ActionMode.Callback {
-            override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
-                return if (mode != null) {
-                    mode.menuInflater.inflate(R.menu.selected_text_menu, menu)
-                    true
-                } else false
-            }
-
-            override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
-                return if (menu != null) {
-                    selectedTextActionPrepare(menu)
-                    true
-                } else false
-            }
-
-            override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
-                return if (item!!.itemId == R.id.bold) {
-                    setBoldForSelectedText()
-                    true
-                } else false
-            }
-
-            override fun onDestroyActionMode(mode: ActionMode?) {
-
-            }
+    private fun editListState() {
+        exampleList.forEachIndexed { index, it ->
+            it.edVisibility = View.VISIBLE
+            it.tvExampleVisibility = View.GONE
+            adapter?.notifyItemChanged(index)
         }
-    }
-
-    private fun selectedTextActionPrepare(menu: Menu) {
-        while (menu.getItem(0).order < 50) {
-            val item = menu.getItem(0)
-            menu.removeItem(item.itemId)
-            when (item.itemId) {
-                android.R.id.paste -> addMenuItem(menu, item.groupId, item.itemId, 52, item.title)
-                android.R.id.copy -> addMenuItem(menu, item.groupId, item.itemId, 53, item.title)
-                android.R.id.cut -> addMenuItem(menu, item.groupId, item.itemId, 54, item.title)
-                android.R.id.textAssist -> addMenuItem(
-                    menu,
-                    item.groupId,
-                    item.itemId,
-                    55,
-                    item.title
-                )
-                else -> addMenuItem(menu, item.groupId, item.itemId, 100 + item.order, item.title)
-            }
-        }
-    }
-
-    private fun addMenuItem(
-        menu: Menu,
-        groupId: Int,
-        itemId: Int,
-        order: Int,
-        title: CharSequence?
-    ) {
-        menu.add(groupId, itemId, order, title)
     }
 
     private fun showLangSettings(defPreference: SharedPreferences) {
@@ -406,11 +441,40 @@ class CardActivity : AppCompatActivity() {
         }
     }
 
+    private fun exampleListAddEmpty() {
+        var cardId = 0
+        if (card != null) {
+            cardId = card!!.id!!
+            if (card!!.step > 8) cardState = CARD_STATE_EDIT_AND_RESET
+        }
+        exampleList.add(
+            ExampleItem(
+                0,
+                cardId,
+                HtmlManager.getFromHtml(""),
+                HtmlManager.getFromHtml(""),
+                View.GONE,
+                View.VISIBLE,
+                null,
+                requestFocus = requestFocusOnAddedExample,
+                finished = false
+            )
+        )
+        binding.edWord.requestFocus()
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(
+            binding.edWord,
+            InputMethodManager.SHOW_IMPLICIT
+        )
+        requestFocusOnAddedExample = true
+        adapter?.notifyItemInserted(exampleList.size - 1)
+    }
+
     companion object {
         const val CARD_STATE_NEW = 1
         const val CARD_STATE_EDIT = 2
         const val CARD_STATE_VIEW = 3
-        const val CARD_STATE_DELETE = 4
+        const val CARD_STATE_EDIT_AND_RESET = 4
         const val CARD_STATE_CHECK = 5
         const val CARD_STATE_RESET = 6
     }

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Словотека</string>
+    <string name="app_name">Словотека Бета</string>
     <string name="create">Создать</string>
     <string name="search">Поиск</string>
     <string name="enter_word">Введите слово</string>
     <string name="word">Слово</string>
     <string name="phrases">Фразы</string>
     <string name="word_usage_examples">Примеры</string>
-    <string name="examples_hint">Введите одно или несколько предложений, примеров использования слова</string>
-    <string name="enter_translation">Введите перевод</string>
+    <string name="no_examples">Введите хотя бы один пример использования слова</string>
+    <string name="no_example">Введите текст примера</string>
     <string name="translation">Перевод</string>
     <string name="save">Сохранить</string>
     <string name="edit">Редактировать</string>
@@ -97,4 +97,7 @@
     <string name="backup_started">Сохранение запущено</string>
     <string name="last_backup">"Последняя копия: "</string>
     <string name="relogin_to_google">Выйдите и войдите в Google повторно, предоставив разрешения</string>
+    <string name="example">Пример</string>
+    <string name="text">Текст</string>
+    <string name="add_example">Добавить пример</string>
 </resources>

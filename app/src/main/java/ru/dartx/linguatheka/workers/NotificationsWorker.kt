@@ -1,11 +1,14 @@
 package ru.dartx.linguatheka.workers
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
@@ -79,7 +82,7 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
                 .setContentText(applicationContext.getString(R.string.time_to_repeat))
                 .setStyle(
                     NotificationCompat.BigTextStyle()
-                        .bigText("${card.examples}\n${card.translation}")
+                        .bigText(card.examples)
                 )
                 .setContentIntent(resultPendingIntent)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -97,6 +100,20 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
                     snoozePendingIntent
                 )
             with(NotificationManagerCompat.from(applicationContext)) {
+                if (ActivityCompat.checkSelfPermission(
+                        applicationContext,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return
+                }
                 notify(card.id, builder.build())
             }
         }

@@ -8,17 +8,15 @@ import android.widget.Toast
 import androidx.core.app.NotificationManagerCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.activities.MainActivity
 import ru.dartx.linguatheka.db.MainDataBase
 import ru.dartx.linguatheka.entities.Card
+import ru.dartx.linguatheka.entities.Example
 import ru.dartx.linguatheka.utils.TimeManager
-import kotlin.coroutines.CoroutineContext
 
-class TapDoneReceiver : BroadcastReceiver(), CoroutineScope {
-    private var job = Job()
+class TapDoneReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
         val database = MainDataBase.getDataBase(context)
         val card = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -39,7 +37,24 @@ class TapDoneReceiver : BroadcastReceiver(), CoroutineScope {
                     remindTime = remindTime,
                     step = step
                 )
-            launch { database.getDao().updateCard(tempCard) }
+
+            CoroutineScope(Dispatchers.IO).launch {
+                if (step > 8) {
+                    val tmpExampleList: ArrayList<Example> = arrayListOf()
+                    val examplesForCard = database.getDao().findExamplesByCardId(card.id!!)
+                    examplesForCard.forEachIndexed { index, example ->
+                        tmpExampleList.add(
+                            example.copy(
+                                id = index + 1,
+                                finished = true
+                            )
+                        )
+                    }
+                    database.getDao().updateCardWithItems(tempCard, tmpExampleList)
+                } else {
+                    database.getDao().updateCard(tempCard)
+                }
+            }
 
             with(
                 NotificationManagerCompat
@@ -52,7 +67,4 @@ class TapDoneReceiver : BroadcastReceiver(), CoroutineScope {
             ).show()
         }
     }
-
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + job
 }

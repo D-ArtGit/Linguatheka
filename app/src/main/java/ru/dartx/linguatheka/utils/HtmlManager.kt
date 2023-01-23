@@ -9,6 +9,6 @@ object HtmlManager {
     }
 
     fun toHtml(text: Spanned): String {
-        return Html.toHtml(text, Html.FROM_HTML_MODE_COMPACT)
+        return Html.toHtml(text, Html.TO_HTML_PARAGRAPH_LINES_INDIVIDUAL)
     }
 }

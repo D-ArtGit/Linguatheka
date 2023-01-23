@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "12697e6ef414f753c344d0d5386c74a3",
+    "identityHash": "5497a0437084384a957f4a62f605d37c",
     "entities": [
       {
         "tableName": "cards",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `lang` TEXT NOT NULL, `word` TEXT NOT NULL, `examples` TEXT NOT NULL, `examples_html` TEXT NOT NULL, `translation` TEXT NOT NULL, `translation_html` TEXT NOT NULL, `createTime` TEXT NOT NULL, `remindTime` TEXT NOT NULL, `step` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `lang` TEXT NOT NULL, `word` TEXT NOT NULL, `examples` TEXT NOT NULL, `translation` TEXT NOT NULL, `createTime` TEXT NOT NULL, `remindTime` TEXT NOT NULL, `step` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -33,20 +33,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "examples_html",
-            "columnName": "examples_html",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
             "fieldPath": "translation",
             "columnName": "translation",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "translation_html",
-            "columnName": "translation_html",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -77,12 +65,56 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "example",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `card_id` INTEGER NOT NULL, `example` TEXT NOT NULL, `translation` TEXT NOT NULL, `finished` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "card_id",
+            "columnName": "card_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "example",
+            "columnName": "example",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "translation",
+            "columnName": "translation",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "finished",
+            "columnName": "finished",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '12697e6ef414f753c344d0d5386c74a3')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5497a0437084384a957f4a62f605d37c')"
     ]
   }
 }

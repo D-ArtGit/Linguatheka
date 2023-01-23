@@ -5,8 +5,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import ru.dartx.linguatheka.entities.Card
+import ru.dartx.linguatheka.entities.Example
 
-@Database(entities = [Card::class], version = 1, exportSchema = true)
+@Database(entities = [Card::class, Example::class], version = 1, exportSchema = true)
 abstract class MainDataBase : RoomDatabase() {
     abstract fun getDao(): Dao
 
@@ -18,8 +19,9 @@ abstract class MainDataBase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     MainDataBase::class.java,
-                    "wordcards.db"
-                ).createFromAsset("new.db")
+                    "linguatheka.db"
+                )
+                    .createFromAsset("new.db")
                     .build()
                 INSTANCE = instance
                 instance
