@@ -7,6 +7,7 @@ import android.text.style.StyleSpan
 import android.util.Log
 import android.view.*
 import android.widget.EditText
+import androidx.core.widget.addTextChangedListener
 import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -22,15 +23,20 @@ class ExampleAdapter(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(exampleItem: ExampleItem) {
             binding.exampleItem = exampleItem
-            "${binding.tvExampleHeader.context.getString(R.string.example)} ${adapterPosition + 1}"
-                .also {
-                    binding.tvExampleHeader.text = it
+            with(binding) {
+                "${tvExampleHeader.context.getString(R.string.example)} ${adapterPosition + 1}"
+                    .also {
+                        tvExampleHeader.text = it
+                    }
+                if (exampleItem.requestFocus) {
+                    edExample.requestFocus()
+                    exampleItem.requestFocus = false
                 }
-            if (exampleItem.requestFocus) {
-                binding.edExample.requestFocus()
-                exampleItem.requestFocus = false
+                if (exampleItem.error != null) {
+                    tilExample.error = exampleItem.error
+                    edExample.requestFocus()
+                }
             }
-            if (exampleItem.error != null) binding.tilExample.error = exampleItem.error
             setListeners(binding, adapterPosition)
         }
     }
@@ -105,7 +111,7 @@ class ExampleAdapter(
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
                 edExample.text!!.trim()
-                exampleItem!!.example = edExample.text!!
+                exampleItem?.example = edExample.text!!
                 edExample.setSelection(startPos)
 
             } else if (selectedField == TRANSLATION) {
@@ -122,7 +128,7 @@ class ExampleAdapter(
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
                 edTranslation.text!!.trim()
-                exampleItem!!.translation = edTranslation.text!!
+                exampleItem?.translation = edTranslation.text!!
                 edTranslation.setSelection(startPos)
             }
         }
@@ -161,36 +167,43 @@ class ExampleAdapter(
     private fun setListeners(
         binding: ExampleItemBinding,
         adapterPosition: Int
-    ) {
-        with(binding) {
-            edExample.customSelectionActionModeCallback =
-                getActionModeCallback(binding, EXAMPLE)
-            edTranslation.customSelectionActionModeCallback = getActionModeCallback(
-                binding,
-                TRANSLATION
-            )
-            edExample.setOnFocusChangeListener { view, hasFocus ->
-                val editText = view as EditText
-                if (!hasFocus) editText.clearComposingText()
-            }
-            edTranslation.setOnFocusChangeListener { view, hasFocus ->
-                val editText = view as EditText
-                if (!hasFocus) editText.clearComposingText()
-            }
-            tvExample.setOnClickListener {
-                if (translationWrapper.visibility == View.GONE) {
-                    translationWrapper.visibility = View.VISIBLE
-                    ivShowHide.rotation = 180F
-                } else {
-                    translationWrapper.visibility = View.GONE
-                    ivShowHide.rotation = 0F
+    ) = with(binding) {
+        edExample.customSelectionActionModeCallback =
+            getActionModeCallback(binding, EXAMPLE)
+        edTranslation.customSelectionActionModeCallback = getActionModeCallback(
+            binding,
+            TRANSLATION
+        )
+        edExample.setOnFocusChangeListener { view, hasFocus ->
+            val editText = view as EditText
+            if (!hasFocus) editText.clearComposingText()
+        }
+        if (exampleItem?.error != null) {
+            edExample.addTextChangedListener { text ->
+                if (!text.isNullOrEmpty()) {
+                    exampleItem?.error = null
+                    notifyItemChanged(adapterPosition)
+                    edExample.setSelection(text.length)
                 }
             }
-            ivDelete.setOnClickListener {
-                exampleList.removeAt(adapterPosition)
-                notifyItemRemoved(adapterPosition)
-                notifyItemRangeChanged(adapterPosition, itemCount)
+        }
+        edTranslation.setOnFocusChangeListener { view, hasFocus ->
+            val editText = view as EditText
+            if (!hasFocus) editText.clearComposingText()
+        }
+        tvExample.setOnClickListener {
+            if (translationWrapper.visibility == View.GONE) {
+                translationWrapper.visibility = View.VISIBLE
+                ivShowHide.rotation = 180F
+            } else {
+                translationWrapper.visibility = View.GONE
+                ivShowHide.rotation = 0F
             }
+        }
+        ivDelete.setOnClickListener {
+            exampleList.removeAt(adapterPosition)
+            notifyItemRemoved(adapterPosition)
+            notifyItemRangeChanged(adapterPosition, itemCount)
         }
     }
 

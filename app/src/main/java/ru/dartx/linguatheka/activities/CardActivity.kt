@@ -223,8 +223,17 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         val currentTime = getCurrentTime()
         val remindTime = addDays(currentTime, daysArray[0])
         binding.apply {
-            val removedEmptyItem =
-                exampleList.removeIf { it.example.isEmpty() && it.translation.isEmpty() }
+            var emptyItemIndex =
+                exampleList.indexOfFirst { it.example.isEmpty() && it.translation.isEmpty() }
+            while (emptyItemIndex >= 0) {
+                exampleList.removeAt(emptyItemIndex)
+                adapter?.notifyItemRemoved(emptyItemIndex)
+                if (exampleList.size > emptyItemIndex) {
+                    adapter?.notifyItemRangeChanged(emptyItemIndex, exampleList.size - 1)
+                }
+                emptyItemIndex =
+                    exampleList.indexOfFirst { it.example.isEmpty() && it.translation.isEmpty() }
+            }
             if (edWord.text.isNullOrEmpty()) {
                 edWord.error = getString(R.string.fill_field)
                 return null
@@ -245,30 +254,30 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     if (it.example.isEmpty()) {
                         it.error = getString(R.string.no_example)
                         exampleIsEmpty = true
-                        if (removedEmptyItem) adapter?.notifyDataSetChanged()
-                        else adapter?.notifyItemChanged(index)
+                        adapter?.notifyItemChanged(index)
                     } else {
                         if (!it.error.isNullOrEmpty()) {
                             it.error = null
-                            if (removedEmptyItem) adapter?.notifyDataSetChanged()
-                            else adapter?.notifyItemChanged(index)
+                            adapter?.notifyItemChanged(index)
                         }
-                        examplesForCard += "${it.example}\n"
-                        translationForCard += "${it.translation}\n"
+                        if (index > 0) {
+                            examplesForCard += "\n"
+                        }
+                        examplesForCard += "${it.example}"
+                        translationForCard += "${it.translation}"
                     }
                 }
                 return if (exampleIsEmpty) null
-                else
-                    return Card(
-                        null,
-                        langArray[0][index],
-                        edWord.text.toString(),
-                        examplesForCard,
-                        translationForCard,
-                        currentTime,
-                        remindTime,
-                        0
-                    )
+                else return Card(
+                    null,
+                    langArray[0][index],
+                    edWord.text.toString(),
+                    examplesForCard,
+                    translationForCard,
+                    currentTime,
+                    remindTime,
+                    0
+                )
             }
         }
     }
@@ -290,8 +299,17 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             }
         }
 
-        val removedEmptyItem = exampleList.removeIf { it.example.isEmpty() && it.translation.isEmpty() }
-
+        var emptyItemIndex =
+            exampleList.indexOfFirst { it.example.isEmpty() && it.translation.isEmpty() }
+        while (emptyItemIndex >= 0) {
+            exampleList.removeAt(emptyItemIndex)
+            adapter?.notifyItemRemoved(emptyItemIndex)
+            if (exampleList.size > emptyItemIndex) {
+                adapter?.notifyItemRangeChanged(emptyItemIndex, exampleList.size - 1)
+            }
+            emptyItemIndex =
+                exampleList.indexOfFirst { it.example.isEmpty() && it.translation.isEmpty() }
+        }
         if (edWord.text.isNullOrEmpty()) {
             edWord.error = getString(R.string.fill_field)
             return null
@@ -308,16 +326,17 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 if (it.example.isEmpty()) {
                     it.error = getString(R.string.no_example)
                     exampleIsEmpty = true
-                    if (removedEmptyItem) adapter?.notifyDataSetChanged()
-                    else adapter?.notifyItemChanged(index)
+                    adapter?.notifyItemChanged(index)
                 } else {
                     if (!it.error.isNullOrEmpty()) {
                         it.error = null
-                        if (removedEmptyItem) adapter?.notifyDataSetChanged()
-                        else adapter?.notifyItemChanged(index)
+                        adapter?.notifyItemChanged(index)
                     }
-                    examplesForCard += "${it.example}\n"
-                    translationForCard += "${it.translation}\n"
+                    if (index > 0) {
+                        examplesForCard += "\n"
+                    }
+                    examplesForCard += "${it.example}"
+                    translationForCard += "${it.translation}"
                     if (step > 8) {
                         it.finished = true
                     }
@@ -447,6 +466,12 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             cardId = card!!.id!!
             if (card!!.step > 8) cardState = CARD_STATE_EDIT_AND_RESET
         }
+        binding.edWord.requestFocus()
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(
+            binding.edWord,
+            InputMethodManager.SHOW_IMPLICIT
+        )
         exampleList.add(
             ExampleItem(
                 0,
@@ -460,14 +485,11 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 finished = false
             )
         )
-        binding.edWord.requestFocus()
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.showSoftInput(
-            binding.edWord,
-            InputMethodManager.SHOW_IMPLICIT
-        )
         requestFocusOnAddedExample = true
         adapter?.notifyItemInserted(exampleList.size - 1)
+        binding.rvCardItems.postDelayed({
+            binding.rvCardItems.smoothScrollToPosition(exampleList.size - 1)
+        }, 100)
     }
 
     companion object {
