@@ -22,20 +22,20 @@
             android:id="@+id/tvWrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:paddingTop="4dp"
             android:visibility="@{exampleItem.tvExampleVisibility}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="gone">
+            tools:visibility="visible">
 
 
             <ImageView
                 android:id="@+id/ivShowHide"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
                 android:layout_weight="1"
                 android:contentDescription="Show/Hide"
                 app:layout_constraintStart_toStartOf="parent"
@@ -61,7 +61,8 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/ivShowHide"
-                app:layout_constraintTop_toBottomOf="@+id/tvExample">
+                app:layout_constraintTop_toBottomOf="@+id/tvExample"
+                tools:visibility="visible">
 
                 <ImageView
                     android:id="@+id/ivArrow"
@@ -76,6 +77,7 @@
                     android:id="@+id/tvTranslation"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
                     android:text="@{exampleItem.translation}"
                     android:textColor="?attr/mainText"
                     android:textSize="18sp"
@@ -98,7 +100,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="gone">
 
             <TextView
                 android:id="@+id/tvExampleHeader"

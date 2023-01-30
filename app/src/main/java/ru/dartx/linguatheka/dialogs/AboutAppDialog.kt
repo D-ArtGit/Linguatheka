@@ -22,7 +22,10 @@ object AboutAppDialog {
         }
         dialog = builder.create()
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog.setCanceledOnTouchOutside(false)
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setOnCancelListener {
+            it.dismiss()
+        }
         dialog.show()
     }
 

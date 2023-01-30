@@ -63,7 +63,11 @@ object SnoozeDialog {
         }
         dialog = builder.create()
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog.setCanceledOnTouchOutside(false)
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setOnCancelListener {
+            listener.onCancelClick()
+            it.dismiss()
+        }
         dialog.show()
         dialog.setOnKeyListener { dialogInListener, keyCode, _ ->
             if (keyCode == KeyEvent.KEYCODE_BACK) {

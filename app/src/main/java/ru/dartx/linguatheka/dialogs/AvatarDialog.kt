@@ -3,6 +3,7 @@ package ru.dartx.linguatheka.dialogs
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
 import ru.dartx.linguatheka.databinding.AvatarDialogBinding
@@ -29,8 +30,19 @@ object AvatarDialog {
         }
         dialog = builder.create()
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog.setCanceledOnTouchOutside(false)
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setOnCancelListener {
+            listener.onClickCancel()
+            it.dismiss()
+        }
         dialog.show()
+        dialog.setOnKeyListener { dialogInListener, keyCode, _ ->
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                listener.onClickCancel()
+                dialogInListener.dismiss()
+            }
+            true
+        }
     }
 
     interface Listener {

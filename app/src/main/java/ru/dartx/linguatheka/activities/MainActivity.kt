@@ -1,6 +1,7 @@
 package ru.dartx.linguatheka.activities
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -52,6 +53,7 @@ import java.net.URL
 class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAdapter.Listener {
     private lateinit var binding: ActivityMainBinding
     private lateinit var nvBinding: NavHeaderBinding
+    private lateinit var cardActivityLauncher: ActivityResultLauncher<Intent>
     private var edSearch: EditText? = null
     private var adapter: CardAdapter? = null
     private var textWatcher: TextWatcher? = null
@@ -242,6 +244,19 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
         } else {
             nvBinding.btSignIn.visibility = View.GONE
         }
+        cardActivityLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                if (it.resultCode == Activity.RESULT_OK) {
+                    if (it.data?.getIntExtra(
+                            CARD_STATE,
+                            CardActivity.CARD_STATE_VIEW
+                        ) == CardActivity.CARD_STATE_CHECK
+                    )
+                        binding.rcViewCardList.postDelayed({
+                            binding.rcViewCardList.smoothScrollToPosition(0)
+                        }, 1000)
+                }
+            }
     }
 
     private fun onDrawerOpen() {
@@ -362,7 +377,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
     override fun onClickCard(card: Card) {
         val i = Intent(this, CardActivity::class.java)
         i.putExtra(CARD_DATA, card)
-        startActivity(i)
+        cardActivityLauncher.launch(i)
     }
 
     private fun textWatcher(): TextWatcher {
@@ -416,6 +431,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
 
     companion object {
         const val CARD_DATA = "card"
+        const val CARD_STATE = "cardState"
         const val CHANNEL_ID = "wordCH"
     }
 }

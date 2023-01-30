@@ -1,5 +1,6 @@
 package ru.dartx.linguatheka.activities
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -17,6 +18,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.*
@@ -163,12 +165,34 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         }
     }
 
-    private fun setOnClickListeners() {
-        binding.btAddExample.setOnClickListener {
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setOnClickListeners() = with(binding) {
+        btAddExample.setOnClickListener {
             exampleListAddEmpty()
         }
-        binding.btSave.setOnClickListener {
+        btSave.setOnClickListener {
             setMainResult()
+        }
+        edWord.addTextChangedListener {
+            if (!it.isNullOrEmpty()) {
+                edWord.setCompoundDrawablesWithIntrinsicBounds(
+                    0,
+                    0,
+                    R.drawable.ic_close_grey,
+                    0
+                )
+                val iconSize = edWord.compoundDrawables[2].bounds.width()
+                edWord.setOnTouchListener { _, motionEvent ->
+                    if (motionEvent.rawX >= edWord.width + 30 - iconSize) {
+                        edWord.setText("")
+                        true
+                    } else false
+                }
+            } else {
+                edWord.setCompoundDrawablesWithIntrinsicBounds(
+                    0, 0, 0, 0
+                )
+            }
         }
     }
 
@@ -215,6 +239,8 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     mainViewModel.updateCard(tempCard)
                 }
             }
+            val i = Intent().putExtra(MainActivity.CARD_STATE, cardState)
+            setResult(RESULT_OK, i)
             finish()
         }
     }

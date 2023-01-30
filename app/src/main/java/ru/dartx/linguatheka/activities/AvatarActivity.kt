@@ -1,12 +1,11 @@
 package ru.dartx.linguatheka.activities
 
-import android.app.Activity
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.Window
 import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
@@ -26,11 +25,11 @@ class AvatarActivity : AppCompatActivity() {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.activity_avatar)
         val pickImageLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                if (it.resultCode == Activity.RESULT_OK && it.data != null) {
+            registerForActivityResult(ActivityResultContracts.PickVisualMedia()) {
+                if (it != null) {
                     try {
                         val stream =
-                            contentResolver.openInputStream(it.data!!.data!!)
+                            contentResolver.openInputStream(it)
                         val realImage: Bitmap = BitmapFactory.decodeStream(stream)
                         editor.putString("avatar", BitmapManager.encodeToBase64(realImage))
                         editor.apply()
@@ -48,14 +47,10 @@ class AvatarActivity : AppCompatActivity() {
                 }
                 finish()
             }
-        val i = Intent().apply {
-            type = "image/*"
-            action = Intent.ACTION_GET_CONTENT
-            addCategory(Intent.CATEGORY_OPENABLE)
-        }
         AvatarDialog.showDialog(this, object : AvatarDialog.Listener {
             override fun onClickChoose() {
-                pickImageLauncher.launch(i)
+                pickImageLauncher
+                    .launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             }
 
             override fun onClickClear() {
