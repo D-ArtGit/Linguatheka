@@ -15,13 +15,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WordCardsBlue">
         <activity
-            android:name="ru.dartx.linguatheka.activities.GoogleSignInActivity"
-            android:excludeFromRecents="true"
-            android:exported="false"
-            android:launchMode="singleInstance"
-            android:taskAffinity=""
-            android:theme="@style/Theme.WordCardsDialogBlue" />
-        <activity
             android:name="ru.dartx.linguatheka.activities.BackupActivity"
             android:excludeFromRecents="true"
             android:exported="false"

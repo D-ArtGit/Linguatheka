@@ -1,13 +1,12 @@
 package ru.dartx.linguatheka.settings
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.preference.ListPreference
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.*
 import androidx.work.WorkManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -19,7 +18,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.dartx.linguatheka.R
-import ru.dartx.linguatheka.activities.GoogleSignInActivity
 import ru.dartx.linguatheka.utils.*
 
 class SettingsActivity : AppCompatActivity() {
@@ -49,7 +47,27 @@ class SettingsActivity : AppCompatActivity() {
             nativeLangPref.entries = langArray[1]
             val nightMode: Preference? = findPreference("night_mode")
             val themeMode: Preference? = findPreference("theme")
-            val autoBackup: Preference? = findPreference("auto_backup")
+            val autoBackup: CheckBoxPreference? = findPreference("auto_backup")
+            val userName: EditTextPreference? = findPreference("user_name")
+            val singInLauncher = registerForActivityResult(
+                ActivityResultContracts.StartActivityForResult()
+            ) {
+                if (it.resultCode == RESULT_OK) {
+                    val acc = GoogleSignIn.getLastSignedInAccount(requireContext())
+                    if (acc != null) {
+                        GoogleSignInManager.setAvatar(requireContext(), acc, false)
+                        userName?.text = acc.displayName
+                        autoBackup?.isChecked = true
+                    } else GoogleSignInManager.googleSignOut(requireContext())
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.grant_access),
+                        Toast.LENGTH_LONG
+                    )
+                        .show()
+                }
+            }
             nightMode?.setOnPreferenceChangeListener { _, value ->
                 AppCompatDelegate.setDefaultNightMode(
                     when (value as String) {
@@ -88,7 +106,9 @@ class SettingsActivity : AppCompatActivity() {
                     if (result) {
                         BackupAndRestoreManager.startBackupWorker(requireContext().applicationContext)
                     } else {
-                        startActivity(Intent(requireContext(), GoogleSignInActivity::class.java))
+                        singInLauncher.launch(
+                            GoogleSignInManager.googleSignIn(requireActivity() as AppCompatActivity)
+                        )
                     }
                 } else {
                     WorkManager.getInstance(requireContext()).cancelAllWorkByTag("backup_cards")
