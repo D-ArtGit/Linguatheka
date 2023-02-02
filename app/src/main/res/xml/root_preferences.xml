@@ -22,11 +22,6 @@
                 android:targetPackage="ru.dartx.linguatheka" />
         </Preference>
 
-        <CheckBoxPreference
-            app:iconSpaceReserved="false"
-            app:key="hide_login_button"
-            app:title="@string/hide_login_button" />
-
     </PreferenceCategory>
 
     <PreferenceCategory

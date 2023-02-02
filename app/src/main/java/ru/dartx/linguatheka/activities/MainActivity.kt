@@ -6,15 +6,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
-import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.window.OnBackInvokedDispatcher
@@ -28,10 +25,6 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.Scope
-import com.google.api.services.drive.DriveScopes
 import kotlinx.coroutines.*
 import ru.dartx.linguatheka.BuildConfig
 import ru.dartx.linguatheka.R
@@ -46,9 +39,6 @@ import ru.dartx.linguatheka.settings.SettingsActivity
 import ru.dartx.linguatheka.utils.BitmapManager
 import ru.dartx.linguatheka.utils.LanguagesManager
 import ru.dartx.linguatheka.utils.ThemeManager
-import java.io.FileNotFoundException
-import java.io.IOException
-import java.net.URL
 
 class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAdapter.Listener {
     private lateinit var binding: ActivityMainBinding
@@ -57,20 +47,17 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
     private var edSearch: EditText? = null
     private var adapter: CardAdapter? = null
     private var textWatcher: TextWatcher? = null
-    private var singInLauncher: ActivityResultLauncher<Intent>? = null
     private var width = 0
     private val mainViewModel: MainViewModel by viewModels {
         MainViewModel.MainViewModelFactory(MainDataBase.getDataBase(applicationContext as MainApp))
     }
     private lateinit var defPreference: SharedPreferences
     private var currentTheme = ""
-    private var currentHideSignButtonState = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         defPreference = PreferenceManager.getDefaultSharedPreferences(this)
         currentTheme = defPreference.getString("theme", "blue").toString()
-        currentHideSignButtonState = defPreference.getBoolean("hide_login_button", false)
         setTheme(ThemeManager.getSelectedThemeNoBar(this))
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -91,10 +78,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
         LanguagesManager.getUsedLanguages(applicationContext as MainApp)
         if (defPreference.getString(
                 "theme", "blue"
-            ) != currentTheme ||
-            defPreference.getBoolean(
-                "hide_login_button", false
-            ) != currentHideSignButtonState
+            ) != currentTheme
         ) recreate()
     }
 
@@ -226,24 +210,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                     }
                 })
         }
-        val account = GoogleSignIn.getLastSignedInAccount(this@MainActivity)
-        if (account != null) {
-            nvBinding.btSignIn.text = getString(R.string.sign_out)
-        }
-        if (!defPreference.getBoolean(
-                "hide_login_button",
-                false
-            ) || (defPreference.getBoolean(
-                "sign_in_state",
-                false
-            ) && account == null)
-        ) {
-            nvBinding.btSignIn.visibility = View.VISIBLE
-            googleSignIn()
-            signInLauncher()
-        } else {
-            nvBinding.btSignIn.visibility = View.GONE
-        }
+
         cardActivityLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 if (it.resultCode == Activity.RESULT_OK) {
@@ -271,74 +238,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
             val imageB = BitmapManager.decodeToBase64(imageS)
             nvBinding.ivAvatar.setImageBitmap(imageB)
         } else nvBinding.ivAvatar.setImageResource(R.drawable.ic_avatar)
-    }
-
-    private fun signInLauncher() {
-        singInLauncher = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) {
-            if (it.resultCode == RESULT_OK) {
-                val acc = GoogleSignIn.getLastSignedInAccount(this)
-                if (acc != null) {
-                    launch {
-                        val editor = defPreference.edit()
-                        editor.putString("user_name", acc.displayName)
-                        editor.putBoolean("hide_login_button", true)
-                        editor.putBoolean("sign_in_state", true)
-                        if (acc.photoUrl != null) {
-                            try {
-                                withContext(Dispatchers.IO) {
-                                    val stream = URL(acc.photoUrl!!.toString()).openStream()
-                                    val realImage: Bitmap = BitmapFactory.decodeStream(stream)
-                                    editor.putString(
-                                        "avatar",
-                                        BitmapManager.encodeToBase64(realImage)
-                                    )
-                                }
-                            } catch (e: FileNotFoundException) {
-                                e.printStackTrace()
-                            } catch (e: IOException) {
-                                e.printStackTrace()
-                            }
-                        }
-                        editor.apply()
-                        currentHideSignButtonState = true
-                    }
-                    nvBinding.btSignIn.text = getString(R.string.sign_out)
-                    nvBinding.btSignIn.visibility = View.GONE
-                    binding.drawerLayout.close()
-                }
-            }
-        }
-    }
-
-    private fun googleSignIn() {
-        nvBinding.btSignIn.setOnClickListener {
-            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestProfile()
-                .requestEmail()
-                .requestScopes(Scope(DriveScopes.DRIVE_FILE), Scope(DriveScopes.DRIVE_APPDATA))
-                .build()
-            val mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
-            val tempAccount = GoogleSignIn.getLastSignedInAccount(this)
-            if (tempAccount == null && singInLauncher != null) {
-                val signInIntent = mGoogleSignInClient.signInIntent
-                singInLauncher!!.launch(signInIntent)
-            } else if (tempAccount != null) {
-                mGoogleSignInClient.signOut()
-                val editor = defPreference.edit()
-                editor.putString("user_name", "")
-                editor.putString("avatar", "")
-                editor.putBoolean("hide_login_button", false)
-                editor.putBoolean("sign_in_state", false)
-                editor.putBoolean("auto_backup", false)
-                editor.apply()
-                nvBinding.btSignIn.text = getString(R.string.sign_in)
-                nvBinding.btSignIn.visibility = View.VISIBLE
-                currentHideSignButtonState = false
-                binding.drawerLayout.close()
-            }
-        }
     }
 
     private fun cardListObserver() {

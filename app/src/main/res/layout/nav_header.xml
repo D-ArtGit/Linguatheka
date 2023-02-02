@@ -15,21 +15,6 @@
         android:layout_margin="4dp"
         app:srcCompat="@drawable/ic_avatar" />
 
-    <Button
-        android:id="@+id/bt_sign_in"
-        style="@style/btn_style"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:background="?attr/btSignIn"
-        android:paddingStart="60dp"
-        android:paddingEnd="16dp"
-        android:text="@string/sign_in"
-        android:textAllCaps="false"
-        android:textColor="?attr/mainText"
-        android:textSize="14sp"
-        android:visibility="visible" />
-
     <TextView
         android:id="@+id/tvStatsHeader"
         android:layout_width="wrap_content"

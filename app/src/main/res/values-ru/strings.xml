@@ -32,7 +32,7 @@
     <string name="mark_done">Слово отмечено как повторенное</string>
     <string name="done">ВЫПОЛНЕНО</string>
     <string name="confirm_avatar">Выберите действие с Вашим аватаром:</string>
-    <string name="choose_new">ВЫБРАТЬ НОВЫЙ</string>
+    <string name="choose_new">ВЫБРАТЬ</string>
     <string name="clear">ОЧИСТИТЬ</string>
     <string name="close">ЗАКРЫТЬ</string>
     <string name="not_show">Не показывать снова</string>
@@ -100,4 +100,7 @@
     <string name="example">Пример</string>
     <string name="text">Текст</string>
     <string name="add_example">Добавить пример</string>
+    <string name="try_later">Что-то пошло не так. Попробуйте позже.</string>
+    <string name="grant_access">Вы должны предоставить доступ к сервисам Google. Попробуйте еще раз.</string>
+    <string name="confirm_grant_access">Вы должны предоставить доступ к сервисам Google, затем активировать опцию повторно. Продолжить?</string>
 </resources>

@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.view.View
 import android.view.Window
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.api.services.drive.Drive
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +19,7 @@ import ru.dartx.linguatheka.databinding.ActivityRestoreBinding
 import ru.dartx.linguatheka.db.MainDataBase
 import ru.dartx.linguatheka.dialogs.RestoreDialog
 import ru.dartx.linguatheka.utils.BackupAndRestoreManager
+import ru.dartx.linguatheka.utils.GoogleSignInManager
 import ru.dartx.linguatheka.utils.ThemeManager
 import java.io.FileOutputStream
 import java.io.IOException
@@ -31,47 +34,67 @@ class RestoreActivity : AppCompatActivity() {
         setContentView(binding.root)
         val account = GoogleSignIn.getLastSignedInAccount(this)
         if (account == null) {
-            Toast.makeText(this, getString(R.string.login_to_google), Toast.LENGTH_SHORT).show()
-            finish()
-        } else {
-            val message1 = getString(R.string.restore_message1)
-            val message2 = getString(R.string.restore_message2)
-            RestoreDialog.showDialog(this, object : RestoreDialog.Listener {
-                override fun onClickOk() {
-                    val googleDriveService =
-                        BackupAndRestoreManager.googleDriveClient(account, this@RestoreActivity)
-                    if (googleDriveService != null
-                        && BackupAndRestoreManager.isOnline(this@RestoreActivity)
-                    ) {
-                        Toast.makeText(
-                            this@RestoreActivity,
-                            getString(R.string.restore_started),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        binding.pbLoading.visibility = View.VISIBLE
-                        CoroutineScope(Dispatchers.Main).launch { restore(googleDriveService) }
+            val singInLauncher = registerForActivityResult(
+                ActivityResultContracts.StartActivityForResult()
+            ) {
+                if (it.resultCode == RESULT_OK) {
+                    val acc = GoogleSignIn.getLastSignedInAccount(this)
+                    if (acc != null) {
+                        GoogleSignInManager.setAvatar(this, acc, true)
+                        confirmRestore(acc)
                     } else {
-                        when (BackupAndRestoreManager.isOnline(this@RestoreActivity)) {
-                            true -> Toast.makeText(
-                                this@RestoreActivity,
-                                getString(R.string.relogin_to_google),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            false -> Toast.makeText(
-                                this@RestoreActivity,
-                                getString(R.string.no_internet),
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
+                        GoogleSignInManager.googleSignOut(this)
+                        Toast.makeText(this, getString(R.string.try_later), Toast.LENGTH_LONG)
+                            .show()
                         finish()
                     }
-                }
-
-                override fun onClickCancel() {
+                } else {
+                    Toast.makeText(this, getString(R.string.grant_access), Toast.LENGTH_LONG)
+                        .show()
                     finish()
                 }
-            }, message1, message2)
-        }
+            }
+            singInLauncher.launch(GoogleSignInManager.googleSignIn(this))
+        } else confirmRestore(account)
+    }
+
+    private fun confirmRestore(account: GoogleSignInAccount) {
+        val message1 = getString(R.string.restore_message1)
+        val message2 = getString(R.string.restore_message2)
+        RestoreDialog.showDialog(this, object : RestoreDialog.Listener {
+            override fun onClickOk() {
+                if (!BackupAndRestoreManager.isOnline(this@RestoreActivity)) {
+                    Toast.makeText(
+                        this@RestoreActivity,
+                        getString(R.string.no_internet),
+                        Toast.LENGTH_LONG
+                    ).show()
+                    finish()
+                }
+                val googleDriveService =
+                    BackupAndRestoreManager.googleDriveClient(account, this@RestoreActivity)
+                if (googleDriveService != null) {
+                    Toast.makeText(
+                        this@RestoreActivity,
+                        getString(R.string.restore_started),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    binding.pbLoading.visibility = View.VISIBLE
+                    CoroutineScope(Dispatchers.Main).launch { restore(googleDriveService) }
+                } else {
+                    Toast.makeText(
+                        this@RestoreActivity,
+                        getString(R.string.try_later),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    finish()
+                }
+            }
+
+            override fun onClickCancel() {
+                finish()
+            }
+        }, message1, message2)
     }
 
     private suspend fun restore(googleDriveService: Drive) {

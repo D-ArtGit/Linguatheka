@@ -3,6 +3,7 @@ package ru.dartx.linguatheka.dialogs
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
 import ru.dartx.linguatheka.databinding.ConfirmDialogBinding
@@ -20,18 +21,30 @@ object ConfirmDialog {
                 listener.onClick()
                 dialog?.dismiss()
             }
-            btCancel.setOnClickListener { dialog?.dismiss() }
+            btCancel.setOnClickListener {
+                listener.onCancel()
+                dialog?.dismiss()
+            }
         }
         dialog = builder.create()
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.setCanceledOnTouchOutside(true)
         dialog.setOnCancelListener {
+            listener.onCancel()
             it.dismiss()
         }
         dialog.show()
+        dialog.setOnKeyListener { dialogInListener, keyCode, _ ->
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                listener.onCancel()
+                dialogInListener.dismiss()
+            }
+            true
+        }
     }
 
     interface Listener {
         fun onClick()
+        fun onCancel()
     }
 }

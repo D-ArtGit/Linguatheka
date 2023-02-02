@@ -5,11 +5,12 @@ import android.os.Bundle
 import android.view.View
 import android.view.Window
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.http.FileContent
-import com.google.api.services.drive.Drive
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,6 +19,7 @@ import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.databinding.ActivityBackupBinding
 import ru.dartx.linguatheka.db.MainDataBase
 import ru.dartx.linguatheka.utils.BackupAndRestoreManager
+import ru.dartx.linguatheka.utils.GoogleSignInManager
 import ru.dartx.linguatheka.utils.ThemeManager
 import java.util.*
 
@@ -29,40 +31,58 @@ class BackupActivity : AppCompatActivity() {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         binding = ActivityBackupBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        if (!BackupAndRestoreManager.isOnline(this)) {
+            Toast.makeText(
+                this,
+                getString(R.string.no_internet),
+                Toast.LENGTH_SHORT
+            ).show()
+            finish()
+        }
         val account = GoogleSignIn.getLastSignedInAccount(this)
         if (account == null) {
-            Toast.makeText(this, getString(R.string.login_to_google), Toast.LENGTH_LONG).show()
-            finish()
-        } else {
-            val googleDriveService =
-                BackupAndRestoreManager.googleDriveClient(account, this)
-            if (googleDriveService != null && BackupAndRestoreManager.isOnline(this)) {
-                binding.pbLoading.visibility = View.VISIBLE
-                backup(googleDriveService)
-            } else {
-                when (BackupAndRestoreManager.isOnline(this)) {
-                    true -> Toast.makeText(
-                        this,
-                        getString(R.string.relogin_to_google),
-                        Toast.LENGTH_LONG
-                    )
+            val singInLauncher = registerForActivityResult(
+                ActivityResultContracts.StartActivityForResult()
+            ) {
+                if (it.resultCode == RESULT_OK) {
+                    val acc = GoogleSignIn.getLastSignedInAccount(this)
+                    if (acc != null) {
+                        GoogleSignInManager.setAvatar(this, acc, true)
+                        backup(acc)
+                    } else {
+                        GoogleSignInManager.googleSignOut(this)
+                        Toast.makeText(this, getString(R.string.try_later), Toast.LENGTH_LONG)
+                            .show()
+                        finish()
+                    }
+                } else {
+                    Toast.makeText(this, getString(R.string.grant_access), Toast.LENGTH_LONG)
                         .show()
-                    false -> Toast.makeText(
-                        this,
-                        getString(R.string.no_internet),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    finish()
                 }
-                finish()
             }
-        }
+            singInLauncher.launch(GoogleSignInManager.googleSignIn(this))
+        } else backup(account)
     }
 
-    private fun backup(googleDriveService: Drive) {
+    private fun backup(account: GoogleSignInAccount) {
+        val googleDriveService =
+            BackupAndRestoreManager.googleDriveClient(account, this)
+        if (googleDriveService == null) {
+            Toast.makeText(
+                this,
+                getString(R.string.try_later),
+                Toast.LENGTH_LONG
+            )
+                .show()
+            finish()
+        }
+
+        binding.pbLoading.visibility = View.VISIBLE
         Toast.makeText(this, getString(R.string.backup_started), Toast.LENGTH_SHORT).show()
+
         MainDataBase.destroyInstance()
         val dbPath = getString(R.string.db_path)
-
         val storageFile = com.google.api.services.drive.model.File()
         storageFile.parents = Collections.singletonList("appDataFolder")
         storageFile.name = getString(R.string.file_name)
@@ -72,7 +92,7 @@ class BackupActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             val success = withContext(Dispatchers.IO) {
                 try {
-                    val uploadedFiles = googleDriveService.files().list()
+                    val uploadedFiles = googleDriveService!!.files().list()
                         .setSpaces("appDataFolder")
                         .setPageSize(10)
                         .execute()

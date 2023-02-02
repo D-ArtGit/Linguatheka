@@ -1,8 +1,8 @@
 package ru.dartx.linguatheka.settings
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.ListPreference
@@ -19,13 +19,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.dartx.linguatheka.R
-import ru.dartx.linguatheka.utils.BackupAndRestoreManager
-import ru.dartx.linguatheka.utils.LanguagesManager
-import ru.dartx.linguatheka.utils.ThemeManager
-import ru.dartx.linguatheka.utils.TimeManager
+import ru.dartx.linguatheka.activities.GoogleSignInActivity
+import ru.dartx.linguatheka.utils.*
 
 class SettingsActivity : AppCompatActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(ThemeManager.getSelectedTheme(this))
         super.onCreate(savedInstanceState)
@@ -79,15 +76,19 @@ class SettingsActivity : AppCompatActivity() {
                 if (newValue as Boolean) {
                     val account = GoogleSignIn.getLastSignedInAccount(requireContext())
                     if (account == null) {
-                        Toast.makeText(
-                            requireActivity(),
-                            getString(R.string.login_to_google),
-                            Toast.LENGTH_LONG
-                        )
-                            .show()
                         result = false
                     } else {
+                        val googleDriveService =
+                            BackupAndRestoreManager.googleDriveClient(account, requireContext())
+                        if (googleDriveService == null) {
+                            result = false
+                            GoogleSignInManager.googleSignOut(requireContext())
+                        }
+                    }
+                    if (result) {
                         BackupAndRestoreManager.startBackupWorker(requireContext().applicationContext)
+                    } else {
+                        startActivity(Intent(requireContext(), GoogleSignInActivity::class.java))
                     }
                 } else {
                     WorkManager.getInstance(requireContext()).cancelAllWorkByTag("backup_cards")

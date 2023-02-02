@@ -388,6 +388,10 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     mainViewModel.deleteCard(card?.id!!)
                     finish()
                 }
+
+                override fun onCancel() {
+
+                }
             },
             message
         )
@@ -408,6 +412,10 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     cardState = if (cardState == CARD_STATE_EDIT) CARD_STATE_EDIT_AND_RESET
                     else CARD_STATE_RESET
                     setMainResult()
+                }
+
+                override fun onCancel() {
+
                 }
             },
             message

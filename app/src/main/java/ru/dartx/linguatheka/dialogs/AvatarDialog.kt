@@ -23,8 +23,8 @@ object AvatarDialog {
                 listener.onClickClear()
                 dialog?.dismiss()
             }
-            btCancel.setOnClickListener {
-                listener.onClickCancel()
+            btGoogle.setOnClickListener {
+                listener.onClickGoogle()
                 dialog?.dismiss()
             }
         }
@@ -49,6 +49,7 @@ object AvatarDialog {
         fun onClickChoose()
         fun onClickClear()
         fun onClickCancel()
+        fun onClickGoogle()
 
     }
 }

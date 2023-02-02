@@ -11,17 +11,15 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
-import ru.dartx.linguatheka.workers.BackupWorker
 import ru.dartx.linguatheka.R
+import ru.dartx.linguatheka.workers.BackupWorker
 import java.util.concurrent.TimeUnit
 
 object BackupAndRestoreManager {
     fun googleDriveClient(account: GoogleSignInAccount, context: Context): Drive? {
-        Log.d("DArtX", "GoogleDriveService")
         val credentials =
             GoogleAccountCredential.usingOAuth2(context, listOf(DriveScopes.DRIVE_FILE, DriveScopes.DRIVE_APPDATA))
         credentials.selectedAccount = account.account
-        Log.d("DArtX", "Account: ${account.account}")
         return Drive.Builder(
             NetHttpTransport(),
             GsonFactory.getDefaultInstance(),

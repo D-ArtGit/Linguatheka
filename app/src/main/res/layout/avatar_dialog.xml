@@ -31,15 +31,6 @@
         app:layout_constraintTop_toBottomOf="@+id/tvQuestion">
 
         <Button
-            android:id="@+id/btCancel"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@android:string/cancel"
-            android:textColor="?attr/colorSecondaryVariant" />
-
-        <Button
             android:id="@+id/btClear"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
@@ -54,7 +45,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="?attr/dialogBg"
             android:text="@string/choose_new"
+            android:textColor="?attr/colorSecondaryVariant" />
+
+        <Button
+            android:id="@+id/btGoogle"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/from_google"
             android:textColor="?attr/colorSecondaryVariant" />
 
     </LinearLayout>
