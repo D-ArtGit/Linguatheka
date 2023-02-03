@@ -500,12 +500,14 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             cardId = card!!.id!!
             if (card!!.step > 8) cardState = CARD_STATE_EDIT_AND_RESET
         }
-        binding.edWord.requestFocus()
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.showSoftInput(
-            binding.edWord,
-            InputMethodManager.SHOW_IMPLICIT
-        )
+        if (!imm.isAcceptingText) {
+            binding.edWord.requestFocus()
+            imm.showSoftInput(
+                binding.edWord,
+                InputMethodManager.SHOW_IMPLICIT
+            )
+        }
         exampleList.add(
             ExampleItem(
                 0,
@@ -519,10 +521,11 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 finished = false
             )
         )
+
         requestFocusOnAddedExample = true
         adapter?.notifyItemInserted(exampleList.size - 1)
-        binding.rvCardItems.postDelayed({
-            binding.rvCardItems.smoothScrollToPosition(exampleList.size - 1)
+        binding.scView.postDelayed({
+            binding.scView.smoothScrollTo(0, resources.displayMetrics.heightPixels)
         }, 100)
     }
 
