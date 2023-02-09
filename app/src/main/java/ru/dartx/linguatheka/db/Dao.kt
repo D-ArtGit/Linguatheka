@@ -17,6 +17,9 @@ interface Dao {
     )
     suspend fun searchCards(cond: String): List<Card>
 
+    @Query("SELECT * FROM cards WHERE word IS :cond AND id != :card_id")
+    suspend fun findDuplicates(cond: String, card_id: Int): List<Card>
+
     @Query("SELECT * FROM example WHERE card_id IS :card_id ORDER BY finished, id ASC")
     suspend fun findExamplesByCardId(card_id: Int): List<Example>
 
@@ -52,7 +55,7 @@ interface Dao {
                 it.copy(
                     id = cardId * 100 + it.id,
                     card_id = cardId
-                    )
+                )
             )
         }
     }

@@ -25,6 +25,7 @@
     <string name="confirm_reset">Do you really want to reset all progress for this card?</string>
     <string name="confirm_delete">Do you really want to delete this card?</string>
     <string name="fill_field">This field can\'t be empty</string>
+    <string name="word_exist">A card with this word already exists. Add new examples to it</string>
     <string name="channel_name">main_channel</string>
     <string name="channel_description">Main notifications</string>
     <string name="time_to_repeat">It\'s time to repeat the word</string>

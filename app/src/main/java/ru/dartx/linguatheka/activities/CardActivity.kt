@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.text.Spanned
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -54,6 +55,7 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     private var defLang = ""
     private val exampleList: ArrayList<ExampleItem> = arrayListOf()
     private var requestFocusOnAddedExample = true
+    private var isDuplicate = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -175,6 +177,25 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         }
         edWord.addTextChangedListener {
             if (!it.isNullOrEmpty()) {
+                isDuplicate = false
+                var cardId = 0
+                if (card?.id != null && card?.id != 0) {
+                    cardId = card!!.id!!
+                }
+                CoroutineScope(Dispatchers.Main).launch {
+                    val duplicatesList = withContext(Dispatchers.IO) {
+                        Log.d("DArtX", "Find: $it in card $cardId")
+                        mainViewModel.findDuplicates(it.toString(), cardId)
+                    }
+                    withContext(Dispatchers.Main) {
+                        Log.d("DArtX", "Found: $duplicatesList")
+                        if (duplicatesList.isNotEmpty()) isDuplicate = true
+                    }
+                }
+
+                edWord.setCompoundDrawablesWithIntrinsicBounds(
+                    0, 0, 0, 0
+                )
                 edWord.setCompoundDrawablesWithIntrinsicBounds(
                     0,
                     0,
@@ -249,28 +270,41 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         val currentTime = getCurrentTime()
         val remindTime = addDays(currentTime, daysArray[0])
         binding.apply {
+            var exampleListIsEmpty = false
             var emptyItemIndex =
                 exampleList.indexOfFirst { it.example.isEmpty() && it.translation.isEmpty() }
             while (emptyItemIndex >= 0) {
-                exampleList.removeAt(emptyItemIndex)
-                adapter?.notifyItemRemoved(emptyItemIndex)
-                if (exampleList.size > emptyItemIndex) {
-                    adapter?.notifyItemRangeChanged(emptyItemIndex, exampleList.size - 1)
+                if (exampleList.size > 1) {
+                    exampleList.removeAt(emptyItemIndex)
+                    adapter?.notifyItemRemoved(emptyItemIndex)
+                    if (exampleList.size > emptyItemIndex) {
+                        adapter?.notifyItemRangeChanged(emptyItemIndex, exampleList.size - 1)
+                    }
+                    emptyItemIndex =
+                        exampleList.indexOfFirst { it.example.isEmpty() && it.translation.isEmpty() }
+                } else {
+                    exampleListIsEmpty = true
+                    emptyItemIndex = -1
                 }
-                emptyItemIndex =
-                    exampleList.indexOfFirst { it.example.isEmpty() && it.translation.isEmpty() }
             }
             if (edWord.text.isNullOrEmpty()) {
                 edWord.error = getString(R.string.fill_field)
                 return null
-            } else if (exampleList.isEmpty()) {
+            } else if (isDuplicate) {
+                edWord.error = getString(R.string.word_exist)
+                return null
+            } else if (exampleList.isEmpty() || exampleListIsEmpty) {
                 Toast.makeText(
                     this@CardActivity,
                     getString(R.string.no_examples),
                     Toast.LENGTH_LONG
                 )
                     .show()
-                exampleListAddEmpty()
+                if (!exampleListIsEmpty) exampleListAddEmpty()
+                else {
+                    exampleList[0].requestFocus = true
+                    adapter?.notifyItemChanged(0)
+                }
                 return null
             } else {
                 var examplesForCard = ""
@@ -325,24 +359,41 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             }
         }
 
+        var exampleListIsEmpty = false
         var emptyItemIndex =
             exampleList.indexOfFirst { it.example.isEmpty() && it.translation.isEmpty() }
         while (emptyItemIndex >= 0) {
-            exampleList.removeAt(emptyItemIndex)
-            adapter?.notifyItemRemoved(emptyItemIndex)
-            if (exampleList.size > emptyItemIndex) {
-                adapter?.notifyItemRangeChanged(emptyItemIndex, exampleList.size - 1)
+            if (exampleList.size > 1) {
+                exampleList.removeAt(emptyItemIndex)
+                adapter?.notifyItemRemoved(emptyItemIndex)
+                if (exampleList.size > emptyItemIndex) {
+                    adapter?.notifyItemRangeChanged(emptyItemIndex, exampleList.size - 1)
+                }
+                emptyItemIndex =
+                    exampleList.indexOfFirst { it.example.isEmpty() && it.translation.isEmpty() }
+            } else {
+                exampleListIsEmpty = true
+                emptyItemIndex = -1
             }
-            emptyItemIndex =
-                exampleList.indexOfFirst { it.example.isEmpty() && it.translation.isEmpty() }
         }
         if (edWord.text.isNullOrEmpty()) {
             edWord.error = getString(R.string.fill_field)
             return null
-        } else if (exampleList.isEmpty()) {
-            Toast.makeText(this@CardActivity, getString(R.string.no_examples), Toast.LENGTH_LONG)
+        } else if (isDuplicate) {
+            edWord.error = getString(R.string.word_exist)
+            return null
+        } else if (exampleList.isEmpty() || exampleListIsEmpty) {
+            Toast.makeText(
+                this@CardActivity,
+                getString(R.string.no_examples),
+                Toast.LENGTH_LONG
+            )
                 .show()
-            exampleListAddEmpty()
+            if (!exampleListIsEmpty) exampleListAddEmpty()
+            else {
+                exampleList[0].requestFocus = true
+                adapter?.notifyItemChanged(0)
+            }
             return null
         } else {
             var examplesForCard = ""
@@ -500,8 +551,10 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             cardId = card!!.id!!
             if (card!!.step > 8) cardState = CARD_STATE_EDIT_AND_RESET
         }
+        var delay = 100L
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         if (!imm.isAcceptingText) {
+            delay = 400L
             binding.edWord.requestFocus()
             imm.showSoftInput(
                 binding.edWord,
@@ -525,8 +578,8 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         requestFocusOnAddedExample = true
         adapter?.notifyItemInserted(exampleList.size - 1)
         binding.scView.postDelayed({
-            binding.scView.smoothScrollTo(0, resources.displayMetrics.heightPixels)
-        }, 100)
+            binding.scView.smoothScrollTo(0, Int.MAX_VALUE)
+        }, delay)
     }
 
     companion object {

@@ -16,6 +16,8 @@ class MainViewModel(dataBase: MainDataBase) : ViewModel() {
     suspend fun findExampleByCardId(card_id: Int): List<Example> =
         dao.findExamplesByCardId(card_id)
 
+    suspend fun findDuplicates(cond: String, card_id: Int): List<Card> = dao.findDuplicates(cond, card_id)
+
     fun insertCard(card: Card, exampleList: List<Example>) =
         viewModelScope.launch { dao.insertCard(card, exampleList) }
 
