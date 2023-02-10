@@ -123,12 +123,17 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             }
             CoroutineScope(Dispatchers.Main).launch {
                 val foundExamples = withContext(Dispatchers.IO) {
-                    val examplesForCard = mainViewModel.findExampleByCardId(card!!.id!!)
-                    examplesForCard
+                    mainViewModel.findExampleByCardId(card!!.id!!)
                 }
                 withContext(Dispatchers.Main) {
                     if (foundExamples.isNotEmpty()) {
+                        var needDivider = true
                         foundExamples.forEachIndexed { index, example ->
+                            var dividerVisibility = false
+                            if (example.finished  && needDivider && index > 0) {
+                                needDivider = false
+                                dividerVisibility = true
+                            }
                             exampleList.add(
                                 ExampleItem(
                                     example.id,
@@ -137,6 +142,7 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                                     HtmlManager.getFromHtml(example.translation).trim() as Spanned,
                                     View.VISIBLE,
                                     View.GONE,
+                                    dividerVisibility,
                                     null,
                                     false,
                                     example.finished
@@ -569,6 +575,7 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 HtmlManager.getFromHtml(""),
                 View.GONE,
                 View.VISIBLE,
+                false,
                 null,
                 requestFocus = requestFocusOnAddedExample,
                 finished = false

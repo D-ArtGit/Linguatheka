@@ -32,6 +32,28 @@
             tools:visibility="visible">
 
 
+            <View
+                android:id="@+id/learnedDivider"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?android:attr/listDivider"
+                android:visibility="@{exampleItem.dividerVisibility ? View.VISIBLE : View.GONE}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/learnedText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="1dp"
+                android:text="@string/learned"
+                android:visibility="@{exampleItem.dividerVisibility ? View.VISIBLE : View.GONE}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/learnedDivider" />
+
             <ImageView
                 android:id="@+id/ivShowHide"
                 android:layout_width="wrap_content"
@@ -39,7 +61,7 @@
                 android:layout_weight="1"
                 android:contentDescription="Show/Hide"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/learnedText"
                 app:srcCompat="@drawable/ic_show" />
 
             <TextView
@@ -51,7 +73,7 @@
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/ivShowHide"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/learnedText"
                 tools:text="@string/example" />
 
             <androidx.constraintlayout.widget.ConstraintLayout

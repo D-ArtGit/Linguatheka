@@ -104,4 +104,5 @@
     <string name="grant_access">Вы должны предоставить доступ к сервисам Google. Попробуйте еще раз.</string>
     <string name="confirm_grant_access">Вы должны предоставить доступ к сервисам Google, затем активировать опцию повторно. Продолжить?</string>
     <string name="word_exist">Карточка с этим словом уже существует. Добавьте новые примеры в нее.</string>
+    <string name="learned">Выучено ранее:</string>
 </resources>

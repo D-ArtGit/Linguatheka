@@ -10,6 +10,7 @@ data class ExampleItem(
     var translation: Spanned,
     var tvExampleVisibility: Int,
     var edVisibility: Int,
+    var dividerVisibility: Boolean,
     var error: String?,
     var requestFocus: Boolean,
     var finished: Boolean
