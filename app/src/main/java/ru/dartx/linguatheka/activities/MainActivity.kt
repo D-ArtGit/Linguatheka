@@ -162,7 +162,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                 R.id.faq -> startActivity(
                     Intent(
                         this@MainActivity,
-                        HowToUseActivity::class.java
+                        LargeTextActivity::class.java
                     )
                 )
                 R.id.donate -> {
@@ -322,7 +322,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
             startActivity(
                 Intent(
                     this@MainActivity,
-                    HowToUseActivity::class.java
+                    LargeTextActivity::class.java
                 )
             )
         }

@@ -18,6 +18,7 @@ import ru.dartx.linguatheka.activities.CardActivity
 import ru.dartx.linguatheka.activities.MainActivity
 import ru.dartx.linguatheka.activities.SnoozeDialogActivity
 import ru.dartx.linguatheka.db.MainDataBase
+import ru.dartx.linguatheka.utils.HtmlManager
 import ru.dartx.linguatheka.utils.TimeManager
 
 class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
@@ -56,16 +57,28 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
         var snoozePendingIntent: PendingIntent?
         var donePendingIntent: PendingIntent?
         notificationCards.forEach { card ->
+            val examples = database.getDao().findExamplesByCardId(card.id!!)
+            var moreThanOneLine = false
+            var examplesForCard = ""
+            examples.forEach { example ->
+                if (!example.finished) {
+                    if (moreThanOneLine) {
+                        examplesForCard += "\n"
+                    }
+                    examplesForCard += HtmlManager.getFromHtml(example.example).trim()
+                    moreThanOneLine = true
+                }
+            }
             resultIntent.putExtra(MainActivity.CARD_DATA, card)
             snoozeIntent.putExtra(MainActivity.CARD_DATA, card)
             doneIntent.putExtra(MainActivity.CARD_DATA, card)
             resultPendingIntent = TaskStackBuilder.create(applicationContext).run {
                 addNextIntentWithParentStack(resultIntent)
-                getPendingIntent(card.id!!, PendingIntent.FLAG_IMMUTABLE)
+                getPendingIntent(card.id, PendingIntent.FLAG_IMMUTABLE)
             }
             snoozePendingIntent = PendingIntent.getActivity(
                 applicationContext,
-                card.id!!,
+                card.id,
                 snoozeIntent,
                 PendingIntent.FLAG_IMMUTABLE
             )
@@ -82,7 +95,7 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
                 .setContentText(applicationContext.getString(R.string.time_to_repeat))
                 .setStyle(
                     NotificationCompat.BigTextStyle()
-                        .bigText(card.examples)
+                        .bigText(examplesForCard)
                 )
                 .setContentIntent(resultPendingIntent)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

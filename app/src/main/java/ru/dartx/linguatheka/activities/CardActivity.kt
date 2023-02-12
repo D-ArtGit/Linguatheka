@@ -7,7 +7,6 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.text.Spanned
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -113,7 +112,6 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         }
         if (card != null) {
             with(NotificationManagerCompat.from(applicationContext)) { cancel(card!!.id!!) }
-            println("GetCard: ${card!!.id}")
             binding.apply {
                 index = langArray[0].indexOf(card!!.lang)
                 if (index < 0) index = langArray[0].indexOf(defLang)
@@ -190,11 +188,9 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 }
                 CoroutineScope(Dispatchers.Main).launch {
                     val duplicatesList = withContext(Dispatchers.IO) {
-                        Log.d("DArtX", "Find: $it in card $cardId")
                         mainViewModel.findDuplicates(it.toString(), cardId)
                     }
                     withContext(Dispatchers.Main) {
-                        Log.d("DArtX", "Found: $duplicatesList")
                         if (duplicatesList.isNotEmpty()) isDuplicate = true
                     }
                 }

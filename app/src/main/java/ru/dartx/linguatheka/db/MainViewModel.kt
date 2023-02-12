@@ -13,7 +13,7 @@ class MainViewModel(dataBase: MainDataBase) : ViewModel() {
     fun searchCard(cond: String) =
         viewModelScope.launch { foundCards.postValue(dao.searchCards(cond)) }
 
-    suspend fun findExampleByCardId(card_id: Int): List<Example> =
+    fun findExampleByCardId(card_id: Int): List<Example> =
         dao.findExamplesByCardId(card_id)
 
     suspend fun findDuplicates(cond: String, card_id: Int): List<Card> = dao.findDuplicates(cond, card_id)

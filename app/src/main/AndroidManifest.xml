@@ -28,7 +28,7 @@
             android:taskAffinity=""
             android:theme="@style/Theme.WordCardsDialogBlue" />
         <activity
-            android:name="ru.dartx.linguatheka.activities.HowToUseActivity"
+            android:name="ru.dartx.linguatheka.activities.LargeTextActivity"
             android:excludeFromRecents="true"
             android:exported="false"
             android:label="@string/how_to_use"

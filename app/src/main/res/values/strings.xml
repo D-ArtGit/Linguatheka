@@ -73,6 +73,8 @@
     <string name="author_contacts">Artem Danilov\n(dartx.apps@gmail.com)</string>
     <string name="method">Original method:</string>
     <string name="link" translatable="false">https://www.brejestovski.com</string>
+    <string name="privacy">Privacy policy</string>
+    <string name="agreement">User agreement</string>
 
     <!-- Preference Titles -->
     <string name="theme_settings_header">Themes</string>
