@@ -4,17 +4,18 @@ This page is used to inform users regarding my policies with the collection, use
 
 If you choose to use my app, then you agree to the collection and use of information in relation to this policy. The Personal Information that I collect is used for providing and improving app. I will not use or share your information with anyone except as described in this Privacy Policy.
 
-The terms used in this Privacy Policy have the same meanings as in our Terms and Conditions, which are accessible in app unless otherwise defined in this Privacy Policy.
+The terms used in this Privacy Policy have the same meanings as in User agreement, which are accessible in app unless otherwise defined in this Privacy Policy.
 
 **Information Collection and Use**
 
-For a better experience, while using my app, I may require you to provide us with certain personally identifiable information. The information that I request will be retained on your device and is not collected by me in any way.
+For a better experience, while using my app, I may require you to provide me with certain personally identifiable information. The information that I request will be retained on your device and is not collected by me in any way.
 
 The app does use third-party services that may collect information used to identify you.
 
 Link to the privacy policy of third-party service providers used by the app
 
-*   [Google Play Services](https://www.google.com/policies/privacy/)
+*   [Google Services: access to the user name and avatar for displaying statistics on the screen, saving a backup of application data in Google Drive](https://www.google.com/policies/privacy)
+*   [“YooMoney”, NBCO LLC: payment data in case of donation](https://yoomoney.ru/page?id=527708)
 
 **Log Data**
 
@@ -24,7 +25,7 @@ I want to inform you that whenever you use my app, in a case of an error in the 
 
 Cookies are files with a small amount of data that are commonly used as anonymous unique identifiers. These are sent to your browser from the websites that you visit and are stored on your device's internal memory.
 
-This Service does not use these “cookies” explicitly. However, the app may use third-party code and libraries that use “cookies” to collect information and improve their services. You have the option to either accept or refuse these cookies and know when a cookie is being sent to your device. If you choose to refuse our cookies, you may not be able to use some portions of this Service.
+This app does not use these “cookies” explicitly. However, the app may use third-party code and libraries that use “cookies” to collect information and improve their services. You have the option to either accept or refuse these cookies and know when a cookie is being sent to your device. If you choose to refuse cookies, you may not be able to use some portions of this Service.
 
 **Security**
 
@@ -32,11 +33,11 @@ I value your trust in providing me your Personal Information, thus I'm striving 
 
 **Links to Other Sites**
 
-This Service may contain links to other sites. If you click on a third-party link, you will be directed to that site. Note that these external sites are not operated by me. Therefore, I strongly advise you to review the Privacy Policy of these websites. I have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party sites or services.
+The app may contain links to other sites. If you click on a third-party link, you will be directed to that site. Note that these external sites are not operated by me. Therefore, I strongly advise you to review the Privacy Policy of these websites. I have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party sites or services.
 
 **Children’s Privacy**
 
-The application is not intended for persons under 5 years of age and can be used by persons under the age of 18. Since the application does not collect personal data about Users, consent to the processing of Personal Data of underage Users is not required.
+The application is not intended for persons under 5 years of age but can be used by persons under the age of 18. Since the application does not collect personal data about Users, consent to the processing of Personal Data of underage Users is not required.
 
 **Changes to This Privacy Policy**
 

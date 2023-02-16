@@ -54,7 +54,7 @@ class LargeTextActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) finish()
+        if (item.itemId == android.R.id.home) this.finish()
         return super.onOptionsItemSelected(item)
     }
 
