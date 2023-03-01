@@ -55,6 +55,7 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     private val exampleList: ArrayList<ExampleItem> = arrayListOf()
     private var requestFocusOnAddedExample = true
     private var isDuplicate = false
+    private var alreadyAsked = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -119,7 +120,7 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 tvCardWord.text = card!!.word
                 edWord.setText(card?.word)
             }
-            CoroutineScope(Dispatchers.Main).launch {
+            launch {
                 val foundExamples = withContext(Dispatchers.IO) {
                     mainViewModel.findExampleByCardId(card!!.id!!)
                 }
@@ -128,9 +129,9 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                         var needDivider = true
                         foundExamples.forEachIndexed { index, example ->
                             var dividerVisibility = false
-                            if (example.finished  && needDivider && index > 0) {
+                            if (example.finished && needDivider) {
                                 needDivider = false
-                                dividerVisibility = true
+                                if (index > 0) dividerVisibility = true
                             }
                             exampleList.add(
                                 ExampleItem(
@@ -243,7 +244,7 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     }
                     mainViewModel.insertCard(tempCard, tmpExampleList)
                 }
-                CARD_STATE_EDIT, CARD_STATE_EDIT_AND_RESET -> {
+                CARD_STATE_EDIT, CARD_STATE_EDIT_AND_RESET, CARD_STATE_EDIT_AND_CHECK -> {
                     val tmpExampleList: ArrayList<Example> = arrayListOf()
                     exampleList.forEachIndexed { index, exampleItem ->
                         tmpExampleList.add(
@@ -353,9 +354,10 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             if (timeToSetRemind) {
                 step++
                 remindTime = if (step <= 8) {
+                    if (cardState == CARD_STATE_EDIT) cardState = CARD_STATE_EDIT_AND_CHECK
                     addDays(getCurrentTime(), daysArray[step])
                 } else {
-                    cardState = CARD_STATE_EDIT
+                    cardState = CARD_STATE_EDIT_AND_CHECK
                     TimeManager.ENDLESS_FUTURE
                 }
             }
@@ -549,10 +551,28 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     private fun exampleListAddEmpty() {
         var cardId = 0
-        if (card != null) {
-            cardId = card!!.id!!
-            if (card!!.step > 8) cardState = CARD_STATE_EDIT_AND_RESET
-        }
+        if (card != null) cardId = card!!.id!!
+        if (cardId != 0 && !alreadyAsked) {
+            val message = getString(R.string.reset_for_added_example)
+            ConfirmDialog.showDialog(
+                this, object : ConfirmDialog.Listener {
+                    override fun onClick() {
+                        cardState = CARD_STATE_EDIT_AND_RESET
+                        alreadyAsked = true
+                        binding.scView.postDelayed({ newFocusedItem(cardId) }, 100)
+                    }
+
+                    override fun onCancel() {
+                        alreadyAsked = true
+                        binding.scView.postDelayed({ newFocusedItem(cardId) }, 100)
+                    }
+                },
+                message
+            )
+        } else newFocusedItem(cardId)
+    }
+
+    private fun newFocusedItem(cardId: Int) {
         var delay = 100L
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         if (!imm.isAcceptingText) {
@@ -590,7 +610,8 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         const val CARD_STATE_EDIT = 2
         const val CARD_STATE_VIEW = 3
         const val CARD_STATE_EDIT_AND_RESET = 4
-        const val CARD_STATE_CHECK = 5
-        const val CARD_STATE_RESET = 6
+        const val CARD_STATE_EDIT_AND_CHECK = 5
+        const val CARD_STATE_CHECK = 6
+        const val CARD_STATE_RESET = 7
     }
 }

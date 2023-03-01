@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Linguatheka Beta</string>
+    <string name="app_name">Linguatheka</string>
     <string name="create">Create</string>
     <string name="search">Search</string>
     <string name="enter_word">Enter word</string>
@@ -23,6 +23,7 @@
     <string name="edit_card">Edit card</string>
     <string name="next_time_to_repeat">Next time to repeat:&#160;</string>
     <string name="confirm_reset">Do you really want to reset all progress for this card?</string>
+    <string name="reset_for_added_example">It\'s recommended to reset the progress of the card in order to learn tha added example. Confirm the reset?</string>
     <string name="confirm_delete">Do you really want to delete this card?</string>
     <string name="fill_field">This field can\'t be empty</string>
     <string name="word_exist">A card with this word already exists. Add new examples to it</string>

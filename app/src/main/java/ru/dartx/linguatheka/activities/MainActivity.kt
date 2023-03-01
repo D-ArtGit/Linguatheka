@@ -214,10 +214,12 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
         cardActivityLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 if (it.resultCode == Activity.RESULT_OK) {
-                    if (it.data?.getIntExtra(
-                            CARD_STATE,
-                            CardActivity.CARD_STATE_VIEW
-                        ) == CardActivity.CARD_STATE_CHECK
+                    val cardState = it.data?.getIntExtra(
+                        CARD_STATE,
+                        CardActivity.CARD_STATE_VIEW
+                    )
+                    if (cardState == CardActivity.CARD_STATE_CHECK ||
+                        cardState == CardActivity.CARD_STATE_EDIT_AND_CHECK
                     )
                         binding.rcViewCardList.postDelayed({
                             binding.rcViewCardList.smoothScrollToPosition(0)

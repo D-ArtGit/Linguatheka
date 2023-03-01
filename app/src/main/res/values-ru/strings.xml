@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Словотека Бета</string>
+    <string name="app_name">Словотека</string>
     <string name="create">Создать</string>
     <string name="search">Поиск</string>
     <string name="enter_word">Введите слово</string>
@@ -107,4 +107,5 @@
     <string name="learned">Выучено ранее:</string>
     <string name="privacy">Политика конфиденциальности</string>
     <string name="agreement">Пользовательское соглашение</string>
+    <string name="reset_for_added_example">Рекомендуется сбросить прогресс карточки, чтобы выучить добавленный пример. Подтверждаете сброс?</string>
 </resources>

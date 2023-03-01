@@ -65,8 +65,8 @@ interface Dao {
 
     @Transaction
     suspend fun updateCardWithItems(card: Card, exampleList: List<Example>) {
-        updateCard(card)
         deleteExamplesByCardId(card.id!!)
+        updateCard(card)
         exampleList.forEach {
             insertExample(
                 it.copy(
@@ -76,9 +76,6 @@ interface Dao {
             )
         }
     }
-
-    @Update
-    suspend fun updateExample(example: Example)
 
     @Query("SELECT lang FROM cards ORDER BY lang ASC")
     fun selectLang(): List<String>
