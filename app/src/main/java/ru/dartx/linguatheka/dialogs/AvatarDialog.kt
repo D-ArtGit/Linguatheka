@@ -5,8 +5,10 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.KeyEvent
 import android.view.LayoutInflater
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import ru.dartx.linguatheka.databinding.AvatarDialogBinding
+import ru.dartx.linguatheka.utils.BackupAndRestoreManager
 
 object AvatarDialog {
     fun showDialog(context: Context, listener: Listener) {
@@ -23,10 +25,12 @@ object AvatarDialog {
                 listener.onClickClear()
                 dialog?.dismiss()
             }
-            btGoogle.setOnClickListener {
-                listener.onClickGoogle()
-                dialog?.dismiss()
-            }
+            if (BackupAndRestoreManager.checkForGooglePlayServices(context)) {
+                btGoogle.setOnClickListener {
+                    listener.onClickGoogle()
+                    dialog?.dismiss()
+                }
+            } else btGoogle.visibility = View.GONE
         }
         dialog = builder.create()
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))

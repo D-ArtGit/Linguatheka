@@ -70,7 +70,8 @@
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
-        app:title="@string/backup_setting_header">
+        app:title="@string/backup_setting_header"
+        app:key="restore_menu">
 
 
         <CheckBoxPreference

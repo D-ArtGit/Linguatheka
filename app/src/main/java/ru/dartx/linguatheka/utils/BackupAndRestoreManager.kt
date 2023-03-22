@@ -6,6 +6,8 @@ import android.net.NetworkCapabilities
 import android.util.Log
 import androidx.work.*
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
@@ -65,5 +67,11 @@ object BackupAndRestoreManager {
             ExistingPeriodicWorkPolicy.KEEP,
             backupRequest
         )
+    }
+
+    fun checkForGooglePlayServices(context: Context): Boolean {
+        val googleApiAvailability = GoogleApiAvailability.getInstance()
+        val status = googleApiAvailability.isGooglePlayServicesAvailable(context)
+        return status == ConnectionResult.SUCCESS
     }
 }

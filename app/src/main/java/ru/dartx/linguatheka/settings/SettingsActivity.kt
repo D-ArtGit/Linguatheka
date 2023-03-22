@@ -49,6 +49,9 @@ class SettingsActivity : AppCompatActivity() {
             val themeMode: Preference? = findPreference("theme")
             val autoBackup: CheckBoxPreference? = findPreference("auto_backup")
             val userName: EditTextPreference? = findPreference("user_name")
+            val restoreMenu: Preference? = findPreference("restore_menu")
+            if (!BackupAndRestoreManager.checkForGooglePlayServices(requireContext())) restoreMenu?.isVisible =
+                false
             val singInLauncher = registerForActivityResult(
                 ActivityResultContracts.StartActivityForResult()
             ) {
