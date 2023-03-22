@@ -52,11 +52,10 @@ object BackupAndRestoreManager {
     fun startBackupWorker(context: Context) {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
-            .setRequiresBatteryNotLow(true)
             .setRequiresDeviceIdle(true)
             .build()
         val backupRequest = PeriodicWorkRequestBuilder<BackupWorker>(
-            24, TimeUnit.HOURS, 8, TimeUnit.HOURS
+            24, TimeUnit.HOURS, 12, TimeUnit.HOURS
         )
             .setConstraints(constraints)
             .addTag("backup_cards")

@@ -2,6 +2,7 @@ package ru.dartx.linguatheka.db
 
 import androidx.room.*
 import androidx.room.Dao
+import androidx.sqlite.db.SupportSQLiteQuery
 import kotlinx.coroutines.flow.Flow
 import ru.dartx.linguatheka.entities.Card
 import ru.dartx.linguatheka.entities.Example
@@ -79,4 +80,7 @@ interface Dao {
 
     @Query("SELECT lang FROM cards ORDER BY lang ASC")
     fun selectLang(): List<String>
+
+    @RawQuery
+    fun checkpoint(supportSQLiteQuery: SupportSQLiteQuery): Int
 }

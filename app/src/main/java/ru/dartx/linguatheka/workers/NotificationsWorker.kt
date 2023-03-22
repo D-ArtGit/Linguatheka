@@ -16,6 +16,7 @@ import androidx.work.WorkerParameters
 import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.activities.CardActivity
 import ru.dartx.linguatheka.activities.MainActivity
+import ru.dartx.linguatheka.activities.MainApp
 import ru.dartx.linguatheka.activities.SnoozeDialogActivity
 import ru.dartx.linguatheka.db.MainDataBase
 import ru.dartx.linguatheka.utils.HtmlManager
@@ -42,7 +43,7 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     private fun createNotifications() {
-        val database = MainDataBase.getDataBase(applicationContext)
+        val database = MainDataBase.getDataBase(applicationContext as MainApp)
         val notificationCards = database.getDao().notificationCards(TimeManager.getCurrentTime())
         val resultIntent = Intent(applicationContext, CardActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK

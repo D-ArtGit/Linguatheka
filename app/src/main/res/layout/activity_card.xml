@@ -120,7 +120,7 @@
                         android:background="@null"
                         android:ems="10"
                         android:hint="@string/enter_word"
-                        android:inputType="textPersonName"
+                        android:inputType="text"
                         android:minHeight="48dp"
                         android:textColor="?attr/mainText"
                         android:textSize="20sp"

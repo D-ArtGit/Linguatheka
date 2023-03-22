@@ -37,7 +37,7 @@ The app may contain links to other sites. If you click on a third-party link, yo
 
 **Children’s Privacy**
 
-The application is not intended for persons under 5 years of age but can be used by persons under the age of 18. Since the application does not collect personal data about Users, consent to the processing of Personal Data of underage Users is not required.
+The application is not intended for persons under 3 years of age but can be used by persons under the age of 18. Since the application does not collect personal data about Users, consent to the processing of Personal Data of underage Users is not required.
 
 **Changes to This Privacy Policy**
 

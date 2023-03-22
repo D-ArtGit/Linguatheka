@@ -164,6 +164,7 @@
                     android:id="@+id/edExample"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:inputType="textMultiLine|textCapSentences"
                     android:text="@={exampleItem.example}" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -185,6 +186,7 @@
                     android:id="@+id/edTranslation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:inputType="textMultiLine|textCapSentences"
                     android:text="@={exampleItem.translation}" />
             </com.google.android.material.textfield.TextInputLayout>
 

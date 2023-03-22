@@ -7,6 +7,7 @@ import android.view.Window
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.sqlite.db.SimpleSQLiteQuery
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
@@ -80,8 +81,6 @@ class BackupActivity : AppCompatActivity() {
 
         binding.pbLoading.visibility = View.VISIBLE
         Toast.makeText(this, getString(R.string.backup_started), Toast.LENGTH_SHORT).show()
-
-        MainDataBase.destroyInstance()
         val dbPath = getString(R.string.db_path)
         val storageFile = com.google.api.services.drive.model.File()
         storageFile.parents = Collections.singletonList("appDataFolder")
@@ -92,6 +91,10 @@ class BackupActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             val success = withContext(Dispatchers.IO) {
                 try {
+                    val database = MainDataBase.getDataBase(applicationContext as MainApp)
+                    database.close()
+                    database.getDao().checkpoint((SimpleSQLiteQuery("pragma wal_checkpoint(full)")))
+                    MainDataBase.destroyInstance()
                     val uploadedFiles = googleDriveService!!.files().list()
                         .setSpaces("appDataFolder")
                         .setPageSize(10)
