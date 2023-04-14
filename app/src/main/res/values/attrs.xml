@@ -2,6 +2,7 @@
 <resources>
     <attr name="mainText" format="color"/>
     <attr name="secondaryText" format="color"/>
+    <attr name="coloredText" format="color"/>
     <attr name="actBgColor" format="color"/>
     <attr name="toolBarBgColor" format="color"/>
     <attr name="cardBgColor" format="color"/>

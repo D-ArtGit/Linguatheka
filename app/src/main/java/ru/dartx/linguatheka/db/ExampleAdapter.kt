@@ -1,11 +1,14 @@
 package ru.dartx.linguatheka.db
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.graphics.Typeface
 import android.text.Spannable
 import android.text.Spanned
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.*
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.BindingAdapter
@@ -97,7 +100,6 @@ class ExampleAdapter(
     ) {
         with(binding) {
             if (selectedField == EXAMPLE) {
-                Log.d("DArtX", "Bold: ${edExample.text}")
                 val startPos = edExample.selectionStart
                 val endPos = edExample.selectionEnd
                 val styles = edExample.text!!.getSpans(startPos, endPos, StyleSpan::class.java)
@@ -192,12 +194,60 @@ class ExampleAdapter(
             if (!hasFocus) editText.clearComposingText()
         }
         tvExample.setOnClickListener {
+            val shortAnimationDuration =
+                root.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
+            val translationHeight = tvExample.lineHeight.toFloat()
             if (translationWrapper.visibility == View.GONE) {
-                translationWrapper.visibility = View.VISIBLE
-                ivShowHide.rotation = 180F
+
+                ivShowHide.animate().rotation(180F).start()
+                translationWrapper.apply {
+                    alpha = 0F
+                    visibility = View.VISIBLE
+                    translationY = -translationHeight / 2
+                }
+
+                /*val alphaAnim = ObjectAnimator.ofFloat(
+                    translationWrapper,
+                    "alpha",
+                    1F
+                ).apply {
+                    duration = shortAnimationDuration
+                }
+                val translationYAnim = ObjectAnimator.ofFloat(
+                    translationWrapper,
+                    "translationY",
+                    0F
+                ).apply {
+                    duration = shortAnimationDuration
+                }
+                AnimatorSet().apply {
+                    interpolator = AccelerateInterpolator()
+                    play(alphaAnim).with(translationYAnim)
+                    start()
+                }*/
+
+                translationWrapper.animate()
+                    .setDuration(shortAnimationDuration)
+                    .setInterpolator(AccelerateInterpolator())
+                    .translationY(0F)
+                    .alpha(1F)
+
             } else {
-                translationWrapper.visibility = View.GONE
-                ivShowHide.rotation = 0F
+                ivShowHide.animate().rotation(0F).start()
+                translationWrapper.animate()
+                    .setDuration(shortAnimationDuration)
+                    .setInterpolator(DecelerateInterpolator())
+                    .translationY(-translationHeight / 2)
+                    .alpha(0F)
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator) {
+                            super.onAnimationEnd(animation)
+                            translationWrapper.apply {
+                                translationY = 0F
+                                visibility = View.GONE
+                            }
+                        }
+                    })
             }
         }
         ivDelete.setOnClickListener {

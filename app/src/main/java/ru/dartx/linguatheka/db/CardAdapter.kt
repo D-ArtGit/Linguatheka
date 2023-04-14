@@ -1,6 +1,7 @@
 package ru.dartx.linguatheka.db
 
 import android.text.SpannableStringBuilder
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,9 +47,15 @@ class CardAdapter(private val listener: Listener) :
                     tvWord.text = SpannableStringBuilder().bold { append(card.word) }
                     tvExamples.text =
                         SpannableStringBuilder().bold { append(card.examples) }
+                    val value = TypedValue()
+                    view.context.theme.resolveAttribute(R.attr.coloredText, value, true)
+                    tvTime.setTextColor(value.data)
                 } else {
                     tvWord.text = card.word
                     tvExamples.text = card.examples
+                    val value = TypedValue()
+                    view.context.theme.resolveAttribute(R.attr.secondaryText, value, true)
+                    tvTime.setTextColor(value.data)
                 }
                 progressBar.max = 9
                 progressBar.progress = card.step
