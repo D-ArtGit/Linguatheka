@@ -1,14 +1,10 @@
 package ru.dartx.linguatheka.db
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.graphics.Typeface
 import android.text.Spannable
 import android.text.Spanned
 import android.text.style.StyleSpan
 import android.view.*
-import android.view.animation.AccelerateInterpolator
-import android.view.animation.DecelerateInterpolator
 import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.BindingAdapter
@@ -17,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.databinding.ExampleItemBinding
 import ru.dartx.linguatheka.model.ExampleItem
+import ru.dartx.linguatheka.utils.Animations
 
 class ExampleAdapter(
     private val exampleList: ArrayList<ExampleItem>
@@ -194,17 +191,15 @@ class ExampleAdapter(
             if (!hasFocus) editText.clearComposingText()
         }
         tvExample.setOnClickListener {
-            val shortAnimationDuration =
-                root.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
-            val translationHeight = tvExample.lineHeight.toFloat()
             if (translationWrapper.visibility == View.GONE) {
 
                 ivShowHide.animate().rotation(180F).start()
-                translationWrapper.apply {
+
+                /*translationWrapper.apply {
                     alpha = 0F
                     visibility = View.VISIBLE
                     translationY = -translationHeight / 2
-                }
+                }*/
 
                 /*val alphaAnim = ObjectAnimator.ofFloat(
                     translationWrapper,
@@ -226,15 +221,26 @@ class ExampleAdapter(
                     start()
                 }*/
 
-                translationWrapper.animate()
+                /*translationWrapper.animate()
                     .setDuration(shortAnimationDuration)
                     .setInterpolator(AccelerateInterpolator())
                     .translationY(0F)
                     .alpha(1F)
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator) {
+                            super.onAnimationEnd(animation)
+                            translationWrapper.apply {
+                                translationY = 0F
+                                visibility = View.VISIBLE
+                            }
+                        }
+                    })*/
+
+                Animations.expand(translationWrapper)
 
             } else {
                 ivShowHide.animate().rotation(0F).start()
-                translationWrapper.animate()
+                /*translationWrapper.animate()
                     .setDuration(shortAnimationDuration)
                     .setInterpolator(DecelerateInterpolator())
                     .translationY(-translationHeight / 2)
@@ -247,7 +253,8 @@ class ExampleAdapter(
                                 visibility = View.GONE
                             }
                         }
-                    })
+                    })*/
+                Animations.collapse(translationWrapper)
             }
         }
         ivDelete.setOnClickListener {
