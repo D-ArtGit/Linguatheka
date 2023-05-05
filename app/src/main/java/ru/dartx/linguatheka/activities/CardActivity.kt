@@ -100,7 +100,7 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             android.R.id.home -> finish()
             R.id.delete -> deleteCard()
             R.id.reset -> resetCardState()
-            R.id.edit -> editCardState()
+            R.id.edit -> editCard()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -244,6 +244,7 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     }
                     mainViewModel.insertCard(tempCard, tmpExampleList)
                 }
+
                 CARD_STATE_EDIT, CARD_STATE_EDIT_AND_RESET, CARD_STATE_EDIT_AND_CHECK -> {
                     val tmpExampleList: ArrayList<Example> = arrayListOf()
                     exampleList.forEachIndexed { index, exampleItem ->
@@ -259,6 +260,7 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     }
                     mainViewModel.updateCardWithItems(tempCard, tmpExampleList)
                 }
+
                 else -> {
                     mainViewModel.updateCard(tempCard)
                 }
@@ -273,70 +275,38 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         val currentTime = getCurrentTime()
         val remindTime = addDays(currentTime, daysArray[0])
         binding.apply {
-            var exampleListIsEmpty = false
-            var emptyItemIndex =
-                exampleList.indexOfFirst { it.example.isEmpty() && it.translation.isEmpty() }
-            while (emptyItemIndex >= 0) {
-                if (exampleList.size > 1) {
-                    exampleList.removeAt(emptyItemIndex)
-                    adapter?.notifyItemRemoved(emptyItemIndex)
-                    if (exampleList.size > emptyItemIndex) {
-                        adapter?.notifyItemRangeChanged(emptyItemIndex, exampleList.size - 1)
-                    }
-                    emptyItemIndex =
-                        exampleList.indexOfFirst { it.example.isEmpty() && it.translation.isEmpty() }
-                } else {
-                    exampleListIsEmpty = true
-                    emptyItemIndex = -1
-                }
-            }
+            val exampleListIsEmpty = checkForEmptyList(exampleList)
+
             if (edWord.text.isNullOrEmpty()) {
                 edWord.error = getString(R.string.fill_field)
                 return null
             } else if (isDuplicate) {
                 edWord.error = getString(R.string.word_exist)
                 return null
-            } else if (exampleList.isEmpty() || exampleListIsEmpty) {
+            } else if (exampleListIsEmpty) {
                 Toast.makeText(
                     this@CardActivity,
                     getString(R.string.no_examples),
                     Toast.LENGTH_LONG
                 )
                     .show()
-                if (!exampleListIsEmpty) exampleListAddEmpty()
+                if (exampleList.isEmpty()) exampleListAddEmpty()
                 else {
                     exampleList[0].requestFocus = true
                     adapter?.notifyItemChanged(0)
                 }
                 return null
             } else {
-                var examplesForCard = ""
-                var translationForCard = ""
-                var exampleIsEmpty = false
-                exampleList.forEachIndexed { index, it ->
-                    if (it.example.isEmpty()) {
-                        it.error = getString(R.string.no_example)
-                        exampleIsEmpty = true
-                        adapter?.notifyItemChanged(index)
-                    } else {
-                        if (!it.error.isNullOrEmpty()) {
-                            it.error = null
-                            adapter?.notifyItemChanged(index)
-                        }
-                        if (index > 0) {
-                            examplesForCard += "\n"
-                        }
-                        examplesForCard += "${it.example}"
-                        translationForCard += "${it.translation}"
-                    }
-                }
+                val texts = arrayListOf("", "")
+                val exampleIsEmpty =
+                    synchronizeCardWithList(exampleList, texts, 0)
                 return if (exampleIsEmpty) null
                 else return Card(
                     null,
                     langArray[0][index],
-                    edWord.text.toString(),
-                    examplesForCard,
-                    translationForCard,
+                    edWord.text.toString().trim(),
+                    texts[0],
+                    texts[1],
                     currentTime,
                     remindTime,
                     0
@@ -363,76 +333,94 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             }
         }
 
-        var exampleListIsEmpty = false
-        var emptyItemIndex =
-            exampleList.indexOfFirst { it.example.isEmpty() && it.translation.isEmpty() }
-        while (emptyItemIndex >= 0) {
-            if (exampleList.size > 1) {
-                exampleList.removeAt(emptyItemIndex)
-                adapter?.notifyItemRemoved(emptyItemIndex)
-                if (exampleList.size > emptyItemIndex) {
-                    adapter?.notifyItemRangeChanged(emptyItemIndex, exampleList.size - 1)
-                }
-                emptyItemIndex =
-                    exampleList.indexOfFirst { it.example.isEmpty() && it.translation.isEmpty() }
-            } else {
-                exampleListIsEmpty = true
-                emptyItemIndex = -1
-            }
-        }
+        val exampleListIsEmpty = checkForEmptyList(exampleList)
+
         if (edWord.text.isNullOrEmpty()) {
             edWord.error = getString(R.string.fill_field)
             return null
         } else if (isDuplicate) {
             edWord.error = getString(R.string.word_exist)
             return null
-        } else if (exampleList.isEmpty() || exampleListIsEmpty) {
+        } else if (exampleListIsEmpty) {
             Toast.makeText(
                 this@CardActivity,
                 getString(R.string.no_examples),
                 Toast.LENGTH_LONG
             )
                 .show()
-            if (!exampleListIsEmpty) exampleListAddEmpty()
+            if (exampleList.isEmpty()) exampleListAddEmpty()
             else {
                 exampleList[0].requestFocus = true
                 adapter?.notifyItemChanged(0)
             }
             return null
         } else {
-            var examplesForCard = ""
-            var translationForCard = ""
-            var exampleIsEmpty = false
-            exampleList.forEachIndexed { index, it ->
-                if (it.example.isEmpty()) {
-                    it.error = getString(R.string.no_example)
-                    exampleIsEmpty = true
-                    adapter?.notifyItemChanged(index)
-                } else {
-                    if (!it.error.isNullOrEmpty()) {
-                        it.error = null
-                        adapter?.notifyItemChanged(index)
-                    }
-                    if (index > 0) {
-                        examplesForCard += "\n"
-                    }
-                    examplesForCard += "${it.example}"
-                    translationForCard += "${it.translation}"
-                    if (step > 8) {
-                        it.finished = true
-                    }
-                }
-            }
+            val texts = arrayListOf("", "")
+            val exampleIsEmpty =
+                synchronizeCardWithList(exampleList, texts, step)
             return if (exampleIsEmpty) null
             else card?.copy(
-                word = edWord.text.toString(),
+                word = edWord.text.toString().trim(),
                 lang = langArray[0][index],
-                examples = examplesForCard,
-                translation = translationForCard,
+                examples = texts[0],
+                translation = texts[1],
                 remindTime = remindTime,
                 step = step
             )
         }
+    }
+
+    private fun synchronizeCardWithList(
+        exampleList: ArrayList<ExampleItem>,
+        texts: ArrayList<String>,
+        step: Int
+    ): Boolean {
+        exampleList.forEachIndexed { index, it ->
+            if (it.example.isEmpty()) {
+                it.error = getString(R.string.no_example)
+                adapter?.notifyItemChanged(index)
+                return true
+            } else {
+                if (!it.error.isNullOrEmpty()) {
+                    it.error = null
+                    adapter?.notifyItemChanged(index)
+                }
+                if (index > 0) {
+                    texts[0] += "\n"
+                }
+                texts[0] += "${it.example}"
+                texts[1] += "${it.translation}"
+                if (step > 8) {
+                    it.finished = true
+                }
+            }
+        }
+        return false
+    }
+
+    private fun checkForEmptyList(exampleList: ArrayList<ExampleItem>): Boolean {
+        var exampleListIsEmpty = false
+        if (exampleList.isEmpty()) {
+            exampleListIsEmpty = true
+        } else {
+            var emptyItemIndex =
+                exampleList.indexOfFirst { it.example.isEmpty() && it.translation.isEmpty() }
+            while (emptyItemIndex >= 0) {
+                if (exampleList.size > 1) {
+                    exampleList.removeAt(emptyItemIndex)
+                    adapter?.notifyItemRemoved(emptyItemIndex)
+                    if (exampleList.size > emptyItemIndex) {
+                        adapter?.notifyItemRangeChanged(emptyItemIndex, exampleList.size - 1)
+                    }
+                    emptyItemIndex =
+                        exampleList.indexOfFirst { it.example.isEmpty() && it.translation.isEmpty() }
+                } else {
+                    exampleListIsEmpty = true
+                    emptyItemIndex = -1
+                }
+            }
+        }
+        return exampleListIsEmpty
     }
 
     private fun deleteCard() {
@@ -452,7 +440,7 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         )
     }
 
-    private fun editCardState() {
+    private fun editCard() {
         cardState = CARD_STATE_EDIT
         invalidateOptionsMenu()
         ab?.setTitle(R.string.edit_card)
@@ -569,7 +557,7 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 },
                 message
             )
-        } else newFocusedItem(cardId)
+        } else binding.scView.postDelayed({ newFocusedItem(cardId) }, 100)
     }
 
     private fun newFocusedItem(cardId: Int) {

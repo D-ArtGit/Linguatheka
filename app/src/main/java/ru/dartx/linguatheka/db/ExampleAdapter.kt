@@ -236,7 +236,7 @@ class ExampleAdapter(
                         }
                     })*/
 
-                Animations.expand(translationWrapper)
+                Animations.expand(translationWrapper, tvExample.width)
 
             } else {
                 ivShowHide.animate().rotation(0F).start()
