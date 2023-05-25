@@ -11,8 +11,8 @@ android {
         applicationId "ru.dartx.linguatheka"
         minSdk 26
         targetSdk 33
-        versionCode 4
-        versionName "1.03"
+        versionCode 5
+        versionName "1.04"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         kapt{
@@ -49,12 +49,12 @@ android {
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.10.0'
+    implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.preference:preference:1.2.0'
-    implementation 'androidx.core:core-ktx:1.10.0'
+    implementation 'androidx.core:core-ktx:1.10.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
@@ -71,4 +71,5 @@ dependencies {
     implementation 'com.google.api-client:google-api-client-android:2.2.0'
     implementation 'com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0'
     implementation 'com.google.auth:google-auth-library-oauth2-http:1.16.1'
+    implementation 'com.vanniktech:android-image-cropper:4.5.0'
 }

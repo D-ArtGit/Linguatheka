@@ -189,7 +189,7 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 }
                 CoroutineScope(Dispatchers.Main).launch {
                     val duplicatesList = withContext(Dispatchers.IO) {
-                        mainViewModel.findDuplicates(it.toString(), cardId)
+                        mainViewModel.findDuplicates(it.toString().trim(), cardId)
                     }
                     withContext(Dispatchers.Main) {
                         if (duplicatesList.isNotEmpty()) isDuplicate = true
@@ -540,7 +540,7 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     private fun exampleListAddEmpty() {
         var cardId = 0
         if (card != null) cardId = card!!.id!!
-        if (cardId != 0 && !alreadyAsked) {
+        if (cardId != 0 && !alreadyAsked && card!!.step > 0) {
             val message = getString(R.string.reset_for_added_example)
             ConfirmDialog.showDialog(
                 this, object : ConfirmDialog.Listener {

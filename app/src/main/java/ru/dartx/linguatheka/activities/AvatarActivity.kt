@@ -5,10 +5,12 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.Window
 import android.widget.Toast
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
+import com.canhub.cropper.CropImageContract
+import com.canhub.cropper.CropImageContractOptions
+import com.canhub.cropper.CropImageOptions
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.dialogs.AvatarDialog
@@ -51,11 +53,11 @@ class AvatarActivity : AppCompatActivity() {
 
 
         val pickImageLauncher =
-            registerForActivityResult(ActivityResultContracts.PickVisualMedia()) {
-                if (it != null) {
+            registerForActivityResult(CropImageContract()) {
+                if (it?.uriContent != null) {
                     try {
                         val stream =
-                            contentResolver.openInputStream(it)
+                            contentResolver.openInputStream(it.uriContent!!)
                         val realImage: Bitmap = BitmapFactory.decodeStream(stream)
                         editor.putString("avatar", BitmapManager.encodeToBase64(realImage))
                         editor.apply()
@@ -73,10 +75,41 @@ class AvatarActivity : AppCompatActivity() {
                 }
                 finish()
             }
+        /*registerForActivityResult(ActivityResultContracts.PickVisualMedia()) {
+            if (it != null) {
+                try {
+                    val stream =
+                        contentResolver.openInputStream(it)
+                    val realImage: Bitmap = BitmapFactory.decodeStream(stream)
+                    editor.putString("avatar", BitmapManager.encodeToBase64(realImage))
+                    editor.apply()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.avatar_applied),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                } catch (e: FileNotFoundException) {
+                    e.printStackTrace()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            finish()
+        }*/
         AvatarDialog.showDialog(this, object : AvatarDialog.Listener {
             override fun onClickChoose() {
-                pickImageLauncher
-                    .launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                pickImageLauncher.launch(
+                    CropImageContractOptions(
+                        uri = null,
+                        cropImageOptions = CropImageOptions(
+                            imageSourceIncludeCamera = true,
+                            imageSourceIncludeGallery = true,
+                            fixAspectRatio = true
+                        )
+                    )
+                )
+                //.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             }
 
             override fun onClickClear() {
