@@ -547,21 +547,21 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     override fun onClick() {
                         cardState = CARD_STATE_EDIT_AND_RESET
                         alreadyAsked = true
-                        binding.scView.postDelayed({ newFocusedItem(cardId) }, 100)
+                        binding.scView.postDelayed({ newFocusedItem(cardId) }, 200)
                     }
 
                     override fun onCancel() {
                         alreadyAsked = true
-                        binding.scView.postDelayed({ newFocusedItem(cardId) }, 100)
+                        binding.scView.postDelayed({ newFocusedItem(cardId) }, 200)
                     }
                 },
                 message
             )
-        } else binding.scView.postDelayed({ newFocusedItem(cardId) }, 100)
+        } else binding.scView.postDelayed({ newFocusedItem(cardId) }, 200)
     }
 
     private fun newFocusedItem(cardId: Int) {
-        var delay = 100L
+        var delay = 200L
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         if (!imm.isAcceptingText) {
             delay = 400L

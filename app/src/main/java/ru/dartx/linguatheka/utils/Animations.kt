@@ -11,7 +11,7 @@ object Animations {
         val shortAnimationDuration =
             view.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
         val height = view.context.resources.displayMetrics.heightPixels
-        val widthSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(width-24), MeasureSpec.AT_MOST)
+        val widthSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(width), MeasureSpec.AT_MOST)
         val heightSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(height), MeasureSpec.AT_MOST)
 
         view.measure(widthSpec, heightSpec)
