@@ -18,7 +18,7 @@
             app:title="@string/avatar">
             <intent
                 android:action="AvatarActivity"
-                android:targetClass="ru.dartx.linguatheka.activities.AvatarActivity"
+                android:targetClass="ru.dartx.linguatheka.presentation.activities.AvatarActivity"
                 android:targetPackage="ru.dartx.linguatheka" />
         </Preference>
 
@@ -87,7 +87,7 @@
             app:title="@string/backup_now">
             <intent
                 android:action="BackupActivity"
-                android:targetClass="ru.dartx.linguatheka.activities.BackupActivity"
+                android:targetClass="ru.dartx.linguatheka.presentation.activities.BackupActivity"
                 android:targetPackage="ru.dartx.linguatheka" />
         </Preference>
 
@@ -98,7 +98,7 @@
             app:title="@string/restore_item">
             <intent
                 android:action="RestoreActivity"
-                android:targetClass="ru.dartx.linguatheka.activities.RestoreActivity"
+                android:targetClass="ru.dartx.linguatheka.presentation.activities.RestoreActivity"
                 android:targetPackage="ru.dartx.linguatheka" />
         </Preference>
 

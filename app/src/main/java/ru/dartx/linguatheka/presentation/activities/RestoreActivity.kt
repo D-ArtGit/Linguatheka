@@ -1,4 +1,4 @@
-package ru.dartx.linguatheka.activities
+package ru.dartx.linguatheka.presentation.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
 import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.databinding.ActivityRestoreBinding
 import ru.dartx.linguatheka.db.MainDataBase
-import ru.dartx.linguatheka.dialogs.RestoreDialog
+import ru.dartx.linguatheka.presentation.dialogs.RestoreDialog
 import ru.dartx.linguatheka.utils.BackupAndRestoreManager
 import ru.dartx.linguatheka.utils.GoogleSignInManager
 import ru.dartx.linguatheka.utils.ThemeManager

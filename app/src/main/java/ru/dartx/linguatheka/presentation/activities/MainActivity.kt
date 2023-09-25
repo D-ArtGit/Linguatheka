@@ -1,4 +1,4 @@
-package ru.dartx.linguatheka.activities
+package ru.dartx.linguatheka.presentation.activities
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -30,10 +30,10 @@ import ru.dartx.linguatheka.BuildConfig
 import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.databinding.ActivityMainBinding
 import ru.dartx.linguatheka.databinding.NavHeaderBinding
-import ru.dartx.linguatheka.db.CardAdapter
+import ru.dartx.linguatheka.presentation.adapters.CardAdapter
 import ru.dartx.linguatheka.db.MainDataBase
 import ru.dartx.linguatheka.db.MainViewModel
-import ru.dartx.linguatheka.dialogs.AboutAppDialog
+import ru.dartx.linguatheka.presentation.dialogs.AboutAppDialog
 import ru.dartx.linguatheka.entities.Card
 import ru.dartx.linguatheka.settings.SettingsActivity
 import ru.dartx.linguatheka.utils.BitmapManager

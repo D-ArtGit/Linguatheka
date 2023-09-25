@@ -1,4 +1,4 @@
-package ru.dartx.linguatheka.db
+package ru.dartx.linguatheka.presentation.adapters
 
 import android.graphics.Typeface
 import android.text.Spannable
@@ -9,16 +9,19 @@ import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.databinding.ExampleItemBinding
-import ru.dartx.linguatheka.model.ExampleItem
+import ru.dartx.linguatheka.domain.ExampleItem
 import ru.dartx.linguatheka.utils.Animations
 
 class ExampleAdapter(
-    private val exampleList: ArrayList<ExampleItem>
+
 ) :
-    RecyclerView.Adapter<ExampleAdapter.ExampleViewHolder>() {
+    ListAdapter<ExampleItem, ExampleAdapter.ExampleViewHolder>(ExampleDiffCallback()) {
+
+    var onDeleteClickListener: ((Int) -> Unit)? = null
     inner class ExampleViewHolder(private val binding: ExampleItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(exampleItem: ExampleItem) {
@@ -52,11 +55,7 @@ class ExampleAdapter(
     }
 
     override fun onBindViewHolder(holder: ExampleViewHolder, position: Int) {
-        holder.bind(exampleList[position])
-    }
-
-    override fun getItemCount(): Int {
-        return exampleList.size
+        holder.bind(getItem(position))
     }
 
     private fun getActionModeCallback(
@@ -258,9 +257,7 @@ class ExampleAdapter(
             }
         }
         ivDelete.setOnClickListener {
-            exampleList.removeAt(adapterPosition)
-            notifyItemRemoved(adapterPosition)
-            notifyItemRangeChanged(adapterPosition, itemCount)
+            onDeleteClickListener?.invoke(adapterPosition)
         }
     }
 

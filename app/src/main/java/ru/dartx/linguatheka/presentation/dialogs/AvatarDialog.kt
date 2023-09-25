@@ -1,4 +1,4 @@
-package ru.dartx.linguatheka.dialogs
+package ru.dartx.linguatheka.presentation.dialogs
 
 import android.content.Context
 import android.graphics.Color

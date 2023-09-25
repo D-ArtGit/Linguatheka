@@ -1,4 +1,4 @@
-package ru.dartx.linguatheka.activities
+package ru.dartx.linguatheka.presentation.activities
 
 import android.os.Build
 import android.os.Bundle
@@ -11,7 +11,7 @@ import androidx.preference.PreferenceManager
 import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.db.MainDataBase
 import ru.dartx.linguatheka.db.MainViewModel
-import ru.dartx.linguatheka.dialogs.SnoozeDialog
+import ru.dartx.linguatheka.presentation.dialogs.SnoozeDialog
 import ru.dartx.linguatheka.entities.Card
 import ru.dartx.linguatheka.utils.ThemeManager
 import ru.dartx.linguatheka.utils.TimeManager

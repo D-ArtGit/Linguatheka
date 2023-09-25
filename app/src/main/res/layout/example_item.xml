@@ -11,7 +11,7 @@
 
         <variable
             name="exampleItem"
-            type="ru.dartx.linguatheka.model.ExampleItem" />
+            type="ru.dartx.linguatheka.domain.ExampleItem" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -57,7 +57,7 @@
                     android:id="@+id/ivShowHide"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:contentDescription="Show/Hide"
+                    android:contentDescription="@string/show_hide_translation"
                     app:srcCompat="@drawable/ic_show" />
 
                 <LinearLayout
@@ -85,7 +85,7 @@
                             android:id="@+id/ivArrow"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:contentDescription="Arrow to open translation"
+                            android:contentDescription="@string/arrow_to_opened_translation"
                             app:srcCompat="@drawable/ic_arrow" />
 
                         <TextView
@@ -131,7 +131,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="12dp"
-                android:contentDescription="Delete button"
+                android:contentDescription="@string/delete_button"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_delete" />

@@ -1,4 +1,4 @@
-package ru.dartx.linguatheka.activities
+package ru.dartx.linguatheka.presentation.activities
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -13,7 +13,7 @@ import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import ru.dartx.linguatheka.R
-import ru.dartx.linguatheka.dialogs.AvatarDialog
+import ru.dartx.linguatheka.presentation.dialogs.AvatarDialog
 import ru.dartx.linguatheka.utils.BitmapManager
 import ru.dartx.linguatheka.utils.GoogleSignInManager
 import ru.dartx.linguatheka.utils.ThemeManager

@@ -1,4 +1,4 @@
-package ru.dartx.linguatheka.dialogs
+package ru.dartx.linguatheka.presentation.dialogs
 
 import android.content.Context
 import android.graphics.Color
@@ -6,23 +6,23 @@ import android.graphics.drawable.ColorDrawable
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
-import ru.dartx.linguatheka.databinding.RestoreDialogBinding
+import ru.dartx.linguatheka.databinding.ConfirmDialogBinding
 
-object RestoreDialog {
-    fun showDialog(context: Context, listener: Listener, message1: String, message2: String) {
+
+object ConfirmDialog {
+    fun showDialog(context: Context, listener: Listener, message: String) {
         var dialog: AlertDialog? = null
         val builder = AlertDialog.Builder(context)
-        val binding = RestoreDialogBinding.inflate(LayoutInflater.from(context))
+        val binding = ConfirmDialogBinding.inflate(LayoutInflater.from(context))
         builder.setView(binding.root)
         binding.apply {
-            tvMessage1.text = message1
-            tvMessage2.text = message2
+            tvMessage.text = message
             btOk.setOnClickListener {
-                listener.onClickOk()
+                listener.onClick()
                 dialog?.dismiss()
             }
             btCancel.setOnClickListener {
-                listener.onClickCancel()
+                listener.onCancel()
                 dialog?.dismiss()
             }
         }
@@ -30,13 +30,13 @@ object RestoreDialog {
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.setCanceledOnTouchOutside(true)
         dialog.setOnCancelListener {
-            listener.onClickCancel()
+            listener.onCancel()
             it.dismiss()
         }
         dialog.show()
         dialog.setOnKeyListener { dialogInListener, keyCode, _ ->
             if (keyCode == KeyEvent.KEYCODE_BACK) {
-                listener.onClickCancel()
+                listener.onCancel()
                 dialogInListener.dismiss()
             }
             true
@@ -44,8 +44,7 @@ object RestoreDialog {
     }
 
     interface Listener {
-        fun onClickOk()
-        fun onClickCancel()
-
+        fun onClick()
+        fun onCancel()
     }
 }

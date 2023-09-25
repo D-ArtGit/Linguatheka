@@ -14,10 +14,10 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import ru.dartx.linguatheka.R
-import ru.dartx.linguatheka.activities.CardActivity
-import ru.dartx.linguatheka.activities.MainActivity
-import ru.dartx.linguatheka.activities.MainApp
-import ru.dartx.linguatheka.activities.SnoozeDialogActivity
+import ru.dartx.linguatheka.presentation.activities.CardActivity
+import ru.dartx.linguatheka.presentation.activities.MainActivity
+import ru.dartx.linguatheka.presentation.activities.MainApp
+import ru.dartx.linguatheka.presentation.activities.SnoozeDialogActivity
 import ru.dartx.linguatheka.db.MainDataBase
 import ru.dartx.linguatheka.utils.HtmlManager
 import ru.dartx.linguatheka.utils.TimeManager

@@ -1,4 +1,4 @@
-package ru.dartx.linguatheka.model
+package ru.dartx.linguatheka.domain
 
 import android.text.Spanned
 

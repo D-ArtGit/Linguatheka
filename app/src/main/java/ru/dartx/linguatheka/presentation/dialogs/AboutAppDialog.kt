@@ -1,4 +1,4 @@
-package ru.dartx.linguatheka.dialogs
+package ru.dartx.linguatheka.presentation.dialogs
 
 import android.content.Context
 import android.content.Intent
@@ -9,7 +9,7 @@ import android.text.Spanned
 import android.text.style.URLSpan
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
-import ru.dartx.linguatheka.activities.LargeTextActivity
+import ru.dartx.linguatheka.presentation.activities.LargeTextActivity
 import ru.dartx.linguatheka.databinding.AboutAppDialogBinding
 
 object AboutAppDialog {

@@ -1,4 +1,4 @@
-package ru.dartx.linguatheka.activities
+package ru.dartx.linguatheka.presentation.activities
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -24,13 +24,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.*
 import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.databinding.ActivityCardBinding
-import ru.dartx.linguatheka.db.ExampleAdapter
 import ru.dartx.linguatheka.db.MainDataBase
 import ru.dartx.linguatheka.db.MainViewModel
-import ru.dartx.linguatheka.dialogs.ConfirmDialog
+import ru.dartx.linguatheka.domain.ExampleItem
 import ru.dartx.linguatheka.entities.Card
 import ru.dartx.linguatheka.entities.Example
-import ru.dartx.linguatheka.model.ExampleItem
+import ru.dartx.linguatheka.presentation.adapters.ExampleAdapter
+import ru.dartx.linguatheka.presentation.dialogs.ConfirmDialog
 import ru.dartx.linguatheka.settings.SettingsActivity
 import ru.dartx.linguatheka.utils.*
 import ru.dartx.linguatheka.utils.TimeManager.addDays
@@ -160,8 +160,14 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     private fun setAdapter() = with(binding) {
         rvCardItems.layoutManager = LinearLayoutManager(this@CardActivity)
-        adapter = ExampleAdapter(exampleList)
+        adapter = ExampleAdapter()
+        adapter!!.submitList(exampleList)
         rvCardItems.adapter = adapter
+        adapter!!.onDeleteClickListener = {
+            exampleList.removeAt(it)
+            adapter!!.notifyItemRemoved(it)
+            adapter!!.notifyItemRangeChanged(it, exampleList.size - 1)
+        }
     }
 
     private fun fieldState() = with(binding) {
@@ -547,24 +553,24 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     override fun onClick() {
                         cardState = CARD_STATE_EDIT_AND_RESET
                         alreadyAsked = true
-                        binding.scView.postDelayed({ newFocusedItem(cardId) }, 200)
+                        newFocusedItem(cardId)
                     }
 
                     override fun onCancel() {
                         alreadyAsked = true
-                        binding.scView.postDelayed({ newFocusedItem(cardId) }, 200)
+                        newFocusedItem(cardId)
                     }
                 },
                 message
             )
-        } else binding.scView.postDelayed({ newFocusedItem(cardId) }, 200)
+        } else newFocusedItem(cardId)
     }
 
     private fun newFocusedItem(cardId: Int) {
-        var delay = 200L
+        var delay = 400L
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         if (!imm.isAcceptingText) {
-            delay = 400L
+            delay = 600L
             binding.edWord.requestFocus()
             imm.showSoftInput(
                 binding.edWord,

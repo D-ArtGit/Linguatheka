@@ -10,8 +10,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.dartx.linguatheka.R
-import ru.dartx.linguatheka.activities.MainActivity
-import ru.dartx.linguatheka.activities.MainApp
+import ru.dartx.linguatheka.presentation.activities.MainActivity
+import ru.dartx.linguatheka.presentation.activities.MainApp
 import ru.dartx.linguatheka.db.MainDataBase
 import ru.dartx.linguatheka.entities.Card
 import ru.dartx.linguatheka.entities.Example

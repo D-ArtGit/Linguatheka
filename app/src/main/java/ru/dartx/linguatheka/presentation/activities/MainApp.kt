@@ -1,4 +1,4 @@
-package ru.dartx.linguatheka.activities
+package ru.dartx.linguatheka.presentation.activities
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
