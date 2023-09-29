@@ -10,9 +10,10 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.preference.PreferenceManager
 import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.db.MainDataBase
-import ru.dartx.linguatheka.db.MainViewModel
-import ru.dartx.linguatheka.presentation.dialogs.SnoozeDialog
 import ru.dartx.linguatheka.entities.Card
+import ru.dartx.linguatheka.presentation.activities.CardActivity.Companion.CARD_DATA
+import ru.dartx.linguatheka.presentation.dialogs.SnoozeDialog
+import ru.dartx.linguatheka.presentation.viewmodels.MainViewModel
 import ru.dartx.linguatheka.utils.ThemeManager
 import ru.dartx.linguatheka.utils.TimeManager
 
@@ -27,9 +28,9 @@ class SnoozeDialogActivity : AppCompatActivity() {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.activity_snooze_dialog)
         val card = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getSerializableExtra(MainActivity.CARD_DATA, Card::class.java)
+            intent.getSerializableExtra(CARD_DATA, Card::class.java)
         } else {
-            @Suppress("DEPRECATION") intent.getSerializableExtra(MainActivity.CARD_DATA) as Card?
+            @Suppress("DEPRECATION") intent.getSerializableExtra(CARD_DATA) as Card?
         }
         if (card != null) {
             SnoozeDialog.showSnoozeDialog(
@@ -43,7 +44,8 @@ class SnoozeDialogActivity : AppCompatActivity() {
                                     delay
                                 )
                             )
-                        val defPreference = PreferenceManager.getDefaultSharedPreferences(this@SnoozeDialogActivity)
+                        val defPreference =
+                            PreferenceManager.getDefaultSharedPreferences(this@SnoozeDialogActivity)
                         val editor = defPreference.edit()
                         editor.putString("snooze", delay.toString())
                         editor.apply()

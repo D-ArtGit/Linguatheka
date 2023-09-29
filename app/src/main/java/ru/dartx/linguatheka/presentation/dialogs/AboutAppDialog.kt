@@ -1,7 +1,6 @@
 package ru.dartx.linguatheka.presentation.dialogs
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.text.SpannableString
@@ -9,8 +8,8 @@ import android.text.Spanned
 import android.text.style.URLSpan
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
-import ru.dartx.linguatheka.presentation.activities.LargeTextActivity
 import ru.dartx.linguatheka.databinding.AboutAppDialogBinding
+import ru.dartx.linguatheka.presentation.activities.LargeTextActivity
 
 object AboutAppDialog {
     fun showDialog(context: Context, message: String) {
@@ -30,13 +29,11 @@ object AboutAppDialog {
                 dialog?.dismiss()
             }
             tvPrivacy.setOnClickListener {
-                val i = Intent(context, LargeTextActivity::class.java)
-                i.putExtra(LargeTextActivity.LARGE_TEXT_TYPE, LargeTextActivity.PRIVACY)
+                val i = LargeTextActivity.intentForPrivacy(context)
                 context.startActivity(i)
             }
             tvAgreement.setOnClickListener {
-                val i = Intent(context, LargeTextActivity::class.java)
-                i.putExtra(LargeTextActivity.LARGE_TEXT_TYPE, LargeTextActivity.AGREEMENT)
+                val i = LargeTextActivity.intentForAgreement(context)
                 context.startActivity(i)
             }
         }

@@ -25,12 +25,12 @@ import kotlinx.coroutines.*
 import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.databinding.ActivityCardBinding
 import ru.dartx.linguatheka.db.MainDataBase
-import ru.dartx.linguatheka.db.MainViewModel
 import ru.dartx.linguatheka.domain.ExampleItem
 import ru.dartx.linguatheka.entities.Card
 import ru.dartx.linguatheka.entities.Example
 import ru.dartx.linguatheka.presentation.adapters.ExampleAdapter
 import ru.dartx.linguatheka.presentation.dialogs.ConfirmDialog
+import ru.dartx.linguatheka.presentation.viewmodels.MainViewModel
 import ru.dartx.linguatheka.settings.SettingsActivity
 import ru.dartx.linguatheka.utils.*
 import ru.dartx.linguatheka.utils.TimeManager.addDays
@@ -107,9 +107,9 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     private fun getCard() {
         card = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getSerializableExtra(MainActivity.CARD_DATA, Card::class.java)
+            intent.getSerializableExtra(CARD_DATA, Card::class.java)
         } else {
-            @Suppress("DEPRECATION") intent.getSerializableExtra(MainActivity.CARD_DATA) as Card?
+            @Suppress("DEPRECATION") intent.getSerializableExtra(CARD_DATA) as Card?
         }
         if (card != null) {
             with(NotificationManagerCompat.from(applicationContext)) { cancel(card!!.id!!) }
@@ -271,7 +271,7 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     mainViewModel.updateCard(tempCard)
                 }
             }
-            val i = Intent().putExtra(MainActivity.CARD_STATE, cardState)
+            val i = Intent().putExtra(CARD_STATE, cardState)
             setResult(RESULT_OK, i)
             finish()
         }
@@ -607,5 +607,13 @@ class CardActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         const val CARD_STATE_EDIT_AND_CHECK = 5
         const val CARD_STATE_CHECK = 6
         const val CARD_STATE_RESET = 7
+        const val CARD_DATA = "card"
+        const val CARD_STATE = "cardState"
+
+        fun intentCardActivityForEdit(context: Context, card: Card): Intent {
+            val i = Intent(context, CardActivity::class.java)
+            i.putExtra(CARD_DATA, card)
+            return i
+        }
     }
 }

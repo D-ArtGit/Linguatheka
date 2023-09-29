@@ -16,12 +16,11 @@ import ru.dartx.linguatheka.databinding.ExampleItemBinding
 import ru.dartx.linguatheka.domain.ExampleItem
 import ru.dartx.linguatheka.utils.Animations
 
-class ExampleAdapter(
-
-) :
+class ExampleAdapter :
     ListAdapter<ExampleItem, ExampleAdapter.ExampleViewHolder>(ExampleDiffCallback()) {
 
     var onDeleteClickListener: ((Int) -> Unit)? = null
+
     inner class ExampleViewHolder(private val binding: ExampleItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(exampleItem: ExampleItem) {
@@ -147,6 +146,7 @@ class ExampleAdapter(
                     55,
                     item.title
                 )
+
                 else -> addMenuItem(menu, item.groupId, item.itemId, 100 + item.order, item.title)
             }
         }
@@ -191,68 +191,10 @@ class ExampleAdapter(
         }
         tvExample.setOnClickListener {
             if (translationWrapper.visibility == View.GONE) {
-
                 ivShowHide.animate().rotation(180F).start()
-
-                /*translationWrapper.apply {
-                    alpha = 0F
-                    visibility = View.VISIBLE
-                    translationY = -translationHeight / 2
-                }*/
-
-                /*val alphaAnim = ObjectAnimator.ofFloat(
-                    translationWrapper,
-                    "alpha",
-                    1F
-                ).apply {
-                    duration = shortAnimationDuration
-                }
-                val translationYAnim = ObjectAnimator.ofFloat(
-                    translationWrapper,
-                    "translationY",
-                    0F
-                ).apply {
-                    duration = shortAnimationDuration
-                }
-                AnimatorSet().apply {
-                    interpolator = AccelerateInterpolator()
-                    play(alphaAnim).with(translationYAnim)
-                    start()
-                }*/
-
-                /*translationWrapper.animate()
-                    .setDuration(shortAnimationDuration)
-                    .setInterpolator(AccelerateInterpolator())
-                    .translationY(0F)
-                    .alpha(1F)
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator) {
-                            super.onAnimationEnd(animation)
-                            translationWrapper.apply {
-                                translationY = 0F
-                                visibility = View.VISIBLE
-                            }
-                        }
-                    })*/
-
                 Animations.expand(translationWrapper, tvExample.width)
-
             } else {
                 ivShowHide.animate().rotation(0F).start()
-                /*translationWrapper.animate()
-                    .setDuration(shortAnimationDuration)
-                    .setInterpolator(DecelerateInterpolator())
-                    .translationY(-translationHeight / 2)
-                    .alpha(0F)
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator) {
-                            super.onAnimationEnd(animation)
-                            translationWrapper.apply {
-                                translationY = 0F
-                                visibility = View.GONE
-                            }
-                        }
-                    })*/
                 Animations.collapse(translationWrapper)
             }
         }

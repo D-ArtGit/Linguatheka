@@ -1,7 +1,8 @@
-package ru.dartx.linguatheka.db
+package ru.dartx.linguatheka.presentation.viewmodels
 
 import androidx.lifecycle.*
 import kotlinx.coroutines.launch
+import ru.dartx.linguatheka.db.MainDataBase
 import ru.dartx.linguatheka.entities.Card
 import ru.dartx.linguatheka.entities.Example
 

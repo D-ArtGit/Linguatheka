@@ -10,20 +10,20 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.dartx.linguatheka.R
-import ru.dartx.linguatheka.presentation.activities.MainActivity
-import ru.dartx.linguatheka.presentation.activities.MainApp
 import ru.dartx.linguatheka.db.MainDataBase
 import ru.dartx.linguatheka.entities.Card
 import ru.dartx.linguatheka.entities.Example
+import ru.dartx.linguatheka.presentation.activities.CardActivity.Companion.CARD_DATA
+import ru.dartx.linguatheka.presentation.activities.MainApp
 import ru.dartx.linguatheka.utils.TimeManager
 
 class TapDoneReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
         val database = MainDataBase.getDataBase(context.applicationContext as MainApp)
         val card = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent?.getSerializableExtra(MainActivity.CARD_DATA, Card::class.java)
+            intent?.getSerializableExtra(CARD_DATA, Card::class.java)
         } else {
-            @Suppress("DEPRECATION") intent?.getSerializableExtra(MainActivity.CARD_DATA) as Card?
+            @Suppress("DEPRECATION") intent?.getSerializableExtra(CARD_DATA) as Card?
         }
         if (card != null) {
             val step = card.step + 1

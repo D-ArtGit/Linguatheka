@@ -30,11 +30,15 @@ import ru.dartx.linguatheka.BuildConfig
 import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.databinding.ActivityMainBinding
 import ru.dartx.linguatheka.databinding.NavHeaderBinding
-import ru.dartx.linguatheka.presentation.adapters.CardAdapter
 import ru.dartx.linguatheka.db.MainDataBase
-import ru.dartx.linguatheka.db.MainViewModel
-import ru.dartx.linguatheka.presentation.dialogs.AboutAppDialog
 import ru.dartx.linguatheka.entities.Card
+import ru.dartx.linguatheka.presentation.activities.CardActivity.Companion.CARD_STATE
+import ru.dartx.linguatheka.presentation.activities.CardActivity.Companion.CARD_STATE_CHECK
+import ru.dartx.linguatheka.presentation.activities.CardActivity.Companion.CARD_STATE_EDIT_AND_CHECK
+import ru.dartx.linguatheka.presentation.activities.CardActivity.Companion.CARD_STATE_VIEW
+import ru.dartx.linguatheka.presentation.adapters.CardAdapter
+import ru.dartx.linguatheka.presentation.dialogs.AboutAppDialog
+import ru.dartx.linguatheka.presentation.viewmodels.MainViewModel
 import ru.dartx.linguatheka.settings.SettingsActivity
 import ru.dartx.linguatheka.utils.BitmapManager
 import ru.dartx.linguatheka.utils.LanguagesManager
@@ -57,8 +61,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
 
     override fun onCreate(savedInstanceState: Bundle?) {
         defPreference = PreferenceManager.getDefaultSharedPreferences(this)
-        currentTheme = defPreference.getString("theme", "blue").toString()
-        setTheme(ThemeManager.getSelectedThemeNoBar(this))
+        applyTheme()
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         nvBinding = NavHeaderBinding.bind(binding.navView.getHeaderView(0))
@@ -66,11 +69,11 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
         init()
         showHTU()
         cardListObserver()
+    }
 
-        binding.btFab.setOnClickListener {
-            val i = Intent(this, CardActivity::class.java)
-            startActivity(i)
-        }
+    private fun applyTheme() {
+        currentTheme = defPreference.getString("theme", "blue").toString()
+        setTheme(ThemeManager.getSelectedThemeNoBar(this))
     }
 
     override fun onResume() {
@@ -159,12 +162,11 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                         SettingsActivity::class.java
                     )
                 )
+
                 R.id.faq -> startActivity(
-                    Intent(
-                        this@MainActivity,
-                        LargeTextActivity::class.java
-                    )
+                    LargeTextActivity.intentForHowToUse(this@MainActivity)
                 )
+
                 R.id.donate -> {
                     val uriUrl = Uri.parse(getString(R.string.donate_url))
                     startActivity(
@@ -174,6 +176,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                         )
                     )
                 }
+
                 R.id.about -> {
                     val message = BuildConfig.VERSION_NAME
                     AboutAppDialog.showDialog(this@MainActivity, message)
@@ -216,16 +219,20 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                 if (it.resultCode == Activity.RESULT_OK) {
                     val cardState = it.data?.getIntExtra(
                         CARD_STATE,
-                        CardActivity.CARD_STATE_VIEW
+                        CARD_STATE_VIEW
                     )
-                    if (cardState == CardActivity.CARD_STATE_CHECK ||
-                        cardState == CardActivity.CARD_STATE_EDIT_AND_CHECK
+                    if (cardState == CARD_STATE_CHECK ||
+                        cardState == CARD_STATE_EDIT_AND_CHECK
                     )
                         binding.rcViewCardList.postDelayed({
                             binding.rcViewCardList.smoothScrollToPosition(0)
                         }, 1000)
                 }
             }
+
+        btFab.setOnClickListener {
+            startActivity(Intent(this@MainActivity, CardActivity::class.java))
+        }
     }
 
     private fun onDrawerOpen() {
@@ -276,8 +283,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
     }
 
     override fun onClickCard(card: Card) {
-        val i = Intent(this, CardActivity::class.java)
-        i.putExtra(CARD_DATA, card)
+        val i = CardActivity.intentCardActivityForEdit(this, card)
         cardActivityLauncher.launch(i)
     }
 
@@ -322,17 +328,12 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
     private fun showHTU() {
         if (!defPreference.getBoolean("not_show_htu", false)) {
             startActivity(
-                Intent(
-                    this@MainActivity,
-                    LargeTextActivity::class.java
-                )
+                LargeTextActivity.intentForHowToUse(this)
             )
         }
     }
 
     companion object {
-        const val CARD_DATA = "card"
-        const val CARD_STATE = "cardState"
         const val CHANNEL_ID = "wordCH"
     }
 }

@@ -14,11 +14,12 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import ru.dartx.linguatheka.R
+import ru.dartx.linguatheka.db.MainDataBase
 import ru.dartx.linguatheka.presentation.activities.CardActivity
+import ru.dartx.linguatheka.presentation.activities.CardActivity.Companion.CARD_DATA
 import ru.dartx.linguatheka.presentation.activities.MainActivity
 import ru.dartx.linguatheka.presentation.activities.MainApp
 import ru.dartx.linguatheka.presentation.activities.SnoozeDialogActivity
-import ru.dartx.linguatheka.db.MainDataBase
 import ru.dartx.linguatheka.utils.HtmlManager
 import ru.dartx.linguatheka.utils.TimeManager
 
@@ -70,9 +71,9 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
                     moreThanOneLine = true
                 }
             }
-            resultIntent.putExtra(MainActivity.CARD_DATA, card)
-            snoozeIntent.putExtra(MainActivity.CARD_DATA, card)
-            doneIntent.putExtra(MainActivity.CARD_DATA, card)
+            resultIntent.putExtra(CARD_DATA, card)
+            snoozeIntent.putExtra(CARD_DATA, card)
+            doneIntent.putExtra(CARD_DATA, card)
             resultPendingIntent = TaskStackBuilder.create(applicationContext).run {
                 addNextIntentWithParentStack(resultIntent)
                 getPendingIntent(card.id, PendingIntent.FLAG_IMMUTABLE)

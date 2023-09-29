@@ -1,6 +1,8 @@
 package ru.dartx.linguatheka.presentation.activities
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.res.Resources
 import android.os.Bundle
 import android.view.MenuItem
@@ -31,26 +33,32 @@ class LargeTextActivity : AppCompatActivity() {
         setContentView(binding.root)
         largeTextType = intent.getIntExtra(LARGE_TEXT_TYPE, HOW_TO_USE)
         actionBarSettings()
-        binding.apply {
-            if (largeTextType == HOW_TO_USE)
-                chBoxDontShow.isChecked = defPreference.getBoolean("not_show_htu", false)
-            else chBoxDontShow.visibility = View.GONE
-            val text: String? = when (largeTextType) {
-                PRIVACY -> getStringFromRawRes(R.raw.privacy)
-                AGREEMENT -> getStringFromRawRes(R.raw.agreement)
-                else -> null
+        initMode(defPreference)
+        setOnClickListener(editor)
+    }
+
+    private fun setOnClickListener(editor: SharedPreferences.Editor) = with(binding) {
+        btClose.setOnClickListener {
+            if (largeTextType == HOW_TO_USE) {
+                if (!chBoxDontShow.isChecked) editor.putBoolean("not_show_htu", false)
+                else editor.putBoolean("not_show_htu", true)
+                editor.apply()
+                showLangSettings()
             }
-            if (!text.isNullOrEmpty()) tvLargeText.text = text
-            btClose.setOnClickListener {
-                if (largeTextType == HOW_TO_USE) {
-                    if (!chBoxDontShow.isChecked) editor.putBoolean("not_show_htu", false)
-                    else editor.putBoolean("not_show_htu", true)
-                    editor.apply()
-                    showLangSettings()
-                }
-                finish()
-            }
+            finish()
         }
+    }
+
+    private fun initMode(defPreference: SharedPreferences) = with(binding) {
+        if (largeTextType == HOW_TO_USE)
+            chBoxDontShow.isChecked = defPreference.getBoolean("not_show_htu", false)
+        else chBoxDontShow.visibility = View.GONE
+        val text: String? = when (largeTextType) {
+            PRIVACY -> getStringFromRawRes(R.raw.privacy)
+            AGREEMENT -> getStringFromRawRes(R.raw.agreement)
+            else -> null
+        }
+        if (!text.isNullOrEmpty()) tvLargeText.text = text
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -124,5 +132,23 @@ class LargeTextActivity : AppCompatActivity() {
         const val HOW_TO_USE = 1
         const val PRIVACY = 2
         const val AGREEMENT = 3
+
+        fun intentForPrivacy(context: Context): Intent {
+            val i = Intent(context, LargeTextActivity::class.java)
+            i.putExtra(LARGE_TEXT_TYPE, PRIVACY)
+            return i
+        }
+
+        fun intentForAgreement(context: Context): Intent {
+            val i = Intent(context, LargeTextActivity::class.java)
+            i.putExtra(LARGE_TEXT_TYPE, AGREEMENT)
+            return i
+        }
+
+        fun intentForHowToUse(context: Context): Intent {
+            val i = Intent(context, LargeTextActivity::class.java)
+            i.putExtra(LARGE_TEXT_TYPE, HOW_TO_USE)
+            return i
+        }
     }
 }
