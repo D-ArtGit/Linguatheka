@@ -11,8 +11,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.db.MainDataBase
-import ru.dartx.linguatheka.entities.Card
-import ru.dartx.linguatheka.entities.Example
+import ru.dartx.linguatheka.db.entities.Card
+import ru.dartx.linguatheka.db.entities.Example
 import ru.dartx.linguatheka.presentation.activities.CardActivity.Companion.CARD_DATA
 import ru.dartx.linguatheka.presentation.activities.MainApp
 import ru.dartx.linguatheka.utils.TimeManager

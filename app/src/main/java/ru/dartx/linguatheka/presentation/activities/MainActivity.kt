@@ -31,14 +31,13 @@ import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.databinding.ActivityMainBinding
 import ru.dartx.linguatheka.databinding.NavHeaderBinding
 import ru.dartx.linguatheka.db.MainDataBase
-import ru.dartx.linguatheka.entities.Card
+import ru.dartx.linguatheka.db.entities.Card
 import ru.dartx.linguatheka.presentation.activities.CardActivity.Companion.CARD_STATE
-import ru.dartx.linguatheka.presentation.activities.CardActivity.Companion.CARD_STATE_CHECK
-import ru.dartx.linguatheka.presentation.activities.CardActivity.Companion.CARD_STATE_EDIT_AND_CHECK
-import ru.dartx.linguatheka.presentation.activities.CardActivity.Companion.CARD_STATE_VIEW
 import ru.dartx.linguatheka.presentation.adapters.CardAdapter
 import ru.dartx.linguatheka.presentation.dialogs.AboutAppDialog
 import ru.dartx.linguatheka.presentation.viewmodels.MainViewModel
+import ru.dartx.linguatheka.presentation.viewmodels.OnActionListener.Companion.CARD_STATE_CHECK
+import ru.dartx.linguatheka.presentation.viewmodels.OnActionListener.Companion.CARD_STATE_VIEW
 import ru.dartx.linguatheka.settings.SettingsActivity
 import ru.dartx.linguatheka.utils.BitmapManager
 import ru.dartx.linguatheka.utils.LanguagesManager
@@ -221,9 +220,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                         CARD_STATE,
                         CARD_STATE_VIEW
                     )
-                    if (cardState == CARD_STATE_CHECK ||
-                        cardState == CARD_STATE_EDIT_AND_CHECK
-                    )
+                    if (cardState == CARD_STATE_CHECK)
                         binding.rcViewCardList.postDelayed({
                             binding.rcViewCardList.smoothScrollToPosition(0)
                         }, 1000)

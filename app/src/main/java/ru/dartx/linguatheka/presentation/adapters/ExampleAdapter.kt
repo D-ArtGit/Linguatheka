@@ -8,57 +8,160 @@ import android.view.*
 import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.BindingAdapter
+import androidx.databinding.DataBindingUtil
 import androidx.databinding.InverseBindingAdapter
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.dartx.linguatheka.R
-import ru.dartx.linguatheka.databinding.ExampleItemBinding
-import ru.dartx.linguatheka.domain.ExampleItem
+import ru.dartx.linguatheka.databinding.ExampleItemEditBinding
+import ru.dartx.linguatheka.databinding.ExampleItemViewBinding
+import ru.dartx.linguatheka.domain.ExampleItemUiState
 import ru.dartx.linguatheka.utils.Animations
 
 class ExampleAdapter :
-    ListAdapter<ExampleItem, ExampleAdapter.ExampleViewHolder>(ExampleDiffCallback()) {
+    ListAdapter<ExampleItemUiState, ExampleAdapter.ExampleViewHolder>(ExampleDiffCallback()) {
 
     var onDeleteClickListener: ((Int) -> Unit)? = null
+    var onRequestFocusWithKeyboard: ((EditText, Int) -> Unit)? = null
+    var onTextChangedAfterError: ((Int) -> Unit)? = null
 
-    inner class ExampleViewHolder(private val binding: ExampleItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(exampleItem: ExampleItem) {
-            binding.exampleItem = exampleItem
-            with(binding) {
-                "${tvExampleHeader.context.getString(R.string.example)} ${adapterPosition + 1}"
-                    .also {
-                        tvExampleHeader.text = it
-                    }
-                if (exampleItem.requestFocus) {
-                    edExample.requestFocus()
-                    exampleItem.requestFocus = false
-                }
-                if (exampleItem.error != null) {
-                    tilExample.error = exampleItem.error
-                    edExample.requestFocus()
-                }
-            }
-            setListeners(binding, adapterPosition)
-        }
+    inner class ExampleViewHolder(val binding: ViewDataBinding) :
+        RecyclerView.ViewHolder(binding.root)
+
+    override fun getItemViewType(position: Int): Int {
+        return if (getItem(position).editMode) EDIT_MODE else VIEW_MODE
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExampleViewHolder {
+        val layout = when (viewType) {
+            EDIT_MODE -> R.layout.example_item_edit
+            VIEW_MODE -> R.layout.example_item_view
+            else -> throw RuntimeException("Unknown layout")
+        }
         return ExampleViewHolder(
-            ExampleItemBinding.inflate(
+            DataBindingUtil.inflate(
                 LayoutInflater.from(parent.context),
+                layout,
                 parent,
                 false
             )
-        )
+        ).apply { onViewHolderCreated(this, viewType, binding) }
     }
 
     override fun onBindViewHolder(holder: ExampleViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        val binding = holder.binding
+        val exampleItem = getItem(position)
+
+        with(binding) {
+            when (this) {
+                is ExampleItemEditBinding -> {
+                    launchEditMode(this, exampleItem)
+                }
+
+                is ExampleItemViewBinding -> {
+                    launchViewMode(this, exampleItem)
+                }
+            }
+        }
+    }
+
+    private fun launchViewMode(
+        exampleItemViewBinding: ExampleItemViewBinding,
+        exampleItemUiState: ExampleItemUiState
+    ) {
+        with(exampleItemViewBinding) {
+            this.exampleItemUiState = exampleItemUiState
+        }
+    }
+
+    private fun launchEditMode(
+        exampleItemEditBinding: ExampleItemEditBinding,
+        exampleItemUiState: ExampleItemUiState
+    ) {
+        with(exampleItemEditBinding) {
+            this.exampleItemUiState = exampleItemUiState
+            "${tvExampleHeader.context.getString(R.string.example)} ${exampleItemUiState.itemNumber}"
+                .also {
+                    tvExampleHeader.text = it
+                }
+            if (exampleItemUiState.requestFocus) {
+                onRequestFocusWithKeyboard?.invoke(edExample, exampleItemUiState.id)
+            }
+        }
+    }
+
+    private fun onViewHolderCreated(
+        viewHolder: ExampleViewHolder,
+        viewType: Int,
+        binding: ViewDataBinding
+    ) {
+        when (viewType) {
+            EDIT_MODE -> setOnEditModeListeners(
+                binding as ExampleItemEditBinding,
+                viewHolder
+            )
+
+            VIEW_MODE -> setOnViewModeListeners(
+                binding as ExampleItemViewBinding
+            )
+        }
+    }
+
+    private fun setOnViewModeListeners(
+        binding: ExampleItemViewBinding
+    ) {
+        with(binding) {
+            tvExample.setOnClickListener {
+                showHide(binding)
+            }
+            ivShowHide.setOnClickListener {
+                showHide(binding)
+            }
+        }
+    }
+
+    private fun showHide(binding: ExampleItemViewBinding) {
+        with(binding) {
+            if (translationWrapper.visibility == View.GONE) {
+                ivShowHide.animate().rotation(180F).start()
+                Animations.expand(translationWrapper, tvExample.width)
+            } else {
+                ivShowHide.animate().rotation(0F).start()
+                Animations.collapse(translationWrapper)
+            }
+        }
+    }
+
+    private fun setOnEditModeListeners(
+        binding: ExampleItemEditBinding,
+        viewHolder: ExampleViewHolder
+    ) = with(binding) {
+        edExample.customSelectionActionModeCallback =
+            getActionModeCallback(binding, EXAMPLE)
+        edTranslation.customSelectionActionModeCallback = getActionModeCallback(
+            binding,
+            TRANSLATION
+        )
+
+        edExample.addTextChangedListener { text ->
+            if (!text.isNullOrBlank() &&
+                getItem(viewHolder.adapterPosition).error != null
+            ) {
+                onTextChangedAfterError?.invoke(getItem(viewHolder.adapterPosition).id)
+            }
+        }
+
+        ivDelete.setOnClickListener {
+            onDeleteClickListener?.invoke(getItem(viewHolder.adapterPosition).id)
+            notifyItemRemoved(viewHolder.adapterPosition)
+            notifyItemRangeChanged(viewHolder.adapterPosition, currentList.size)
+        }
     }
 
     private fun getActionModeCallback(
-        binding: ExampleItemBinding,
+        binding: ExampleItemEditBinding,
         selectedField: Int
     ): ActionMode.Callback {
         return object : ActionMode.Callback {
@@ -90,7 +193,7 @@ class ExampleAdapter :
     }
 
     private fun setBoldForSelectedText(
-        binding: ExampleItemBinding,
+        binding: ExampleItemEditBinding,
         selectedField: Int
     ) {
         with(binding) {
@@ -108,7 +211,7 @@ class ExampleAdapter :
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
                 edExample.text!!.trim()
-                exampleItem?.example = edExample.text!!
+                exampleItemUiState?.example = edExample.text!!
                 edExample.setSelection(startPos)
 
             } else if (selectedField == TRANSLATION) {
@@ -125,7 +228,7 @@ class ExampleAdapter :
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
                 edTranslation.text!!.trim()
-                exampleItem?.translation = edTranslation.text!!
+                exampleItemUiState?.translation = edTranslation.text!!
                 edTranslation.setSelection(startPos)
             }
         }
@@ -162,50 +265,11 @@ class ExampleAdapter :
         menu.add(groupId, itemId, order, title)
     }
 
-    private fun setListeners(
-        binding: ExampleItemBinding,
-        adapterPosition: Int
-    ) = with(binding) {
-        edExample.customSelectionActionModeCallback =
-            getActionModeCallback(binding, EXAMPLE)
-        edTranslation.customSelectionActionModeCallback = getActionModeCallback(
-            binding,
-            TRANSLATION
-        )
-        edExample.setOnFocusChangeListener { view, hasFocus ->
-            val editText = view as EditText
-            if (!hasFocus) editText.clearComposingText()
-        }
-        if (exampleItem?.error != null) {
-            edExample.addTextChangedListener { text ->
-                if (!text.isNullOrEmpty()) {
-                    exampleItem?.error = null
-                    notifyItemChanged(adapterPosition)
-                    edExample.setSelection(text.length)
-                }
-            }
-        }
-        edTranslation.setOnFocusChangeListener { view, hasFocus ->
-            val editText = view as EditText
-            if (!hasFocus) editText.clearComposingText()
-        }
-        tvExample.setOnClickListener {
-            if (translationWrapper.visibility == View.GONE) {
-                ivShowHide.animate().rotation(180F).start()
-                Animations.expand(translationWrapper, tvExample.width)
-            } else {
-                ivShowHide.animate().rotation(0F).start()
-                Animations.collapse(translationWrapper)
-            }
-        }
-        ivDelete.setOnClickListener {
-            onDeleteClickListener?.invoke(adapterPosition)
-        }
-    }
-
     companion object {
         const val EXAMPLE = 1
         const val TRANSLATION = 2
+        const val EDIT_MODE = 1
+        const val VIEW_MODE = 0
 
         @BindingAdapter("android:text")
         @JvmStatic

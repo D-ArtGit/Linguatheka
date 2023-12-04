@@ -3,15 +3,15 @@ package ru.dartx.linguatheka.domain
 import android.text.Spanned
 
 
-data class ExampleItem(
-    var id: Int?,
-    var card_id: Int,
+data class ExampleItemUiState(
+    var id: Int,
+    var cardId: Int,
     var example: Spanned,
     var translation: Spanned,
-    var tvExampleVisibility: Int,
-    var edVisibility: Int,
     var dividerVisibility: Boolean,
     var error: String?,
     var requestFocus: Boolean,
-    var finished: Boolean
+    var finished: Boolean,
+    var editMode: Boolean,
+    var itemNumber: Int = 0
 )

@@ -1,4 +1,4 @@
-package ru.dartx.linguatheka.entities
+package ru.dartx.linguatheka.db.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

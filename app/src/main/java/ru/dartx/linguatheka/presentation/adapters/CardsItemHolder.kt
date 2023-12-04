@@ -9,7 +9,7 @@ import androidx.core.text.bold
 import androidx.recyclerview.widget.RecyclerView
 import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.databinding.CardItemBinding
-import ru.dartx.linguatheka.entities.Card
+import ru.dartx.linguatheka.db.entities.Card
 import ru.dartx.linguatheka.utils.TimeManager
 
 class CardsItemHolder(private val view: View) : RecyclerView.ViewHolder(view) {

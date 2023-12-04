@@ -2,7 +2,7 @@ package ru.dartx.linguatheka.presentation.adapters
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
-import ru.dartx.linguatheka.entities.Card
+import ru.dartx.linguatheka.db.entities.Card
 
 class CardAdapter(private val listener: Listener) :
     ListAdapter<Card, CardsItemHolder>(CardsDiffCallback()) {

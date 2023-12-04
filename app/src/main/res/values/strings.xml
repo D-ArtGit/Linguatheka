@@ -137,6 +137,9 @@
     <string name="show_hide_translation">Show/Hide translation</string>
     <string name="arrow_to_opened_translation">Arrow to opened translation</string>
     <string name="delete_button">Delete button</string>
+    <string name="complete">Complete</string>
+    <string name="saved">Card saved</string>
+    <string name="card_deleted">Card deleted</string>
 
 
 </resources>
