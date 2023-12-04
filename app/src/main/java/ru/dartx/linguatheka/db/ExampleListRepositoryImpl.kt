@@ -27,7 +27,11 @@ class ExampleListRepositoryImpl(application: Application) : ExampleListRepositor
         val cardLangText = langArray[1][langIndex]
         val needCheck = TimeManager.isTimeToSetNewRemind(card.remindTime)
         val tempExampleList = dao.getExamplesByCardId(cardId)
-        var shouldShowDivider = true
+        var shouldShowDivider = false
+        if (tempExampleList.indexOfFirst { it.finished } >= 0 &&
+            tempExampleList.indexOfFirst { !it.finished } >= 0) {
+            shouldShowDivider = true
+        }
         tempExampleList.forEachIndexed { index, example ->
             val exampleItem = UiDbMapper().mapExampleToExampleItemUiState(example)
             exampleItem.itemNumber = index + 1

@@ -114,6 +114,12 @@ class CardViewModel(val application: Application, cardId: Int) : ViewModel() {
         setNumbersForItems()
         if (exampleList.isEmpty()) {
             addEmptyItem(true, application.getString(R.string.no_examples))
+        } else {
+            val indexToUpdate = arrayListOf<Int>()
+            for (i in indexToRemove..exampleList.size) {
+                indexToUpdate.add(i)
+            }
+            _notifyItemChanged.value = indexToUpdate
         }
     }
 
@@ -279,12 +285,7 @@ class CardViewModel(val application: Application, cardId: Int) : ViewModel() {
     }
 
     private fun setNumbersForItems() {
-        var shouldShowDivider = true
         exampleList.forEachIndexed { index, exampleItem ->
-            if (index > 0 && shouldShowDivider && exampleItem.finished) {
-                exampleItem.dividerVisibility = true
-                shouldShowDivider = false
-            }
             exampleItem.itemNumber = index + 1
         }
     }
