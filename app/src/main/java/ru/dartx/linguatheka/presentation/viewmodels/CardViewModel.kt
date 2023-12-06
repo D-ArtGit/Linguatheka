@@ -244,7 +244,7 @@ class CardViewModel(val application: Application, cardId: Int) : ViewModel() {
             }
             setNumbersForItems()
             _notifyItemRemoved.value = indexToRemove
-            for (i in exampleList.indices) indexOfUpdated.add(i)
+            for (i in idToRemove.min()..<exampleList.size) indexOfUpdated.add(i)
             if (exampleList.isEmpty()) {
                 addEmptyItem(true, application.getString(R.string.no_examples))
                 result = false
@@ -273,9 +273,7 @@ class CardViewModel(val application: Application, cardId: Int) : ViewModel() {
         val index = exampleList.indexOfFirst { it.id == exampleItemId }
         if (index >= 0) {
             exampleList[index].error = null
-            val indexOfUpdated = arrayListOf<Int>()
-            indexOfUpdated.add(index)
-            _notifyItemChanged.value = indexOfUpdated
+            _notifyItemChanged.value = listOf(index)
         }
     }
 
