@@ -82,10 +82,8 @@ class ExampleAdapter :
     ) {
         with(exampleItemEditBinding) {
             this.exampleItemUiState = exampleItemUiState
-            "${tvExampleHeader.context.getString(R.string.example)} ${exampleItemUiState.itemNumber}"
-                .also {
-                    tvExampleHeader.text = it
-                }
+            tvExampleHeader.text =
+                tvExampleHeader.context.getString(R.string.example, exampleItemUiState.itemNumber)
             if (exampleItemUiState.requestFocus) {
                 onRequestFocusWithKeyboard?.invoke(edExample, exampleItemUiState.id)
             }

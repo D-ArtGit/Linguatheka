@@ -3,13 +3,9 @@ package ru.dartx.linguatheka.presentation.activities
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
 import ru.dartx.linguatheka.db.MainDataBase
-import ru.dartx.linguatheka.utils.BackupAndRestoreManager
+import ru.dartx.linguatheka.workers.BackupWorker
 import ru.dartx.linguatheka.workers.NotificationsWorker
-import java.util.concurrent.TimeUnit
 
 class MainApp : Application() {
     val database by lazy { MainDataBase.getDataBase(this) }
@@ -24,23 +20,9 @@ class MainApp : Application() {
                 else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             }
         )
-        startNotificationsWorker()
+        NotificationsWorker.startNotificationsWorker(applicationContext)
         if (defPreference.getBoolean("auto_backup", false)) {
-            BackupAndRestoreManager.startBackupWorker(applicationContext)
+            BackupWorker.startBackupWorker(applicationContext)
         }
-    }
-
-    private fun startNotificationsWorker() {
-        val notificationsRequest =
-            PeriodicWorkRequestBuilder<NotificationsWorker>(
-                30, TimeUnit.MINUTES, 5, TimeUnit.MINUTES
-            )
-                .addTag("notifications")
-                .build()
-        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
-            "notifications",
-            ExistingPeriodicWorkPolicy.KEEP,
-            notificationsRequest
-        )
     }
 }

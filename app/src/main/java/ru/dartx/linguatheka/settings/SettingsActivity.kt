@@ -6,7 +6,11 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.preference.*
+import androidx.preference.CheckBoxPreference
+import androidx.preference.EditTextPreference
+import androidx.preference.ListPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
 import androidx.work.WorkManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -18,7 +22,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.dartx.linguatheka.R
-import ru.dartx.linguatheka.utils.*
+import ru.dartx.linguatheka.utils.BackupAndRestoreManager
+import ru.dartx.linguatheka.utils.GoogleSignInManager
+import ru.dartx.linguatheka.utils.LanguagesManager
+import ru.dartx.linguatheka.utils.ThemeManager
+import ru.dartx.linguatheka.utils.TimeManager
+import ru.dartx.linguatheka.workers.BackupWorker
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,7 +116,7 @@ class SettingsActivity : AppCompatActivity() {
                         }
                     }
                     if (result) {
-                        BackupAndRestoreManager.startBackupWorker(requireContext().applicationContext)
+                        BackupWorker.startBackupWorker(requireContext().applicationContext)
                     } else {
                         singInLauncher.launch(
                             GoogleSignInManager.googleSignIn(requireActivity() as AppCompatActivity)

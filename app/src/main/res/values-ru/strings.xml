@@ -97,7 +97,7 @@
     <string name="backup_started">Сохранение запущено</string>
     <string name="last_backup">"Последняя копия: "</string>
     <string name="relogin_to_google">Выйдите и войдите в Google повторно, предоставив разрешения</string>
-    <string name="example">Пример</string>
+    <string name="example">Пример %d</string>
     <string name="text">Текст</string>
     <string name="add_example">Добавить пример</string>
     <string name="try_later">Что-то пошло не так. Попробуйте позже.</string>

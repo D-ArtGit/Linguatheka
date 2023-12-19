@@ -6,7 +6,7 @@
     <string name="word">Word</string>
     <string name="phrases">Phrases</string>
     <string name="word_usage_examples">Examples</string>
-    <string name="example">Example</string>
+    <string name="example">Example %d</string>
     <string name="add_example">Add example</string>
     <string name="text">Text</string>
     <string name="no_examples">Enter at least one examples</string>

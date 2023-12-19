@@ -11,8 +11,14 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.db.MainDataBase
 import ru.dartx.linguatheka.presentation.activities.CardActivity
@@ -22,28 +28,35 @@ import ru.dartx.linguatheka.presentation.activities.MainApp
 import ru.dartx.linguatheka.presentation.activities.SnoozeDialogActivity
 import ru.dartx.linguatheka.utils.HtmlManager
 import ru.dartx.linguatheka.utils.TimeManager
+import java.util.concurrent.TimeUnit
 
 class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
     override fun doWork(): Result {
-        createChannel()
-        createNotifications()
+        if (createChannel())
+            CoroutineScope(Dispatchers.IO).launch {
+                createNotifications()
+            }
         return Result.success()
     }
 
-    private fun createChannel() {
+    private fun createChannel(): Boolean {
         val name = applicationContext.getString(R.string.channel_name)
         val descriptionText = applicationContext.getString(R.string.channel_description)
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
-        val channel = NotificationChannel(MainActivity.CHANNEL_ID, name, importance).apply {
+        val channel = NotificationChannel(
+            MainActivity.CHANNEL_ID,
+            name,
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
             description = descriptionText
         }
         val notificationManager: NotificationManager =
             applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
+        return notificationManager.areNotificationsEnabled()
     }
 
-    private fun createNotifications() {
+    private suspend fun createNotifications() {
         val database = MainDataBase.getDataBase(applicationContext as MainApp)
         val notificationCards = database.getDao().notificationCards(TimeManager.getCurrentTime())
         val resultIntent = Intent(applicationContext, CardActivity::class.java).apply {
@@ -59,7 +72,7 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
         var snoozePendingIntent: PendingIntent?
         var donePendingIntent: PendingIntent?
         notificationCards.forEach { card ->
-            val examples = database.getDao().findExamplesByCardId(card.id!!)
+            val examples = database.getDao().getExamplesByCardId(card.id!!)
             var moreThanOneLine = false
             var examplesForCard = ""
             examples.forEach { example ->
@@ -120,13 +133,6 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
                         Manifest.permission.POST_NOTIFICATIONS
                     ) != PackageManager.PERMISSION_GRANTED
                 ) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
                     return
                 }
                 notify(card.id, builder.build())
@@ -136,5 +142,25 @@ class NotificationsWorker(appContext: Context, workerParams: WorkerParameters) :
 
     companion object {
         const val ACTION_DONE = "wc_done"
+        private const val NOTIFICATIONS_WORK_NAME = "notifications"
+        fun startNotificationsWorker(applicationContext: Context) {
+            if (ActivityCompat.checkSelfPermission(
+                    applicationContext,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                val notificationsRequest =
+                    PeriodicWorkRequestBuilder<NotificationsWorker>(
+                        30, TimeUnit.MINUTES, 5, TimeUnit.MINUTES
+                    )
+                        .addTag(NOTIFICATIONS_WORK_NAME)
+                        .build()
+                WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+                    NOTIFICATIONS_WORK_NAME,
+                    ExistingPeriodicWorkPolicy.KEEP,
+                    notificationsRequest
+                )
+            }
+        }
     }
 }

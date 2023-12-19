@@ -1,10 +1,12 @@
 package ru.dartx.linguatheka.presentation.activities
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
@@ -32,16 +34,15 @@ import ru.dartx.linguatheka.databinding.ActivityMainBinding
 import ru.dartx.linguatheka.databinding.NavHeaderBinding
 import ru.dartx.linguatheka.db.MainDataBase
 import ru.dartx.linguatheka.db.entities.Card
-import ru.dartx.linguatheka.presentation.activities.CardActivity.Companion.CARD_STATE
+import ru.dartx.linguatheka.presentation.activities.CardActivity.Companion.NEED_TO_SCROLL
 import ru.dartx.linguatheka.presentation.adapters.CardAdapter
 import ru.dartx.linguatheka.presentation.dialogs.AboutAppDialog
 import ru.dartx.linguatheka.presentation.viewmodels.MainViewModel
-import ru.dartx.linguatheka.presentation.viewmodels.OnActionListener.Companion.CARD_STATE_CHECK
-import ru.dartx.linguatheka.presentation.viewmodels.OnActionListener.Companion.CARD_STATE_VIEW
 import ru.dartx.linguatheka.settings.SettingsActivity
 import ru.dartx.linguatheka.utils.BitmapManager
 import ru.dartx.linguatheka.utils.LanguagesManager
 import ru.dartx.linguatheka.utils.ThemeManager
+import ru.dartx.linguatheka.workers.NotificationsWorker
 
 class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAdapter.Listener {
     private lateinit var binding: ActivityMainBinding
@@ -67,6 +68,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
         setContentView(binding.root)
         init()
         showHTU()
+        requestPermissions()
         cardListObserver()
     }
 
@@ -216,11 +218,11 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
         cardActivityLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 if (it.resultCode == Activity.RESULT_OK) {
-                    val cardState = it.data?.getIntExtra(
-                        CARD_STATE,
-                        CARD_STATE_VIEW
-                    )
-                    if (cardState == CARD_STATE_CHECK)
+                    val needToScroll = it.data?.getBooleanExtra(
+                        NEED_TO_SCROLL,
+                        false
+                    ) ?: false
+                    if (needToScroll)
                         binding.rcViewCardList.postDelayed({
                             binding.rcViewCardList.smoothScrollToPosition(0)
                         }, 1000)
@@ -330,7 +332,39 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
         }
     }
 
+    private fun requestPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+            && shouldShowRequestPermissionRationale(
+                Manifest.permission.POST_NOTIFICATIONS
+            )
+        ) {
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_CODE)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    NotificationsWorker.startNotificationsWorker(applicationContext)
+                } else {
+                    //TODO: Explain why need Notifications
+                }
+                return
+            }
+            else -> {
+                println("Unknown request")
+            }
+        }
+    }
+
     companion object {
         const val CHANNEL_ID = "wordCH"
+        const val REQUEST_CODE = 112
     }
 }

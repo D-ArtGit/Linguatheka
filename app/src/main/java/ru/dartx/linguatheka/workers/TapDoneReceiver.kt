@@ -42,13 +42,10 @@ class TapDoneReceiver : BroadcastReceiver() {
             CoroutineScope(Dispatchers.IO).launch {
                 if (step > 8) {
                     val tmpExampleList: ArrayList<Example> = arrayListOf()
-                    val examplesForCard = database.getDao().findExamplesByCardId(card.id!!)
-                    examplesForCard.forEachIndexed { index, example ->
+                    val examplesForCard = database.getDao().getExamplesByCardId(card.id!!)
+                    examplesForCard.forEach {
                         tmpExampleList.add(
-                            example.copy(
-                                id = index + 1,
-                                finished = true
-                            )
+                            it.copy(finished = true)
                         )
                     }
                     database.getDao().updateCardWithItems(tempCard, tmpExampleList)

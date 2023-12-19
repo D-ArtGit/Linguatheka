@@ -87,7 +87,7 @@ class CardViewFragment : Fragment() {
         }
 
         viewModel.shouldCloseActivity.observe(viewLifecycleOwner) {
-            onActionListener.onFinished(it)
+            onActionListener.onFinished(it, true)
         }
     }
 

@@ -194,8 +194,8 @@ class CardActivity : AppCompatActivity(), OnActionListener,
 
     companion object {
         const val CARD_DATA = "card"
-        const val CARD_STATE = "cardState"
         const val CARD_FRAGMENT = "card_fragment"
+        const val NEED_TO_SCROLL = "need_to_scroll"
 
         fun intentCardActivityForEdit(context: Context, card: Card): Intent {
             val i = Intent(context, CardActivity::class.java)
@@ -204,8 +204,13 @@ class CardActivity : AppCompatActivity(), OnActionListener,
         }
     }
 
-    override fun onFinished(message: String) {
+    override fun onFinished(message: String, isChecked: Boolean) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        if (isChecked) {
+            val i = Intent()
+            i.putExtra(NEED_TO_SCROLL, true)
+            setResult(RESULT_OK, i)
+        }
         finish()
     }
 

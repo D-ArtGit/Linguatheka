@@ -2,6 +2,11 @@ package ru.dartx.linguatheka.workers
 
 import android.content.Context
 import androidx.sqlite.db.SimpleSQLiteQuery
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -12,10 +17,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.dartx.linguatheka.R
-import ru.dartx.linguatheka.presentation.activities.MainApp
 import ru.dartx.linguatheka.db.MainDataBase
+import ru.dartx.linguatheka.presentation.activities.MainApp
 import ru.dartx.linguatheka.utils.BackupAndRestoreManager
-import java.util.*
+import java.util.Collections
+import java.util.concurrent.TimeUnit
 
 class BackupWorker(context: Context, workerParams: WorkerParameters) :
     Worker(context, workerParams) {
@@ -79,6 +85,27 @@ class BackupWorker(context: Context, workerParams: WorkerParameters) :
                 println("Unable upload: " + e.details)
                 throw e
             }
+        }
+    }
+
+    companion object {
+        private const val BACKUP_WORK_NAME = "backup_cards"
+        fun startBackupWorker(context: Context) {
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresDeviceIdle(true)
+                .build()
+            val backupRequest = PeriodicWorkRequestBuilder<BackupWorker>(
+                24, TimeUnit.HOURS, 12, TimeUnit.HOURS
+            )
+                .setConstraints(constraints)
+                .addTag(BACKUP_WORK_NAME)
+                .build()
+            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+                BACKUP_WORK_NAME,
+                ExistingPeriodicWorkPolicy.KEEP,
+                backupRequest
+            )
         }
     }
 }

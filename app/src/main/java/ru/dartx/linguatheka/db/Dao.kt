@@ -1,7 +1,11 @@
 package ru.dartx.linguatheka.db
 
-import androidx.room.*
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.room.Transaction
+import androidx.room.Update
 import androidx.sqlite.db.SupportSQLiteQuery
 import kotlinx.coroutines.flow.Flow
 import ru.dartx.linguatheka.db.entities.Card
@@ -26,9 +30,6 @@ interface Dao {
 
     @Query("SELECT * FROM cards WHERE word LIKE :cond AND id != :card_id")
     suspend fun findDuplicates(cond: String, card_id: Int): List<Card>
-
-    @Query("SELECT * FROM example WHERE card_id IS :card_id ORDER BY finished, id ASC")
-    fun findExamplesByCardId(card_id: Int): List<Example>
 
     @Query(
         "SELECT * FROM cards WHERE remindTime <= :cond " +

@@ -1,7 +1,7 @@
 package ru.dartx.linguatheka.presentation.viewmodels
 
 interface OnActionListener {
-    fun onFinished(message: String)
+    fun onFinished(message: String, isChecked: Boolean)
     fun setState(state: Int)
 
     companion object{

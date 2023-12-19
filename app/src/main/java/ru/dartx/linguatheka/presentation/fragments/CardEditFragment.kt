@@ -145,7 +145,7 @@ class CardEditFragment : Fragment() {
         }
 
         viewModel.shouldCloseActivity.observe(viewLifecycleOwner) {
-            onActionListener.onFinished(it)
+            onActionListener.onFinished(it, false)
         }
     }
 
