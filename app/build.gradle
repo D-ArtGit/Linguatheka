@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-    id 'org.jetbrains.kotlin.kapt'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
     id("com.google.devtools.ksp")
 }
 
@@ -67,8 +67,8 @@ dependencies {
     implementation 'androidx.room:room-ktx:2.6.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     ksp 'androidx.room:room-compiler:2.6.1'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.2'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0'
     implementation 'androidx.preference:preference-ktx:1.2.1'
     implementation 'com.google.android.gms:play-services-auth:20.7.0'
     implementation 'com.google.http-client:google-http-client-gson:1.43.3'
