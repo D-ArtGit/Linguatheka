@@ -69,7 +69,7 @@ class CardViewFragment : Fragment() {
 
     private fun observeViewModel() {
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 viewModel.cardWithExamplesUiState.collect {
                     binding.tvCardWord.text = it.card.word
                     binding.tvLang.text = it.cardLangText

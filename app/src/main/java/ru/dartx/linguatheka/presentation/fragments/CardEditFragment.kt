@@ -105,7 +105,7 @@ class CardEditFragment : Fragment() {
 
     private fun observeViewModel() {
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 viewModel.cardWithExamplesUiState
                     .collect {
                         if (binding.edWord.text.isNullOrBlank()) {

@@ -27,7 +27,8 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
 import ru.dartx.linguatheka.BuildConfig
 import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.databinding.ActivityMainBinding
@@ -188,7 +189,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
         }
         toolbar.inflateMenu(R.menu.top_menu)
         val search = toolbar.menu.findItem(R.id.search)
-        edSearch = search.actionView?.findViewById(R.id.edSearch) as EditText
+        edSearch = search.actionView?.findViewById(R.id.edSearch)!!
         search.setOnActionExpandListener(expandActionView())
         textWatcher = textWatcher()
         if (Build.VERSION.SDK_INT >= 33) {
