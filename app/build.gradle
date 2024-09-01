@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId "ru.dartx.linguatheka"
         minSdk 26
-        targetSdk 35
+        targetSdk 34
         versionCode 8
         versionName "1.07"
 
