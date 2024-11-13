@@ -8,8 +8,10 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.ActionBar
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.preference.PreferenceManager
 import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.databinding.ActivityLargeTextBinding
@@ -22,7 +24,7 @@ import java.io.UnsupportedEncodingException
 
 class LargeTextActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLargeTextBinding
-    private var ab: ActionBar? = null
+
     private var largeTextType = HOW_TO_USE
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(ThemeManager.getSelectedTheme(this))
@@ -30,7 +32,13 @@ class LargeTextActivity : AppCompatActivity() {
         val defPreference = PreferenceManager.getDefaultSharedPreferences(this)
         val editor = defPreference.edit()
         binding = ActivityLargeTextBinding.inflate(layoutInflater)
+        enableEdgeToEdge()
         setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         largeTextType = intent.getIntExtra(LARGE_TEXT_TYPE, HOW_TO_USE)
         actionBarSettings()
         initMode(defPreference)
@@ -82,11 +90,11 @@ class LargeTextActivity : AppCompatActivity() {
     }
 
     private fun actionBarSettings() {
-        ab = supportActionBar
-        ab?.setDisplayHomeAsUpEnabled(true)
+//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        binding.toolbar.setNavigationOnClickListener { finish() }
         when (largeTextType) {
-            PRIVACY -> ab?.setTitle(R.string.privacy)
-            AGREEMENT -> ab?.setTitle(R.string.agreement)
+            PRIVACY -> binding.toolbar.setTitle(R.string.privacy)
+            AGREEMENT -> binding.toolbar.setTitle(R.string.agreement)
         }
     }
 

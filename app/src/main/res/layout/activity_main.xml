@@ -8,58 +8,39 @@
     android:fitsSystemWindows="true"
     tools:context=".presentation.activities.MainActivity">
 
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/cLMainActivity"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/actBgColor"
+        android:fitsSystemWindows="true"
+        android:background="?attr/toolBarBgColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:context=".MainActivity">
+        tools:context=".presentation.activities.MainActivity">
 
-        <LinearLayout
-            android:id="@+id/linearLayout4"
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:background="?attr/toolBarBgColor"
+            android:fitsSystemWindows="true"
+            android:theme="@style/Theme.WordCards.AppBarOverlay">
 
-            <com.google.android.material.appbar.AppBarLayout
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/colorPrimary"
-                android:theme="@style/Theme.WordCards.AppBarOverlay">
+                android:minHeight="?attr/actionBarSize"
+                app:navigationIcon="@drawable/ic_menu"
+                app:popupTheme="@style/Theme.WordCards.PopupOverlay"
+                app:title="@string/app_name" />
 
-                <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    android:background="?attr/toolBarBgColor"
-                    android:elevation="0dp"
-                    app:navigationIcon="@drawable/ic_menu"
-                    app:popupTheme="@style/Theme.WordCards.PopupOverlay"
-                    app:title="@string/app_name" />
+        </com.google.android.material.appbar.AppBarLayout>
 
-            </com.google.android.material.appbar.AppBarLayout>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/mcViewMainActivity"
-                style="@style/CustomCardViewStyle"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:cardBackgroundColor="?attr/cardBgColor"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rcViewCardList"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    tools:listitem="@layout/card_item" />
-            </com.google.android.material.card.MaterialCardView>
-
-
-        </LinearLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btFab"
@@ -67,20 +48,37 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_marginEnd="18dp"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="36dp"
             android:clickable="true"
             android:contentDescription="@string/create"
             app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
             app:srcCompat="@drawable/ic_fab" />
 
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/mcViewMainActivity"
+            style="@style/CustomCardViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cardBackgroundColor="?attr/cardBgColor"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcViewCardList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                tools:listitem="@layout/card_item" />
+        </com.google.android.material.card.MaterialCardView>
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navView"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:elevation="16dp"
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/nav_menu" />
 

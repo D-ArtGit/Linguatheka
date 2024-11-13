@@ -28,16 +28,4 @@ object ThemeManager {
             else -> R.style.Theme_WordCardsDialogRed
         }
     }
-
-    fun getSelectedThemeNoBar(context: Context): Int {
-        val defPreference = PreferenceManager.getDefaultSharedPreferences(context)
-        return when (defPreference.getString(
-            "theme",
-            "blue"
-        )) {
-            "blue" -> R.style.Theme_WordCardsBlue_NoActionBar
-            "green" -> R.style.Theme_WordCardsGreen_NoActionBar
-            else -> R.style.Theme_WordCardsRed_NoActionBar
-        }
-    }
 }

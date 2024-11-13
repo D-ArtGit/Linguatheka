@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -26,7 +28,9 @@ import ru.dartx.linguatheka.presentation.viewmodels.OnActionListener
 
 class CardEditFragment : Fragment() {
     private var cardId = 0
-    private lateinit var binding: FragmentCardEditBinding
+    private var _binding: FragmentCardEditBinding? = null
+    private val binding: FragmentCardEditBinding
+        get() = _binding ?: throw RuntimeException("Binding is null")
     private val viewModelFactory: CardViewModelFactory by lazy {
         CardViewModelFactory(
             requireActivity().application,
@@ -57,18 +61,30 @@ class CardEditFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentCardEditBinding.inflate(inflater, container, false)
+        _binding = FragmentCardEditBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.clCardEditFragment) { v, insets ->
+            val bottomPadding =
+                insets.getInsets(WindowInsetsCompat.Type.navigationBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime()).bottom
+            v.setPadding(0, 0, 0, bottomPadding)
+            WindowInsetsCompat.CONSUMED
+        }
+
         exampleListAdapter = ExampleAdapter()
         binding.rvExampleList.adapter = exampleListAdapter
         setUpSpinner()
         observeViewModel()
         setOnClickListeners()
         setUpTextWatchers()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun setUpSpinner() {

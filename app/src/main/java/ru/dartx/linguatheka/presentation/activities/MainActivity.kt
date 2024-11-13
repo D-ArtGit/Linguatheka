@@ -18,12 +18,16 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -66,7 +70,14 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         nvBinding = NavHeaderBinding.bind(binding.navView.getHeaderView(0))
+        enableEdgeToEdge()
         setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.rcViewCardList) { v, insets ->
+            val bottomPadding =
+                insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime()).bottom
+            v.updatePadding(bottom = bottomPadding)
+            WindowInsetsCompat.CONSUMED
+        }
         init()
         showHTU()
         requestPermissions()
@@ -75,7 +86,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
 
     private fun applyTheme() {
         currentTheme = defPreference.getString("theme", "blue").toString()
-        setTheme(ThemeManager.getSelectedThemeNoBar(this))
+        setTheme(ThemeManager.getSelectedTheme(this))
     }
 
     override fun onResume() {
@@ -358,6 +369,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                 }
                 return
             }
+
             else -> {
                 println("Unknown request")
             }

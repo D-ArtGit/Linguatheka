@@ -5,10 +5,8 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import android.widget.Toast
-import androidx.appcompat.app.ActionBar
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
 import androidx.preference.PreferenceManager
@@ -31,7 +29,6 @@ import ru.dartx.linguatheka.utils.ThemeManager
 class CardActivity : AppCompatActivity(), OnActionListener,
     CoroutineScope by MainScope() {
     private lateinit var binding: ActivityCardBinding
-    private var ab: ActionBar? = null
     private var card: Card? = null
     private var cardState = CARD_STATE_VIEW
 
@@ -40,39 +37,58 @@ class CardActivity : AppCompatActivity(), OnActionListener,
         setTheme(ThemeManager.getSelectedTheme(this))
         super.onCreate(savedInstanceState)
         binding = ActivityCardBinding.inflate(layoutInflater)
+        enableEdgeToEdge()
         setContentView(binding.root)
         showLangSettings(defPreference)
-        actionBarSettings()
+        setUpToolbar()
         getCard()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.card_menu, menu)
-        val itemEdit = menu?.findItem(R.id.edit)
-        val itemReset = menu?.findItem(R.id.reset)
-        val itemDelete = menu?.findItem(R.id.delete)
-        if (cardState == CARD_STATE_VIEW || cardState == CARD_STATE_CHECK) {
-            itemEdit?.isVisible = true
+    private fun setUpToolbar() {
+        with(binding) {
+            toolbar.setNavigationOnClickListener { finish() }
+            toolbar.inflateMenu(R.menu.card_menu)
+            val itemEdit = toolbar.menu.findItem(R.id.edit)
+            val itemReset = toolbar.menu.findItem(R.id.reset)
+            val itemDelete = toolbar.menu.findItem(R.id.delete)
+            toolbarMenuItemVisibility()
+            itemEdit.setOnMenuItemClickListener {
+                editCard()
+                true
+            }
+            itemReset.setOnMenuItemClickListener {
+                resetCardState()
+                true
+            }
+            itemDelete.setOnMenuItemClickListener {
+                deleteCard()
+                true
+            }
         }
-        if (cardState == CARD_STATE_NEW) {
-            itemReset?.isVisible = false
-            itemDelete?.isVisible = false
-            itemEdit?.isVisible = false
-        }
-        if (cardState == CARD_STATE_EDIT) {
-            itemEdit?.isVisible = false
-        }
-        return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> finish()
-            R.id.delete -> deleteCard()
-            R.id.reset -> resetCardState()
-            R.id.edit -> editCard()
+    private fun toolbarMenuItemVisibility() {
+        with(binding) {
+            val itemEdit = toolbar.menu.findItem(R.id.edit)
+            val itemReset = toolbar.menu.findItem(R.id.reset)
+            val itemDelete = toolbar.menu.findItem(R.id.delete)
+
+            if (cardState == CARD_STATE_VIEW || cardState == CARD_STATE_CHECK) {
+                itemEdit.isVisible = true
+                itemDelete.isVisible = true
+                itemReset.isVisible = true
+            }
+            if (cardState == CARD_STATE_NEW) {
+                itemReset.isVisible = false
+                itemDelete.isVisible = false
+                itemEdit.isVisible = false
+            }
+            if (cardState == CARD_STATE_EDIT) {
+                itemEdit.isVisible = false
+                itemReset.isVisible = true
+                itemDelete.isVisible = true
+            }
         }
-        return super.onOptionsItemSelected(item)
     }
 
     private fun getCard() {
@@ -163,17 +179,14 @@ class CardActivity : AppCompatActivity(), OnActionListener,
         )
     }
 
-    private fun actionBarSettings() {
-        ab = supportActionBar
-        ab?.setDisplayHomeAsUpEnabled(true)
-    }
-
     private fun setActionBarTitle() {
-        when (cardState) {
-            CARD_STATE_CHECK -> ab?.setTitle(R.string.repeat_card)
-            CARD_STATE_NEW -> ab?.setTitle(R.string.fill_card)
-            CARD_STATE_EDIT -> ab?.setTitle(R.string.edit_card)
-            CARD_STATE_VIEW -> ab?.setTitle(R.string.view_card)
+        with(binding) {
+            when (cardState) {
+                CARD_STATE_CHECK -> toolbar.setTitle(R.string.repeat_card)
+                CARD_STATE_NEW -> toolbar.setTitle(R.string.fill_card)
+                CARD_STATE_EDIT -> toolbar.setTitle(R.string.edit_card)
+                CARD_STATE_VIEW -> toolbar.setTitle(R.string.view_card)
+            }
         }
     }
 
@@ -216,7 +229,7 @@ class CardActivity : AppCompatActivity(), OnActionListener,
 
     override fun setState(state: Int) {
         cardState = state
-        invalidateOptionsMenu()
+        toolbarMenuItemVisibility()
         setActionBarTitle()
     }
 }

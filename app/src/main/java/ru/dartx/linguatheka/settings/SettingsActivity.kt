@@ -3,9 +3,12 @@ package ru.dartx.linguatheka.settings
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.preference.CheckBoxPreference
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
@@ -22,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.dartx.linguatheka.R
+import ru.dartx.linguatheka.databinding.SettingsActivityBinding
 import ru.dartx.linguatheka.utils.BackupAndRestoreManager
 import ru.dartx.linguatheka.utils.GoogleSignInManager
 import ru.dartx.linguatheka.utils.LanguagesManager
@@ -30,17 +34,25 @@ import ru.dartx.linguatheka.utils.TimeManager
 import ru.dartx.linguatheka.workers.BackupWorker
 
 class SettingsActivity : AppCompatActivity() {
+    private lateinit var binding: SettingsActivityBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(ThemeManager.getSelectedTheme(this))
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.settings_activity)
+        binding = SettingsActivityBinding.inflate(layoutInflater)
+        enableEdgeToEdge()
+        setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
         if (savedInstanceState == null) {
             supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.settings, SettingsFragment())
                 .commit()
         }
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        binding.toolbar.setNavigationOnClickListener { finish() }
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {

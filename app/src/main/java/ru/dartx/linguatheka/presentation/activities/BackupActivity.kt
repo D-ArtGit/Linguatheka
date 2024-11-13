@@ -22,7 +22,7 @@ import ru.dartx.linguatheka.db.MainDataBase
 import ru.dartx.linguatheka.utils.BackupAndRestoreManager
 import ru.dartx.linguatheka.utils.GoogleSignInManager
 import ru.dartx.linguatheka.utils.ThemeManager
-import java.util.*
+import java.util.Collections
 
 class BackupActivity : AppCompatActivity() {
     lateinit var binding: ActivityBackupBinding

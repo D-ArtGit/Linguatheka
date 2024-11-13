@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -22,7 +24,9 @@ import ru.dartx.linguatheka.presentation.viewmodels.OnActionListener.Companion.C
 class CardViewFragment : Fragment() {
 
     private var cardId: Int = -1
-    private lateinit var binding: FragmentCardViewBinding
+    private var _binding: FragmentCardViewBinding? = null
+    private val binding: FragmentCardViewBinding
+        get() = _binding ?: throw RuntimeException("Binding is null")
     private val viewModelFactory: CardViewModelFactory by lazy {
         CardViewModelFactory(
             requireActivity().application,
@@ -53,18 +57,29 @@ class CardViewFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentCardViewBinding.inflate(inflater, container, false)
+        _binding = FragmentCardViewBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.clCardViewFragment) { v, insets ->
+            val bottomPadding =
+                insets.getInsets(WindowInsetsCompat.Type.navigationBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime()).bottom
+            v.setPadding(0, 0, 0, bottomPadding)
+            WindowInsetsCompat.CONSUMED
+        }
         exampleListAdapter = ExampleAdapter()
         binding.rvExampleList.adapter = exampleListAdapter
         observeViewModel()
         binding.btComplete.setOnClickListener {
             viewModel.cardWithExamplesUiState.value.card.id?.let { viewModel.completeStep(it) }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun observeViewModel() {
