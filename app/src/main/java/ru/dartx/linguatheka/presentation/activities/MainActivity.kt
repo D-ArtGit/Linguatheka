@@ -31,6 +31,7 @@ import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import ru.dartx.linguatheka.BuildConfig
@@ -78,6 +79,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
             v.updatePadding(bottom = bottomPadding)
             WindowInsetsCompat.CONSUMED
         }
+        hideShowFloatActionButton()
         init()
         showHTU()
         requestPermissions()
@@ -91,6 +93,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
 
     override fun onResume() {
         super.onResume()
+        if (binding.btFab.isOrWillBeHidden) binding.btFab.show()
         LanguagesManager.getUsedLanguages(applicationContext as MainApp)
         if (defPreference.getString(
                 "theme", "blue"
@@ -139,6 +142,21 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                 }
                 return true
             }
+        }
+    }
+
+    private fun hideShowFloatActionButton() {
+        with(binding) {
+            rcViewCardList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    if (dy > 0) {
+                        if (btFab.isOrWillBeShown) btFab.hide()
+                    } else if (dy < 0) {
+                        if (btFab.isOrWillBeHidden) btFab.show()
+                    }
+                }
+            })
         }
     }
 

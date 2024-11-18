@@ -51,7 +51,6 @@
             android:layout_marginBottom="36dp"
             android:clickable="true"
             android:contentDescription="@string/create"
-            app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
             app:srcCompat="@drawable/ic_fab" />
 
 
