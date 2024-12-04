@@ -25,12 +25,6 @@ object AvatarDialog {
                 listener.onClickClear()
                 dialog?.dismiss()
             }
-            if (BackupAndRestoreManager.checkForGooglePlayServices(context)) {
-                btGoogle.setOnClickListener {
-                    listener.onClickGoogle()
-                    dialog?.dismiss()
-                }
-            } else btGoogle.visibility = View.GONE
         }
         dialog = builder.create()
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -53,7 +47,5 @@ object AvatarDialog {
         fun onClickChoose()
         fun onClickClear()
         fun onClickCancel()
-        fun onClickGoogle()
-
     }
 }

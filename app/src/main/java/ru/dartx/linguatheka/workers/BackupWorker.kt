@@ -9,7 +9,6 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.http.FileContent
 import com.google.api.services.drive.Drive
@@ -19,7 +18,9 @@ import kotlinx.coroutines.launch
 import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.db.MainDataBase
 import ru.dartx.linguatheka.presentation.activities.MainApp
+import ru.dartx.linguatheka.utils.AuthorizationClientManager
 import ru.dartx.linguatheka.utils.BackupAndRestoreManager
+import ru.dartx.linguatheka.utils.BackupAndRestoreManager.isGrantedAllScopes
 import java.util.Collections
 import java.util.concurrent.TimeUnit
 
@@ -32,20 +33,17 @@ class BackupWorker(context: Context, workerParams: WorkerParameters) :
 
     private fun createBackup() {
         println("Start backup")
-        val account = GoogleSignIn.getLastSignedInAccount(applicationContext)
-        if (account == null) {
-            println("Backup account is null")
-        } else {
-            val googleDriveService =
-                BackupAndRestoreManager.googleDriveClient(account, applicationContext)
-            if (googleDriveService != null) {
-                if (BackupAndRestoreManager.isOnline(applicationContext)) {
-                    backup(googleDriveService)
-                } else {
-                    println("There is no Internet connection")
-                }
+        AuthorizationClientManager.authorize(applicationContext) { authorizationResult ->
+            if (isGrantedAllScopes(authorizationResult)) {
+                val driveService =
+                    BackupAndRestoreManager.googleDriveClient(
+                        authorizationResult,
+                        applicationContext
+                    )
+                if (BackupAndRestoreManager.isOnline(applicationContext)) backup(driveService)
+                else println("There is no Internet connection")
             } else {
-                println("Google Drive Service is null")
+                println("Backup account not authorized")
             }
         }
     }
@@ -82,7 +80,10 @@ class BackupWorker(context: Context, workerParams: WorkerParameters) :
                     }
                 }
             } catch (e: GoogleJsonResponseException) {
-                println("Unable upload: " + e.details)
+                println("Unable upload: ${e.details}")
+                throw e
+            } catch (e: Exception) {
+                println("Unable upload: ${e.message}")
                 throw e
             }
         }

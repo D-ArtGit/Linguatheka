@@ -24,6 +24,11 @@
         <item name="btSignIn">@drawable/common_google_signin_btn_text_dark</item>
     </style>
 
+    <style name="Theme.WordCards.ActionBar" parent="Theme.Material3.Light">
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorSurfaceContainer">@color/white</item>
+    </style>
+
     <style name="Theme.WordCardsGreen" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/green_500</item>

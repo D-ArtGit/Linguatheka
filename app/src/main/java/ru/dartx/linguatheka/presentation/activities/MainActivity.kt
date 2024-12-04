@@ -73,17 +73,27 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
         nvBinding = NavHeaderBinding.bind(binding.navView.getHeaderView(0))
         enableEdgeToEdge()
         setContentView(binding.root)
+        setInsets()
+        hideShowFloatActionButton()
+        init()
+        showHTU()
+        requestPermissions()
+        cardListObserver()
+    }
+
+    private fun setInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.rcViewCardList) { v, insets ->
             val bottomPadding =
                 insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime()).bottom
             v.updatePadding(bottom = bottomPadding)
             WindowInsetsCompat.CONSUMED
         }
-        hideShowFloatActionButton()
-        init()
-        showHTU()
-        requestPermissions()
-        cardListObserver()
+        ViewCompat.setOnApplyWindowInsetsListener(binding.navView) { v, insets ->
+            val topPadding =
+                insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()).top
+            v.updatePadding(top = topPadding)
+            WindowInsetsCompat.CONSUMED
+        }
     }
 
     private fun applyTheme() {

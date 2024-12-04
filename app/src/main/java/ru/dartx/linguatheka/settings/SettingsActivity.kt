@@ -10,24 +10,21 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.preference.CheckBoxPreference
-import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.work.WorkManager
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.Scope
+import com.google.android.gms.auth.api.identity.Identity
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAuthIOException
-import com.google.api.services.drive.DriveScopes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.databinding.SettingsActivityBinding
+import ru.dartx.linguatheka.utils.AuthorizationClientManager
 import ru.dartx.linguatheka.utils.BackupAndRestoreManager
-import ru.dartx.linguatheka.utils.GoogleSignInManager
+import ru.dartx.linguatheka.utils.BackupAndRestoreManager.isGrantedAllScopes
 import ru.dartx.linguatheka.utils.LanguagesManager
 import ru.dartx.linguatheka.utils.ThemeManager
 import ru.dartx.linguatheka.utils.TimeManager
@@ -69,20 +66,25 @@ class SettingsActivity : AppCompatActivity() {
             val nightMode: Preference? = findPreference("night_mode")
             val themeMode: Preference? = findPreference("theme")
             val autoBackup: CheckBoxPreference? = findPreference("auto_backup")
-            val userName: EditTextPreference? = findPreference("user_name")
             val restoreMenu: Preference? = findPreference("restore_menu")
             if (!BackupAndRestoreManager.checkForGooglePlayServices(requireContext())) restoreMenu?.isVisible =
                 false
-            val singInLauncher = registerForActivityResult(
-                ActivityResultContracts.StartActivityForResult()
+            val authorizationLauncher = registerForActivityResult(
+                ActivityResultContracts.StartIntentSenderForResult()
             ) {
                 if (it.resultCode == RESULT_OK) {
-                    val acc = GoogleSignIn.getLastSignedInAccount(requireContext())
-                    if (acc != null) {
-                        GoogleSignInManager.setAvatar(requireContext(), acc, false)
-                        userName?.text = acc.displayName
+                    val authorizationResult = Identity.getAuthorizationClient(requireActivity())
+                        .getAuthorizationResultFromIntent(it.data)
+                    if (isGrantedAllScopes(authorizationResult)) {
                         autoBackup?.isChecked = true
-                    } else GoogleSignInManager.googleSignOut(requireContext())
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.grant_access),
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
+                    }
                 } else {
                     Toast.makeText(
                         requireContext(),
@@ -116,23 +118,24 @@ class SettingsActivity : AppCompatActivity() {
             autoBackup?.setOnPreferenceChangeListener { _, newValue ->
                 var result = true
                 if (newValue as Boolean) {
-                    val account = GoogleSignIn.getLastSignedInAccount(requireContext())
-                    if (account == null) {
-                        result = false
-                    } else {
-                        val googleDriveService =
-                            BackupAndRestoreManager.googleDriveClient(account, requireContext())
-                        if (googleDriveService == null) {
+                    AuthorizationClientManager.authorize(
+                        requireActivity(),
+                        authorizationLauncher
+                    ) { authorizationResult ->
+                        if (!isGrantedAllScopes(authorizationResult)) {
                             result = false
-                            GoogleSignInManager.googleSignOut(requireContext())
                         }
                     }
+
                     if (result) {
                         BackupWorker.startBackupWorker(requireContext().applicationContext)
                     } else {
-                        singInLauncher.launch(
-                            GoogleSignInManager.googleSignIn(requireActivity() as AppCompatActivity)
+                        Toast.makeText(
+                            requireActivity(),
+                            getString(R.string.grant_access),
+                            Toast.LENGTH_LONG
                         )
+                            .show()
                     }
                 } else {
                     WorkManager.getInstance(requireContext()).cancelAllWorkByTag("backup_cards")
@@ -142,18 +145,16 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         private fun backupSummary() {
-            val account = GoogleSignIn.getLastSignedInAccount(requireContext())
-            if (account != null) {
-                val googleDriveService =
-                    BackupAndRestoreManager.googleDriveClient(account, requireContext())
-                if (googleDriveService != null
-                    && BackupAndRestoreManager.isOnline(requireContext())
-                ) {
+
+            AuthorizationClientManager.authorize(requireActivity()) { authorizationResult ->
+                val driveService =
+                    BackupAndRestoreManager.googleDriveClient(authorizationResult, requireContext())
+                if (BackupAndRestoreManager.isOnline(requireContext())) {
                     var backupTime = ""
                     CoroutineScope(Dispatchers.Main).launch {
                         val success = withContext(Dispatchers.IO) {
                             try {
-                                val files = googleDriveService.files().list()
+                                val files = driveService.files().list()
                                     .setSpaces("appDataFolder")
                                     .setFields("files(id, name, createdTime)")
                                     .setPageSize(10)
@@ -169,18 +170,9 @@ class SettingsActivity : AppCompatActivity() {
                                 true
                             } catch (e: GoogleAuthIOException) {
                                 println("Authorisation error: ${e.message}")
-                                val gso =
-                                    GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                                        .requestProfile()
-                                        .requestEmail()
-                                        .requestScopes(
-                                            Scope(DriveScopes.DRIVE_FILE),
-                                            Scope(DriveScopes.DRIVE_APPDATA)
-                                        )
-                                        .build()
-                                val mGoogleSignInClient =
-                                    GoogleSignIn.getClient(requireContext(), gso)
-                                mGoogleSignInClient.signOut()
+                                false
+                            } catch (e: Exception) {
+                                println("Authorisation error: ${e.message}")
                                 false
                             }
                         }

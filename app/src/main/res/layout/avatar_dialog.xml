@@ -49,14 +49,5 @@
             android:text="@string/choose_new"
             android:textColor="?attr/colorSecondaryVariant" />
 
-        <Button
-            android:id="@+id/btGoogle"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/from_google"
-            android:textColor="?attr/colorSecondaryVariant" />
-
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

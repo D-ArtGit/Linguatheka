@@ -8,8 +8,8 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.sqlite.db.SimpleSQLiteQuery
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.identity.AuthorizationResult
+import com.google.android.gms.auth.api.identity.Identity
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.http.FileContent
 import kotlinx.coroutines.CoroutineScope
@@ -19,8 +19,9 @@ import kotlinx.coroutines.withContext
 import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.databinding.ActivityBackupBinding
 import ru.dartx.linguatheka.db.MainDataBase
+import ru.dartx.linguatheka.utils.AuthorizationClientManager
 import ru.dartx.linguatheka.utils.BackupAndRestoreManager
-import ru.dartx.linguatheka.utils.GoogleSignInManager
+import ru.dartx.linguatheka.utils.BackupAndRestoreManager.isGrantedAllScopes
 import ru.dartx.linguatheka.utils.ThemeManager
 import java.util.Collections
 
@@ -39,46 +40,37 @@ class BackupActivity : AppCompatActivity() {
                 Toast.LENGTH_SHORT
             ).show()
             finish()
+            return
         }
-        val account = GoogleSignIn.getLastSignedInAccount(this)
-        if (account == null) {
-            val singInLauncher = registerForActivityResult(
-                ActivityResultContracts.StartActivityForResult()
-            ) {
-                if (it.resultCode == RESULT_OK) {
-                    val acc = GoogleSignIn.getLastSignedInAccount(this)
-                    if (acc != null) {
-                        GoogleSignInManager.setAvatar(this, acc, true)
-                        backup(acc)
-                    } else {
-                        GoogleSignInManager.googleSignOut(this)
-                        Toast.makeText(this, getString(R.string.try_later), Toast.LENGTH_LONG)
-                            .show()
-                        finish()
-                    }
+        val singInLauncher = registerForActivityResult(
+            ActivityResultContracts.StartIntentSenderForResult()
+        ) {
+            if (it.resultCode == RESULT_OK) {
+                val authorizationResult = Identity.getAuthorizationClient(this)
+                    .getAuthorizationResultFromIntent(it.data)
+                if (isGrantedAllScopes(authorizationResult)) {
+                    backup(authorizationResult)
                 } else {
                     Toast.makeText(this, getString(R.string.grant_access), Toast.LENGTH_LONG)
                         .show()
                     finish()
                 }
             }
-            singInLauncher.launch(GoogleSignInManager.googleSignIn(this))
-        } else backup(account)
+        }
+        AuthorizationClientManager.authorize(this, singInLauncher) { authorizationResult ->
+            if (isGrantedAllScopes(authorizationResult)) {
+                backup(authorizationResult)
+            } else {
+                Toast.makeText(this, getString(R.string.grant_access), Toast.LENGTH_LONG)
+                    .show()
+                finish()
+            }
+        }
     }
 
-    private fun backup(account: GoogleSignInAccount) {
-        val googleDriveService =
-            BackupAndRestoreManager.googleDriveClient(account, this)
-        if (googleDriveService == null) {
-            Toast.makeText(
-                this,
-                getString(R.string.try_later),
-                Toast.LENGTH_LONG
-            )
-                .show()
-            finish()
-        }
-
+    private fun backup(authorizationResult: AuthorizationResult) {
+        val driveService =
+            BackupAndRestoreManager.googleDriveClient(authorizationResult, this)
         binding.pbLoading.visibility = View.VISIBLE
         Toast.makeText(this, getString(R.string.backup_started), Toast.LENGTH_SHORT).show()
         val dbPath = getString(R.string.db_path)
@@ -95,26 +87,29 @@ class BackupActivity : AppCompatActivity() {
                     database.close()
                     database.getDao().checkpoint((SimpleSQLiteQuery("pragma wal_checkpoint(full)")))
                     MainDataBase.destroyInstance()
-                    val uploadedFiles = googleDriveService!!.files().list()
+                    val uploadedFiles = driveService.files().list()
                         .setSpaces("appDataFolder")
                         .setPageSize(10)
                         .execute()
                     val file =
-                        googleDriveService.files().create(storageFile, mediaContent)
+                        driveService.files().create(storageFile, mediaContent)
                             .setFields("id")
                             .execute()
                     println("Filename: " + file.id)
                     if (!file.id.isNullOrEmpty()) {
                         for (uploadedFile in uploadedFiles.files) {
                             if (uploadedFile.id != file.id) {
-                                googleDriveService.files().delete(uploadedFile.id).execute()
+                                driveService.files().delete(uploadedFile.id).execute()
                                 println("File deleted: " + uploadedFile.name + " " + uploadedFile.id)
                             }
                         }
                     }
                     true
                 } catch (e: GoogleJsonResponseException) {
-                    println("Unable upload: " + e.details)
+                    println("Unable upload: ${e.details}")
+                    false
+                } catch (e: Exception) {
+                    println("Unable upload: ${e.message}")
                     false
                 }
             }

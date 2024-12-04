@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/ic_icon_100"
         android:supportsRtl="true"
-        android:theme="@style/Theme.WordCardsBlue">
+        android:theme="@style/Theme.WordCards.ActionBar">
         <activity
             android:name="ru.dartx.linguatheka.presentation.activities.BackupActivity"
             android:excludeFromRecents="true"

@@ -7,8 +7,8 @@ import android.view.Window
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.identity.AuthorizationResult
+import com.google.android.gms.auth.api.identity.Identity
 import com.google.api.services.drive.Drive
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,8 +18,9 @@ import ru.dartx.linguatheka.R
 import ru.dartx.linguatheka.databinding.ActivityRestoreBinding
 import ru.dartx.linguatheka.db.MainDataBase
 import ru.dartx.linguatheka.presentation.dialogs.RestoreDialog
+import ru.dartx.linguatheka.utils.AuthorizationClientManager
 import ru.dartx.linguatheka.utils.BackupAndRestoreManager
-import ru.dartx.linguatheka.utils.GoogleSignInManager
+import ru.dartx.linguatheka.utils.BackupAndRestoreManager.isGrantedAllScopes
 import ru.dartx.linguatheka.utils.ThemeManager
 import java.io.FileOutputStream
 import java.io.IOException
@@ -32,33 +33,46 @@ class RestoreActivity : AppCompatActivity() {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
         binding = ActivityRestoreBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val account = GoogleSignIn.getLastSignedInAccount(this)
-        if (account == null) {
-            val singInLauncher = registerForActivityResult(
-                ActivityResultContracts.StartActivityForResult()
-            ) {
-                if (it.resultCode == RESULT_OK) {
-                    val acc = GoogleSignIn.getLastSignedInAccount(this)
-                    if (acc != null) {
-                        GoogleSignInManager.setAvatar(this, acc, true)
-                        confirmRestore(acc)
-                    } else {
-                        GoogleSignInManager.googleSignOut(this)
-                        Toast.makeText(this, getString(R.string.try_later), Toast.LENGTH_LONG)
-                            .show()
-                        finish()
-                    }
+
+        val authorizationLauncher = registerForActivityResult(
+            ActivityResultContracts.StartIntentSenderForResult()
+        ) {
+            if (it.resultCode == RESULT_OK) {
+                val authorizationResult = Identity.getAuthorizationClient(this)
+                    .getAuthorizationResultFromIntent(it.data)
+                if (isGrantedAllScopes(authorizationResult)) {
+                    confirmRestore(authorizationResult)
                 } else {
-                    Toast.makeText(this, getString(R.string.grant_access), Toast.LENGTH_LONG)
+                    Toast.makeText(
+                        this,
+                        getString(R.string.grant_access),
+                        Toast.LENGTH_LONG
+                    )
                         .show()
                     finish()
                 }
+            } else {
+                Toast.makeText(this, getString(R.string.grant_access), Toast.LENGTH_LONG)
+                    .show()
+
             }
-            singInLauncher.launch(GoogleSignInManager.googleSignIn(this))
-        } else confirmRestore(account)
+        }
+
+        AuthorizationClientManager.authorize(
+            this,
+            authorizationLauncher
+        ) { authorizationResult ->
+            if (isGrantedAllScopes(authorizationResult)) {
+                confirmRestore(authorizationResult)
+            } else {
+                Toast.makeText(this, getString(R.string.grant_access), Toast.LENGTH_LONG)
+                    .show()
+                finish()
+            }
+        }
     }
 
-    private fun confirmRestore(account: GoogleSignInAccount) {
+    private fun confirmRestore(authorizationResult: AuthorizationResult) {
         val message1 = getString(R.string.restore_message1)
         val message2 = getString(R.string.restore_message2)
         RestoreDialog.showDialog(this, object : RestoreDialog.Listener {
@@ -71,24 +85,19 @@ class RestoreActivity : AppCompatActivity() {
                     ).show()
                     finish()
                 }
-                val googleDriveService =
-                    BackupAndRestoreManager.googleDriveClient(account, this@RestoreActivity)
-                if (googleDriveService != null) {
-                    Toast.makeText(
-                        this@RestoreActivity,
-                        getString(R.string.restore_started),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    binding.pbLoading.visibility = View.VISIBLE
-                    CoroutineScope(Dispatchers.Main).launch { restore(googleDriveService) }
-                } else {
-                    Toast.makeText(
-                        this@RestoreActivity,
-                        getString(R.string.try_later),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    finish()
-                }
+                val driveService =
+                    BackupAndRestoreManager.googleDriveClient(
+                        authorizationResult,
+                        this@RestoreActivity
+                    )
+
+                Toast.makeText(
+                    this@RestoreActivity,
+                    getString(R.string.restore_started),
+                    Toast.LENGTH_SHORT
+                ).show()
+                binding.pbLoading.visibility = View.VISIBLE
+                CoroutineScope(Dispatchers.Main).launch { restore(driveService) }
             }
 
             override fun onClickCancel() {
@@ -97,16 +106,16 @@ class RestoreActivity : AppCompatActivity() {
         }, message1, message2)
     }
 
-    private suspend fun restore(googleDriveService: Drive) {
+    private suspend fun restore(driveService: Drive) {
         var restoreSuccess = false
         val success = withContext(Dispatchers.IO) {
-            val files = googleDriveService.files().list()
-                .setSpaces("appDataFolder")
-                .setPageSize(10)
-                .execute()
-            if (files.files.size == 1) {
-                MainDataBase.destroyInstance()
-                try {
+            try {
+                val files = driveService.files().list()
+                    .setSpaces("appDataFolder")
+                    .setPageSize(10)
+                    .execute()
+                if (files.files.size == 1) {
+                    MainDataBase.destroyInstance()
                     val dir = java.io.File(getString(R.string.path))
                     if (dir.isDirectory) {
                         val children = dir.list()
@@ -128,7 +137,7 @@ class RestoreActivity : AppCompatActivity() {
                         when (file.name) {
                             getString(R.string.file_name) -> {
                                 val outputStream = FileOutputStream(getString(R.string.db_path))
-                                googleDriveService.files().get(file.id)
+                                driveService.files().get(file.id)
                                     .executeMediaAndDownloadTo(outputStream)
                                 outputStream.close()
                                 println("File restored: " + file.name + " " + file.id)
@@ -136,10 +145,14 @@ class RestoreActivity : AppCompatActivity() {
                         }
                     }
                     restoreSuccess = true
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    restoreSuccess = false
+
                 }
+            } catch (e: IOException) {
+                e.printStackTrace()
+                restoreSuccess = false
+            } catch (e: Exception) {
+                e.printStackTrace()
+                restoreSuccess = false
             }
             restoreSuccess
         }
