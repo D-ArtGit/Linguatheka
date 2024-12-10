@@ -49,18 +49,18 @@ class BackupWorker(context: Context, workerParams: WorkerParameters) :
     }
 
     private fun backup(googleDriveService: Drive) {
-        val database = MainDataBase.getDataBase(applicationContext as MainApp)
-        database.close()
-        database.getDao().checkpoint((SimpleSQLiteQuery("pragma wal_checkpoint(full)")))
-        MainDataBase.destroyInstance()
 
-        val dbPath = applicationContext.getString(R.string.db_path)
-        val storageFile = com.google.api.services.drive.model.File()
-        storageFile.parents = Collections.singletonList("appDataFolder")
-        storageFile.name = applicationContext.getString(R.string.file_name)
-        val filePath = java.io.File(dbPath)
-        val mediaContent = FileContent("", filePath)
         CoroutineScope(Dispatchers.IO).launch {
+            val database = MainDataBase.getDataBase(applicationContext as MainApp)
+            database.close()
+            database.getDao().checkpoint((SimpleSQLiteQuery("pragma wal_checkpoint(full)")))
+            MainDataBase.destroyInstance()
+            val dbPath = applicationContext.getString(R.string.db_path)
+            val storageFile = com.google.api.services.drive.model.File()
+            storageFile.parents = Collections.singletonList("appDataFolder")
+            storageFile.name = applicationContext.getString(R.string.file_name)
+            val filePath = java.io.File(dbPath)
+            val mediaContent = FileContent("", filePath)
             try {
                 val uploadedFiles = googleDriveService.files().list()
                     .setSpaces("appDataFolder")
