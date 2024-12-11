@@ -123,11 +123,9 @@ class ExampleAdapter :
     private fun showHide(binding: ExampleItemViewBinding) {
         with(binding) {
             if (translationWrapper.visibility == View.GONE) {
-                ivShowHide.animate().rotation(180F).start()
-                Animations.expand(translationWrapper, tvExample.width)
+                Animations.expand(translationWrapper, ivShowHide, tvExample.width)
             } else {
-                ivShowHide.animate().rotation(0F).start()
-                Animations.collapse(translationWrapper)
+                Animations.collapse(translationWrapper, ivShowHide)
             }
         }
     }
