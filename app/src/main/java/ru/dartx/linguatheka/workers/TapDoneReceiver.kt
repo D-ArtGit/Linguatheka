@@ -10,20 +10,20 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.dartx.linguatheka.R
-import ru.dartx.linguatheka.activities.MainActivity
-import ru.dartx.linguatheka.activities.MainApp
 import ru.dartx.linguatheka.db.MainDataBase
-import ru.dartx.linguatheka.entities.Card
-import ru.dartx.linguatheka.entities.Example
+import ru.dartx.linguatheka.db.entities.Card
+import ru.dartx.linguatheka.db.entities.Example
+import ru.dartx.linguatheka.presentation.activities.CardActivity.Companion.CARD_DATA
+import ru.dartx.linguatheka.presentation.activities.MainApp
 import ru.dartx.linguatheka.utils.TimeManager
 
 class TapDoneReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
         val database = MainDataBase.getDataBase(context.applicationContext as MainApp)
         val card = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent?.getSerializableExtra(MainActivity.CARD_DATA, Card::class.java)
+            intent?.getSerializableExtra(CARD_DATA, Card::class.java)
         } else {
-            @Suppress("DEPRECATION") intent?.getSerializableExtra(MainActivity.CARD_DATA) as Card?
+            @Suppress("DEPRECATION") intent?.getSerializableExtra(CARD_DATA) as Card?
         }
         if (card != null) {
             val step = card.step + 1
@@ -42,13 +42,10 @@ class TapDoneReceiver : BroadcastReceiver() {
             CoroutineScope(Dispatchers.IO).launch {
                 if (step > 8) {
                     val tmpExampleList: ArrayList<Example> = arrayListOf()
-                    val examplesForCard = database.getDao().findExamplesByCardId(card.id!!)
-                    examplesForCard.forEachIndexed { index, example ->
+                    val examplesForCard = database.getDao().getExamplesByCardId(card.id!!)
+                    examplesForCard.forEach {
                         tmpExampleList.add(
-                            example.copy(
-                                id = index + 1,
-                                finished = true
-                            )
+                            it.copy(finished = true)
                         )
                     }
                     database.getDao().updateCardWithItems(tempCard, tmpExampleList)

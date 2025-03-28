@@ -1,55 +1,66 @@
 package ru.dartx.linguatheka.utils
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ValueAnimator
 import android.view.View
 import android.view.View.MeasureSpec
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.Transformation
+import androidx.core.view.isGone
 
 object Animations {
-    fun expand(view: View, width: Int) {
+    fun expand(viewToExpand: View, viewToRotate: View, width: Int) {
         val shortAnimationDuration =
-            view.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
-        val height = view.context.resources.displayMetrics.heightPixels
+            viewToExpand.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
+        val height = viewToExpand.context.resources.displayMetrics.heightPixels
         val widthSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(width), MeasureSpec.AT_MOST)
-        val heightSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(height), MeasureSpec.AT_MOST)
+        val heightSpec =
+            MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(height), MeasureSpec.AT_MOST)
 
-        view.measure(widthSpec, heightSpec)
-        val actualHeight = view.measuredHeight
-        view.layoutParams.height = 0
-        view.visibility = View.VISIBLE
+        viewToExpand.measure(widthSpec, heightSpec)
+        val actualHeight = viewToExpand.measuredHeight
+        viewToExpand.layoutParams.height = 0
+        viewToExpand.visibility = View.VISIBLE
+        val durationValue = (actualHeight / viewToExpand.context.resources.displayMetrics.density).toLong() * shortAnimationDuration / 40
 
-        val animation = object : Animation() {
-            override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-                //super.applyTransformation(interpolatedTime, t)
-                view.layoutParams.height =
-                    if (interpolatedTime == 1F) ViewGroup.LayoutParams.WRAP_CONTENT else
-                        (actualHeight * interpolatedTime).toInt()
-                view.requestLayout()
+        val animator = ValueAnimator.ofInt(0, actualHeight).apply {
+            duration = durationValue
+            addUpdateListener {
+                viewToExpand.layoutParams.height = it.animatedValue as Int
+                viewToExpand.requestLayout()
             }
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    super.onAnimationEnd(animation)
+                    viewToExpand.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+                    viewToExpand.requestLayout()
+                }
+            })
         }
-        animation.duration =
-            (actualHeight / view.context.resources.displayMetrics.density).toLong() * shortAnimationDuration / 40
-        view.startAnimation(animation)
+        viewToRotate.animate().setDuration(durationValue).rotation(180F)
+        animator.start()
     }
 
-    fun collapse(view: View) {
+    fun collapse(viewToCollapse: View, viewToRotate: View) {
         val shortAnimationDuration =
-            view.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
-        val actualHeight = view.measuredHeight
-        val animation = object : Animation() {
-            override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-                //super.applyTransformation(interpolatedTime, t)
-                if (interpolatedTime == 1F) view.visibility = View.GONE
-                else {
-                    view.layoutParams.height =
-                        actualHeight - (actualHeight * interpolatedTime).toInt()
-                    view.requestLayout()
-                }
+            viewToCollapse.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
+        val actualHeight = viewToCollapse.measuredHeight
+        val durationValue = (actualHeight / viewToCollapse.context.resources.displayMetrics.density).toLong() * shortAnimationDuration / 40
+        val animator = ValueAnimator.ofInt(actualHeight, 0).apply {
+            duration = durationValue
+            addUpdateListener {
+                viewToCollapse.layoutParams.height = it.animatedValue as Int
+                viewToCollapse.requestLayout()
             }
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    super.onAnimationEnd(animation)
+                    viewToCollapse.isGone = true
+                    viewToCollapse.requestLayout()
+                }
+            })
         }
-        animation.duration =
-            (actualHeight / view.context.resources.displayMetrics.density).toLong() * shortAnimationDuration / 40
-        view.startAnimation(animation)
+        viewToRotate.animate().setDuration(durationValue).rotation(0F)
+        animator.start()
     }
 }

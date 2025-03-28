@@ -1,16 +1,26 @@
 package ru.dartx.linguatheka.db
 
-import androidx.room.*
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.room.Transaction
+import androidx.room.Update
 import androidx.sqlite.db.SupportSQLiteQuery
 import kotlinx.coroutines.flow.Flow
-import ru.dartx.linguatheka.entities.Card
-import ru.dartx.linguatheka.entities.Example
+import ru.dartx.linguatheka.db.entities.Card
+import ru.dartx.linguatheka.db.entities.Example
 
 @Dao
 interface Dao {
     @Query("SELECT * FROM cards ORDER BY remindTime, word ASC")
     fun getAllCards(): Flow<List<Card>>
+
+    @Query("SELECT * FROM cards WHERE id == :card_id")
+    suspend fun getCardData(card_id: Int): Card
+
+    @Query("SELECT * FROM example WHERE card_id IS :card_id ORDER BY finished, id ASC")
+    suspend fun getExamplesByCardId(card_id: Int): List<Example>
 
     @Query(
         "SELECT * FROM cards WHERE word LIKE :cond OR examples LIKE :cond " +
@@ -18,11 +28,8 @@ interface Dao {
     )
     suspend fun searchCards(cond: String): List<Card>
 
-    @Query("SELECT * FROM cards WHERE word IS :cond AND id != :card_id")
+    @Query("SELECT * FROM cards WHERE word LIKE :cond AND id != :card_id")
     suspend fun findDuplicates(cond: String, card_id: Int): List<Card>
-
-    @Query("SELECT * FROM example WHERE card_id IS :card_id ORDER BY finished, id ASC")
-    fun findExamplesByCardId(card_id: Int): List<Example>
 
     @Query(
         "SELECT * FROM cards WHERE remindTime <= :cond " +
@@ -69,14 +76,12 @@ interface Dao {
         deleteExamplesByCardId(card.id!!)
         updateCard(card)
         exampleList.forEach {
-            insertExample(
-                it.copy(
-                    id = card.id * 100 + it.id,
-                    card_id = card.id
-                )
-            )
+            insertExample(it)
         }
     }
+
+    @Query("UPDATE example SET finished = :finished WHERE card_id = :cardId")
+    suspend fun changeFinishedMarkForAllExamples(cardId: Int, finished: Boolean)
 
     @Query("SELECT lang FROM cards ORDER BY lang ASC")
     fun selectLang(): List<String>

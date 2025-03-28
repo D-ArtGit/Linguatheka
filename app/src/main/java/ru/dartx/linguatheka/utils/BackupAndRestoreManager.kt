@@ -4,34 +4,42 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
-import androidx.work.*
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.identity.AuthorizationResult
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
+import com.google.auth.http.HttpCredentialsAdapter
+import com.google.auth.oauth2.AccessToken
+import com.google.auth.oauth2.GoogleCredentials
 import ru.dartx.linguatheka.R
-import ru.dartx.linguatheka.workers.BackupWorker
-import java.util.concurrent.TimeUnit
 
 object BackupAndRestoreManager {
-    fun googleDriveClient(account: GoogleSignInAccount, context: Context): Drive? {
-        val credentials =
-            GoogleAccountCredential.usingOAuth2(context, listOf(DriveScopes.DRIVE_FILE, DriveScopes.DRIVE_APPDATA))
-        credentials.selectedAccount = account.account
+    fun googleDriveClient(authorizationResult: AuthorizationResult, context: Context): Drive {
+        val accessToken = authorizationResult.accessToken
+        val credentials = GoogleCredentials.create(AccessToken(accessToken!!, null))
+        credentials.refreshIfExpired()
         return Drive.Builder(
             NetHttpTransport(),
             GsonFactory.getDefaultInstance(),
-            credentials
+            HttpCredentialsAdapter(credentials)
         )
             .setApplicationName(context.getString(R.string.app_name))
             .build()
     }
 
-    fun isOnline(context: Context):Boolean {
+    fun isGrantedAllScopes(authorizationResult: AuthorizationResult): Boolean {
+        val grantedScopes = authorizationResult.grantedScopes.filter { grantedScope ->
+            grantedScope.equals(DriveScopes.DRIVE_FILE) || grantedScope.equals(
+                DriveScopes.DRIVE_APPDATA
+            )
+        }
+        return grantedScopes.size == 2
+    }
+
+    fun isOnline(context: Context): Boolean {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val capabilities =
@@ -49,24 +57,6 @@ object BackupAndRestoreManager {
             }
         }
         return false
-    }
-
-    fun startBackupWorker(context: Context) {
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .setRequiresDeviceIdle(true)
-            .build()
-        val backupRequest = PeriodicWorkRequestBuilder<BackupWorker>(
-            24, TimeUnit.HOURS, 12, TimeUnit.HOURS
-        )
-            .setConstraints(constraints)
-            .addTag("backup_cards")
-            .build()
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            "backup_cards",
-            ExistingPeriodicWorkPolicy.KEEP,
-            backupRequest
-        )
     }
 
     fun checkForGooglePlayServices(context: Context): Boolean {

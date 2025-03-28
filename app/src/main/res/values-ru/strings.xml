@@ -5,7 +5,6 @@
     <string name="search">Поиск</string>
     <string name="enter_word">Введите слово</string>
     <string name="word">Слово</string>
-    <string name="phrases">Фразы</string>
     <string name="word_usage_examples">Примеры</string>
     <string name="no_examples">Введите хотя бы один пример использования слова</string>
     <string name="no_example">Введите текст примера</string>
@@ -22,7 +21,6 @@
     <string name="next_time_to_repeat">Следующий повтор:&#160;</string>
     <string name="confirm_reset">Вы действительно хотите сбросить прогресс?</string>
     <string name="confirm_delete">Вы действительно хотите удалить карточку?</string>
-    <string name="fill_field">Это поле не может быть пустым</string>
     <string name="channel_name">Основной канал</string>
     <string name="channel_description">Общие уведомления</string>
     <string name="time_to_repeat">Время повторить слово</string>
@@ -44,7 +42,6 @@
         4) И еще через две недели вы снова читате его вслух три раза в течение 10 секунд.\n
         Итого: 90 секунд (70 + 10 + 10). При такой стратегии нужное слово и предложение буквально зацементируются в вашей памяти. А приложение само напомнит, когда нужно повторить.
     </string>
-    <string name="choose_lang">Выбрать язык по-умолчанию</string>
     <string name="settings">Настройки</string>
     <string name="how_to_use">Как пользоваться приложением</string>
     <string name="about_app">О приложении</string>
@@ -81,12 +78,8 @@
     <string name="author">Автор:</string>
     <string name="method">Оригинальная\nметодика:</string>
     <string name="author_contacts">Артем Данилов\n(dartx.apps@gmail.com)</string>
-    <string name="sign_in">Войти с Google</string>
-    <string name="sign_out">Выйти из Google</string>
-    <string name="hide_login_button">Скрыть кнопку авторизации</string>
     <string name="restore_message1">Подтверждаете восстановление карточек из копии Google Drive?</string>
     <string name="restore_message2">Все карточки, введенные после создания последней копии, будут удалены.</string>
-    <string name="login_to_google">Чтобы сохранять и восстанавливать карточки войдите в Google</string>
     <string name="restore_item">Восстановить из Google Drive</string>
     <string name="restored_success">Карточки успешно восстановлены</string>
     <string name="backup_success">Резервная копия успешно сохранена</string>
@@ -96,16 +89,19 @@
     <string name="restore_started">Восстановление запущено</string>
     <string name="backup_started">Сохранение запущено</string>
     <string name="last_backup">"Последняя копия: "</string>
-    <string name="relogin_to_google">Выйдите и войдите в Google повторно, предоставив разрешения</string>
-    <string name="example">Пример</string>
+    <string name="example">Пример %d</string>
     <string name="text">Текст</string>
     <string name="add_example">Добавить пример</string>
-    <string name="try_later">Что-то пошло не так. Попробуйте позже.</string>
     <string name="grant_access">Вы должны предоставить доступ к сервисам Google. Попробуйте еще раз.</string>
-    <string name="confirm_grant_access">Вы должны предоставить доступ к сервисам Google, затем активировать опцию повторно. Продолжить?</string>
     <string name="word_exist">Карточка с этим словом уже существует. Добавьте новые примеры в нее.</string>
     <string name="learned">Выучено ранее:</string>
     <string name="privacy">Политика конфиденциальности</string>
     <string name="agreement">Пользовательское соглашение</string>
     <string name="reset_for_added_example">Рекомендуется сбросить прогресс карточки, чтобы выучить добавленный пример. Подтверждаете сброс?</string>
+    <string name="show_hide_translation">Показать/Скрыть перевод</string>
+    <string name="arrow_to_opened_translation">Указатель на перевод</string>
+    <string name="delete_button">Кнопка Удалить</string>
+    <string name="complete">Выполнить</string>
+    <string name="saved">Карточка сохранена</string>
+    <string name="card_deleted">Карточка удалена</string>
 </resources>

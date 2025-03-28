@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import ru.dartx.linguatheka.entities.Card
-import ru.dartx.linguatheka.entities.Example
+import ru.dartx.linguatheka.db.entities.Card
+import ru.dartx.linguatheka.db.entities.Example
 
 @Database(entities = [Card::class, Example::class], version = 1, exportSchema = true)
 abstract class MainDataBase : RoomDatabase() {
@@ -14,17 +14,23 @@ abstract class MainDataBase : RoomDatabase() {
     companion object {
         @Volatile
         private var INSTANCE: MainDataBase? = null
+        private val LOCK = Any()
+        private const val DB_NAME = "linguatheka.db"
+        private const val NEW_DB_FROM_ASSET = "new.db"
         fun getDataBase(context: Context): MainDataBase {
-            return INSTANCE ?: synchronized(this) {
+
+            INSTANCE?.let { return it }
+            synchronized(LOCK) {
+                INSTANCE?.let { return it }
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     MainDataBase::class.java,
-                    "linguatheka.db"
+                    DB_NAME
                 )
-                    .createFromAsset("new.db")
+                    .createFromAsset(NEW_DB_FROM_ASSET)
                     .build()
                 INSTANCE = instance
-                instance
+                return instance
             }
         }
 
