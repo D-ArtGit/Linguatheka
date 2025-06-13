@@ -56,6 +56,7 @@ class SettingsActivity : AppCompatActivity() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
             backupSummary()
+            LanguagesManager.getUsedLanguages(this@SettingsFragment.requireActivity().application)
             val defLangPref: ListPreference = findPreference("def_lang")!!
             val nativeLangPref: ListPreference = findPreference("native_lang")!!
             val langArray = LanguagesManager.getLanguages()

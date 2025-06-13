@@ -38,7 +38,6 @@ class CardViewModel(val application: Application, cardId: Int) : ViewModel() {
     private val daysArray = application.resources.getIntArray(R.array.remind_days)
     private val defPreference = PreferenceManager.getDefaultSharedPreferences(application)
     private val defLang = defPreference.getString("def_lang", "en").toString()
-    val langArray = LanguagesManager.getLanguages()
 
     private var _shouldCloseActivity = MutableLiveData<String>()
     val shouldCloseActivity: LiveData<String>
@@ -59,6 +58,7 @@ class CardViewModel(val application: Application, cardId: Int) : ViewModel() {
         get() = _notifyItemRemoved
 
     init {
+        LanguagesManager.getUsedLanguages(application)
         if (cardId == 0) {
             newCard()
         } else {
@@ -67,6 +67,8 @@ class CardViewModel(val application: Application, cardId: Int) : ViewModel() {
             }
         }
     }
+
+    val langArray = LanguagesManager.getLanguages()
 
     private fun newCard() {
         val card = Card(

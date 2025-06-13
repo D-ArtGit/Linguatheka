@@ -1,20 +1,21 @@
 package ru.dartx.linguatheka.utils
 
-import android.content.Context
+import android.app.Application
 import android.util.Pair
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.dartx.linguatheka.db.MainDataBase
-import java.util.*
+import ru.dartx.linguatheka.presentation.activities.MainApp
+import java.util.Locale
 
 object LanguagesManager {
     private var langArray = emptyArray<Array<String>>()
     private var usedLanguages = ArrayList<String>()
 
-    fun getUsedLanguages(context: Context) {
+    fun getUsedLanguages(application: Application) {
         CoroutineScope(Dispatchers.IO).launch {
-            val database = MainDataBase.getDataBase(context).getDao()
+            val database = MainDataBase.getDataBase(application as MainApp).getDao()
             val usedLanguagesTmp: ArrayList<String> = database.selectLang() as ArrayList<String>
             val hashedLanguages = HashSet<String>()
             hashedLanguages.addAll(usedLanguagesTmp)

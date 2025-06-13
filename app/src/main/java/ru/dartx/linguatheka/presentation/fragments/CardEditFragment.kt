@@ -76,7 +76,6 @@ class CardEditFragment : Fragment() {
 
         exampleListAdapter = ExampleAdapter()
         binding.rvExampleList.adapter = exampleListAdapter
-        setUpSpinner()
         observeViewModel()
         setOnClickListeners()
         setUpTextWatchers()
@@ -87,7 +86,7 @@ class CardEditFragment : Fragment() {
         _binding = null
     }
 
-    private fun setUpSpinner() {
+    private fun setUpSpinner(lang: String) {
 
         val spinner = binding.spLang
         val spinnerArrayAdapter =
@@ -99,7 +98,7 @@ class CardEditFragment : Fragment() {
         spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
         spinner.adapter = spinnerArrayAdapter
         val langIndex = viewModel.langArray[0].indexOf(
-            viewModel.cardWithExamplesUiState.value.card.lang
+            lang
         )
         spinner.setSelection(langIndex)
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -110,7 +109,6 @@ class CardEditFragment : Fragment() {
                 id: Long
             ) {
                 viewModel.changeLang(position)
-
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -139,6 +137,7 @@ class CardEditFragment : Fragment() {
                             viewModel.setEditMode()
                             onActionListener.setState(OnActionListener.CARD_STATE_EDIT)
                         }
+                        setUpSpinner(it.card.lang)
                     }
             }
         }

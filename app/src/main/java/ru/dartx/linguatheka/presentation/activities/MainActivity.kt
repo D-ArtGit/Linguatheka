@@ -2,13 +2,10 @@ package ru.dartx.linguatheka.presentation.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -24,6 +21,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -46,7 +44,6 @@ import ru.dartx.linguatheka.presentation.dialogs.AboutAppDialog
 import ru.dartx.linguatheka.presentation.viewmodels.MainViewModel
 import ru.dartx.linguatheka.settings.SettingsActivity
 import ru.dartx.linguatheka.utils.BitmapManager
-import ru.dartx.linguatheka.utils.LanguagesManager
 import ru.dartx.linguatheka.utils.ThemeManager
 import ru.dartx.linguatheka.workers.NotificationsWorker
 
@@ -104,7 +101,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
     override fun onResume() {
         super.onResume()
         if (binding.btFab.isOrWillBeHidden) binding.btFab.show()
-        LanguagesManager.getUsedLanguages(applicationContext as MainApp)
         if (defPreference.getString(
                 "theme", "blue"
             ) != currentTheme
@@ -124,7 +120,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                 edSearch?.width = width
                 edSearch?.post {
                     edSearch?.requestFocus()
-                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.showSoftInput(edSearch, InputMethodManager.SHOW_IMPLICIT)
                 }
                 edSearch?.addTextChangedListener(textWatcher)
@@ -144,7 +140,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                 mainViewModel.foundCards.removeObservers(this@MainActivity)
                 cardListObserver()
                 edSearch?.post {
-                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.hideSoftInputFromWindow(
                         currentFocus?.windowToken,
                         InputMethodManager.HIDE_NOT_ALWAYS
@@ -209,7 +205,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
                 )
 
                 R.id.donate -> {
-                    val uriUrl = Uri.parse(getString(R.string.donate_url))
+                    val uriUrl = getString(R.string.donate_url).toUri()
                     startActivity(
                         Intent(
                             Intent.ACTION_VIEW,
@@ -257,11 +253,11 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope(), CardAda
 
         cardActivityLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                if (it.resultCode == Activity.RESULT_OK) {
+                if (it.resultCode == RESULT_OK) {
                     val needToScroll = it.data?.getBooleanExtra(
                         NEED_TO_SCROLL,
                         false
-                    ) ?: false
+                    ) == true
                     if (needToScroll)
                         binding.rcViewCardList.postDelayed({
                             binding.rcViewCardList.smoothScrollToPosition(0)
