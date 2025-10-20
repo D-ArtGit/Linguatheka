@@ -2,15 +2,16 @@ package ru.dartx.linguatheka.db.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.io.Serializable
 
-@Entity(tableName = "example")
+@Entity(tableName = "example", indices = [Index(value = ["card_id"])])
 data class Example(
     @PrimaryKey(autoGenerate = false)
     val id: Int,
     @ColumnInfo(name = "card_id")
-    val card_id: Int,
+    val cardId: Int,
     @ColumnInfo(name = "example")
     val example: String,
     @ColumnInfo(name = "translation")

@@ -13,27 +13,27 @@ import ru.dartx.linguatheka.db.entities.Example
 
 @Dao
 interface Dao {
-    @Query("SELECT * FROM cards ORDER BY remindTime, word ASC")
+    @Query("SELECT * FROM cards ORDER BY remind_time, word ASC")
     fun getAllCards(): Flow<List<Card>>
 
-    @Query("SELECT * FROM cards WHERE id == :card_id")
-    suspend fun getCardData(card_id: Int): Card
+    @Query("SELECT * FROM cards WHERE id == :cardId")
+    suspend fun getCardData(cardId: Int): Card
 
-    @Query("SELECT * FROM example WHERE card_id IS :card_id ORDER BY finished, id ASC")
-    suspend fun getExamplesByCardId(card_id: Int): List<Example>
+    @Query("SELECT * FROM example WHERE card_id IS :cardId ORDER BY finished, id ASC")
+    suspend fun getExamplesByCardId(cardId: Int): List<Example>
 
     @Query(
         "SELECT * FROM cards WHERE word LIKE :cond OR examples LIKE :cond " +
-                "OR translation LIKE :cond ORDER BY remindTime, word ASC"
+                "OR translation LIKE :cond ORDER BY remind_time, word ASC"
     )
     suspend fun searchCards(cond: String): List<Card>
 
-    @Query("SELECT * FROM cards WHERE word LIKE :cond AND id != :card_id")
-    suspend fun findDuplicates(cond: String, card_id: Int): List<Card>
+    @Query("SELECT * FROM cards WHERE word LIKE :cond AND id != :cardId")
+    suspend fun findDuplicates(cond: String, cardId: Int): List<Card>
 
     @Query(
-        "SELECT * FROM cards WHERE remindTime <= :cond " +
-                "AND step < 9 ORDER BY remindTime, word ASC"
+        "SELECT * FROM cards WHERE remind_time <= :cond " +
+                "AND step < 9 ORDER BY remind_time, word ASC"
     )
     fun notificationCards(cond: String): List<Card>
 
@@ -62,7 +62,7 @@ interface Dao {
             insertExample(
                 it.copy(
                     id = cardId * 100 + it.id,
-                    card_id = cardId
+                    cardId = cardId
                 )
             )
         }

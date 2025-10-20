@@ -8,7 +8,7 @@ import ru.dartx.linguatheka.utils.HtmlManager
 class UiDbMapper {
     fun mapExampleToExampleItemUiState(example: Example) = ExampleItemUiState(
         id = example.id,
-        cardId = example.card_id,
+        cardId = example.cardId,
         example = HtmlManager.getFromHtml(example.example).trim() as Spanned,
         translation = HtmlManager.getFromHtml(example.translation).trim() as Spanned,
         finished = example.finished,

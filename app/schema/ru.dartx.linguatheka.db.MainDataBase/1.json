@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "5497a0437084384a957f4a62f605d37c",
+    "identityHash": "daf2a792418425aeedbda9d65f02af0a",
     "entities": [
       {
         "tableName": "cards",
@@ -11,8 +11,7 @@
           {
             "fieldPath": "id",
             "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": false
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "lang",
@@ -58,13 +57,49 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "id"
-          ],
-          "autoGenerate": true
+          ]
         },
-        "indices": [],
-        "foreignKeys": []
+        "indices": [
+          {
+            "name": "index_cards_word",
+            "unique": true,
+            "columnNames": [
+              "word"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_cards_word` ON `${TABLE_NAME}` (`word`)"
+          },
+          {
+            "name": "index_cards_translation",
+            "unique": true,
+            "columnNames": [
+              "translation"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_cards_translation` ON `${TABLE_NAME}` (`translation`)"
+          },
+          {
+            "name": "index_cards_examples",
+            "unique": true,
+            "columnNames": [
+              "examples"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_cards_examples` ON `${TABLE_NAME}` (`examples`)"
+          },
+          {
+            "name": "index_cards_lang",
+            "unique": false,
+            "columnNames": [
+              "lang"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_cards_lang` ON `${TABLE_NAME}` (`lang`)"
+          }
+        ]
       },
       {
         "tableName": "example",
@@ -102,19 +137,16 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "id"
-          ],
-          "autoGenerate": false
-        },
-        "indices": [],
-        "foreignKeys": []
+          ]
+        }
       }
     ],
-    "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5497a0437084384a957f4a62f605d37c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'daf2a792418425aeedbda9d65f02af0a')"
     ]
   }
 }

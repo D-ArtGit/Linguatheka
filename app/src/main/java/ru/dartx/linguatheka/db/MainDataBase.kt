@@ -4,10 +4,14 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import ru.dartx.linguatheka.db.entities.Card
 import ru.dartx.linguatheka.db.entities.Example
 
-@Database(entities = [Card::class, Example::class], version = 1, exportSchema = true)
+@Database(
+    entities = [Card::class, Example::class], version = 2, exportSchema = true
+)
 abstract class MainDataBase : RoomDatabase() {
     abstract fun getDao(): Dao
 
@@ -28,6 +32,7 @@ abstract class MainDataBase : RoomDatabase() {
                     DB_NAME
                 )
                     .createFromAsset(NEW_DB_FROM_ASSET)
+                    .addMigrations(MIGRATION_1_2)
                     .build()
                 INSTANCE = instance
                 return instance
@@ -40,6 +45,21 @@ abstract class MainDataBase : RoomDatabase() {
                     INSTANCE!!.close()
                 }
                 INSTANCE = null
+            }
+        }
+
+        val MIGRATION_1_2: Migration = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE cards_new (id INTEGER PRIMARY KEY AUTOINCREMENT, lang TEXT NOT NULL, word TEXT NOT NULL, examples TEXT NOT NULL, translation TEXT NOT NULL, create_time TEXT NOT NULL, remind_time TEXT NOT NULL, step INTEGER NOT NULL)"
+                )
+                db.execSQL("INSERT INTO cards_new (id, lang, word, examples, translation, create_time, remind_time, step) SELECT id, lang, word, examples, translation, createTime, remindTime, step FROM cards")
+                db.execSQL("DROP TABLE cards")
+                db.execSQL("ALTER TABLE cards_new RENAME TO cards")
+                db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_cards_word_examples_translation ON cards (word, examples, translation)")
+                db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_cards_remind_time_word ON cards (remind_time, word)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_cards_lang ON cards (lang)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_example_card_id ON example (card_id)")
             }
         }
     }
