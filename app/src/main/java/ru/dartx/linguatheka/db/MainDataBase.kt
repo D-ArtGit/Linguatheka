@@ -33,6 +33,7 @@ abstract class MainDataBase : RoomDatabase() {
                 )
                     .createFromAsset(NEW_DB_FROM_ASSET)
                     .addMigrations(MIGRATION_1_2)
+                    .setJournalMode(JournalMode.WRITE_AHEAD_LOGGING)
                     .build()
                 INSTANCE = instance
                 return instance
