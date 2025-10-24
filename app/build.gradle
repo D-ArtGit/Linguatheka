@@ -12,8 +12,8 @@ android {
         applicationId "ru.dartx.linguatheka"
         minSdk 26
         targetSdk 36
-        versionCode 15
-        versionName "1.14"
+        versionCode 16
+        versionName "1.15"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -65,11 +65,11 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.3.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
 
-    implementation 'androidx.work:work-runtime-ktx:2.10.5'
-    implementation 'androidx.room:room-ktx:2.8.2'
+    implementation 'androidx.work:work-runtime-ktx:2.11.0'
+    implementation 'androidx.room:room-ktx:2.8.3'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     androidTestImplementation 'org.junit.jupiter:junit-jupiter:6.0.0'
-    ksp 'androidx.room:room-compiler:2.8.2'
+    ksp 'androidx.room:room-compiler:2.8.3'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.9.4'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.4'
     implementation 'androidx.preference:preference-ktx:1.2.1'
