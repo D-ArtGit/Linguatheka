@@ -84,8 +84,8 @@ class BackupActivity : AppCompatActivity() {
             val success = withContext(Dispatchers.IO) {
                 try {
                     val database = MainDataBase.getDataBase(applicationContext as MainApp)
-                    database.close()
                     database.getDao().checkpoint((SimpleSQLiteQuery("pragma wal_checkpoint(full)")))
+                    database.close()
                     MainDataBase.destroyInstance()
                     val uploadedFiles = driveService.files().list()
                         .setSpaces("appDataFolder")
