@@ -52,8 +52,8 @@ class BackupWorker(context: Context, workerParams: WorkerParameters) :
 
         CoroutineScope(Dispatchers.IO).launch {
             val database = MainDataBase.getDataBase(applicationContext as MainApp)
-            database.close()
             database.getDao().checkpoint((SimpleSQLiteQuery("pragma wal_checkpoint(full)")))
+            database.close()
             MainDataBase.destroyInstance()
             val dbPath = applicationContext.getString(R.string.db_path)
             val storageFile = com.google.api.services.drive.model.File()
