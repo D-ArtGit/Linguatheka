@@ -41,15 +41,13 @@ abstract class MainDataBase : RoomDatabase() {
         }
 
         fun destroyInstance() {
-            if (INSTANCE != null) {
-                if (INSTANCE!!.isOpen) {
-                    INSTANCE!!.close()
-                }
-                INSTANCE = null
+            INSTANCE?.let {
+                if (it.isOpen) it.close()
             }
+            INSTANCE = null
         }
 
-        val MIGRATION_1_2: Migration = object : Migration(1, 2) {
+        private val MIGRATION_1_2: Migration = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL(
                     "CREATE TABLE cards_new (id INTEGER PRIMARY KEY AUTOINCREMENT, lang TEXT NOT NULL, word TEXT NOT NULL, examples TEXT NOT NULL, translation TEXT NOT NULL, create_time TEXT NOT NULL, remind_time TEXT NOT NULL, step INTEGER NOT NULL)"
